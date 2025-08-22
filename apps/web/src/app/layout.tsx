@@ -1,41 +1,33 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "../index.css";
-import Providers from "@/components/providers";
-import Header from "@/components/header";
+import type { Metadata } from 'next';
+import { Geist, Geist_Mono, Inter, Inter_Tight } from 'next/font/google';
+import '../index.css';
+import Providers from '@/components/providers';
 
-const geistSans = Geist({
-	variable: "--font-geist-sans",
-	subsets: ["latin"],
+const interTight = Inter_Tight({
+  variable: '--font-inter-tight',
+  subsets: ['latin'],
 });
 
-const geistMono = Geist_Mono({
-	variable: "--font-geist-mono",
-	subsets: ["latin"],
+const inter = Inter({
+  variable: '--font-inter',
+  subsets: ['latin'],
 });
 
 export const metadata: Metadata = {
-	title: "orbyte",
-	description: "orbyte",
+  title: 'Orbyte',
+  description: 'orbyte',
 };
 
 export default function RootLayout({
-	children,
+  children,
 }: Readonly<{
-	children: React.ReactNode;
+  children: React.ReactNode;
 }>) {
-	return (
-		<html lang="en" suppressHydrationWarning>
-			<body
-				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-			>
-				<Providers>
-					<div className="grid grid-rows-[auto_1fr] h-svh">
-						<Header />
-						{children}
-					</div>
-				</Providers>
-			</body>
-		</html>
-	);
+  return (
+    <html lang='en' suppressHydrationWarning>
+      <body className={`${interTight.variable} ${inter.variable} antialiased`}>
+        <Providers>{children}</Providers>
+      </body>
+    </html>
+  );
 }
