@@ -1,8 +1,8 @@
 import type { BreadcrumbItemType } from '@/types/nav';
 import type { ReactNode } from 'react';
-import AppShell from './app-shell';
-import { AppSidebar } from './app-sidebar';
-import AppSidebarHeader from './app-sidebar-header';
+import AppShell from '@/components/layout/app-shell';
+import { AppSidebar } from '@/components/layout/app-sidebar';
+import AppSidebarHeader from '@/components/layout/app-sidebar-header';
 
 interface Props {
   children: ReactNode;
