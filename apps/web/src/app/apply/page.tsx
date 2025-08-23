@@ -13,6 +13,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import api from '@/config/axios';
+import { useKycContract } from '@/hooks/use-kyc-contract';
 
 export default function ApplyAsProfessionalPage() {
   const FormSchema = z.object({
@@ -26,7 +27,8 @@ export default function ApplyAsProfessionalPage() {
     certification: z.instanceof(File).optional(),
   });
 
-  const [loading, setLoading] = useState(false);
+  const { submitKYC } = useKycContract();
+  const [loading, setLoading] = useState<boolean>(false);
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -35,11 +37,28 @@ export default function ApplyAsProfessionalPage() {
     },
   });
 
+  const { watch } = form;
+
+  const role = watch('role');
+  const document = watch('document');
+  const proofOfAddress = watch('proofOfAddress');
+  const certification = watch('certification');
+
+  let completedSteps = 0;
+  if (role) completedSteps++;
+  if (document) completedSteps++;
+  if (proofOfAddress) completedSteps++;
+  if (certification) completedSteps++;
+
+  const totalSteps = 4;
+  const progress = (completedSteps / totalSteps) * 100;
+
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     try {
+      setLoading(true);
       // Build FormData for KYC + event
       const formData = new FormData();
-      formData.append('role', data.role);
+      formData.append('role', String(data.role));
       formData.append('document', data.document);
       formData.append('proofOfAddress', data.proofOfAddress);
       if (data.certification) {
@@ -50,25 +69,37 @@ export default function ApplyAsProfessionalPage() {
         .post('/kyc/submit', formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         })
-        .then((res) => {
-          console.log(res.data);
-          toast.success('KYC submitted!');
+        .then(async (res) => {
+          const { role, documentCid, proofOfAddressCid, certificationCid } =
+            res.data.data;
 
-          // Smart contract here later
-        })
-        .catch((err) => {
-          toast.error(err.message);
+          const tx = await submitKYC(
+            role,
+            documentCid,
+            proofOfAddressCid,
+            certificationCid
+          );
+
+          // Send Toast UI
+          toast('KYC Submitted', {
+            description: `Transaction Hash: ${tx.hash}`,
+            action: {
+              label: 'Close',
+              onClick: () => toast.dismiss(),
+            },
+          });
         });
     } catch (error) {
       console.error(error);
-      toast.error('Submission failed');
-      toast('SUbmission failed', {
+      toast('Submission failed', {
         description: (error as Error).message,
         action: {
           label: 'Close',
-          onClick: () => console.log('Closed'),
+          onClick: () => toast.dismiss(),
         },
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -90,11 +121,13 @@ export default function ApplyAsProfessionalPage() {
           <CardContent>
             <div className='h-2 w-full rounded bg-accent'>
               <div
-                className='h-2 rounded bg-[#14b881]'
-                style={{ width: '25%' }}
+                className='h-2 rounded bg-[#14b881] transition-all'
+                style={{ width: `${progress}%` }}
               />
             </div>
-            <p className='mt-2 text-sm text-muted-foreground'>Step 1 of 4</p>
+            <p className='mt-2 text-sm text-muted-foreground'>
+              Step {completedSteps} of {totalSteps}
+            </p>
           </CardContent>
         </Card>
 
@@ -109,7 +142,7 @@ export default function ApplyAsProfessionalPage() {
               name='role'
               render={({ field }) => (
                 <RadioGroup
-                  value={field.value}
+                  value={String(field.value)}
                   onValueChange={field.onChange}
                   className='space-y-3'
                 >
@@ -119,7 +152,10 @@ export default function ApplyAsProfessionalPage() {
                       field.value === UserRole.AUDITOR && 'border-accent'
                     }`}
                   >
-                    <RadioGroupItem value={UserRole.AUDITOR} id='auditor' />
+                    <RadioGroupItem
+                      value={String(UserRole.AUDITOR)}
+                      id='auditor'
+                    />
 
                     <div className='flex flex-col'>
                       <span className='font-medium'>Auditor</span>
@@ -134,7 +170,10 @@ export default function ApplyAsProfessionalPage() {
                       field.value === UserRole.DEVELOPER && 'border-accent'
                     }`}
                   >
-                    <RadioGroupItem value={UserRole.DEVELOPER} id='developer' />
+                    <RadioGroupItem
+                      value={String(UserRole.DEVELOPER)}
+                      id='developer'
+                    />
 
                     <div className='flex flex-col'>
                       <span className='font-medium'>Project Developer</span>

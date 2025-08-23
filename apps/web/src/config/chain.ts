@@ -1,3 +1,3 @@
-import { celoAlfajores } from 'wagmi/chains';
+import { arbitrum, arbitrumSepolia, celoAlfajores } from 'wagmi/chains';
 
 export const defaultChain = celoAlfajores;

@@ -6,12 +6,12 @@ export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
 
-    const role = formData.get('role') as string | null;
+    const role = Number(formData.get('role') as string | null);
     const document = formData.get('document') as File | null;
     const proofOfAddress = formData.get('proofOfAddress') as File | null;
     const certification = formData.get('certification') as File | null;
 
-    if (!role || !document || !proofOfAddress) {
+    if (!document || !proofOfAddress) {
       return fail('Missing required KYC fields', 400);
     }
 

@@ -14,6 +14,7 @@ import { useRouter } from 'next/navigation';
 
 export function UserDropdown() {
   const { ready, authenticated, user, login, logout } = usePrivy();
+
   const router = useRouter();
 
   if (!ready) return null;
@@ -26,7 +27,7 @@ export function UserDropdown() {
     );
   }
 
-  const address = user?.wallet?.address ?? '';
+  const address = user?.wallet?.address ?? 'Loading...';
 
   return (
     <DropdownMenu>
