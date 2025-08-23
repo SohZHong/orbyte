@@ -16,7 +16,7 @@ export default function Home() {
     <AppHeaderLayout breadcrumbs={breadcrumbs}>
       <div className='flex flex-col gap-6 p-6'>
         <div>
-          <h1 className='text-3xl font-bold tracking-tight'>My Patients</h1>
+          <h1 className='text-3xl font-bold tracking-tight'>Dashboard</h1>
           <p className='text-muted-foreground'>
             List of patients with confirmed bookings
           </p>

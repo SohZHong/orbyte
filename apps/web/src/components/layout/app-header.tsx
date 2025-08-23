@@ -54,7 +54,7 @@ export default function AppHeader({ breadcrumbs = [] }: Props) {
   //   const role = user?.role ?? 'guest';
 
   const mainNavItems: NavItem[] = [
-    { title: 'Home', href: '/dashboard', icon: LayoutGrid },
+    { title: 'Home', href: '/', icon: LayoutGrid },
     { title: 'Professional Application', href: '/apply', icon: IdCard },
   ];
 
