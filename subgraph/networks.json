@@ -3,6 +3,15 @@
     "ProjectRegistry": {
       "address": "0x70BB0f04930f8e299a3720Ca6Cb3F434A6Fd5d60",
       "startBlock": 55002476
+    },
+    "KYC": {
+      "address": "0x2f698DEC0A381Dfa330F0f67287AF95726a36C9F"
+    },
+    "RoleToken": {
+      "address": "0x477E01b4DfD8d4E895c9DAf4eB8077f5D85e59Bd"
+    },
+    "CarbonCredit": {
+      "address": "0xcc5819A9B4536b7122C09E2CB131FeF44Fe6e5d0"
     }
   }
 }
