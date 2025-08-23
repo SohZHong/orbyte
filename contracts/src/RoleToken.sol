@@ -14,6 +14,7 @@ contract RoleToken is ERC721, Ownable {
     }
     mapping(uint256 => Role) public tokenRoles; // tokenId -> Role
     mapping(address => bool) public hasToken;
+    mapping(address => Role) public roleOfAccount; // NEW
 
     event RoleMinted(address indexed account, uint256 tokenId, Role role);
     event RoleBurned(address indexed account, uint256 tokenId, Role role);
@@ -33,11 +34,11 @@ contract RoleToken is ERC721, Ownable {
 
         tokenRoles[tokenId] = role;
         hasToken[to] = true;
+        roleOfAccount[to] = role; // NEW
 
         emit RoleMinted(to, tokenId, role);
     }
 
-    // Remove the role from specific wallet
     function burn(uint256 tokenId) external onlyOwner {
         address owner = ownerOf(tokenId);
         Role role = tokenRoles[tokenId];
@@ -46,8 +47,15 @@ contract RoleToken is ERC721, Ownable {
 
         hasToken[owner] = false;
         delete tokenRoles[tokenId];
+        delete roleOfAccount[owner]; // NEW
 
         emit RoleBurned(owner, tokenId, role);
+    }
+
+    // Simple view for external contracts
+    function roleOf(address who) external view returns (uint8) {
+        require(hasToken[who], "No role");
+        return uint8(roleOfAccount[who]); // 0 = Developer, 1 = Auditor
     }
 
     // View role data

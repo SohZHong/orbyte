@@ -1,0 +1,473 @@
+[
+  {
+    "inputs": [
+      { "internalType": "address", "name": "roleToken_", "type": "address" },
+      { "internalType": "address", "name": "creditToken_", "type": "address" },
+      {
+        "internalType": "uint256",
+        "name": "proposalApprovalThreshold_",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "proofApprovalThreshold_",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "developer",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "tokenURI",
+        "type": "string"
+      }
+    ],
+    "name": "CreditsIssued",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "developer",
+        "type": "address"
+      },
+      {
+        "components": [
+          { "internalType": "string", "name": "name", "type": "string" },
+          { "internalType": "string", "name": "description", "type": "string" },
+          { "internalType": "string", "name": "location", "type": "string" },
+          {
+            "internalType": "uint256",
+            "name": "estimatedCredits",
+            "type": "uint256"
+          },
+          {
+            "internalType": "enum ProjectRegistry.Standard",
+            "name": "standard",
+            "type": "uint8"
+          },
+          { "internalType": "uint16", "name": "vintage", "type": "uint16" },
+          { "internalType": "string", "name": "methodology", "type": "string" },
+          {
+            "internalType": "string",
+            "name": "projectPlanCID",
+            "type": "string"
+          },
+          { "internalType": "string", "name": "eiaCID", "type": "string" },
+          {
+            "internalType": "string",
+            "name": "otherDocsCID",
+            "type": "string"
+          },
+          { "internalType": "string", "name": "metadataCID", "type": "string" }
+        ],
+        "indexed": false,
+        "internalType": "struct ProjectRegistry.ProposalMeta",
+        "name": "meta",
+        "type": "tuple"
+      }
+    ],
+    "name": "ProjectProposed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "enum ProjectRegistry.ProjectStatus",
+        "name": "newStatus",
+        "type": "uint8"
+      }
+    ],
+    "name": "ProjectStatusChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "auditor",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "enum ProjectRegistry.ReviewAction",
+        "name": "action",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "commentCID",
+        "type": "string"
+      }
+    ],
+    "name": "ProofAudited",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "developer",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "proofCID",
+        "type": "string"
+      }
+    ],
+    "name": "ProofSubmitted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "auditor",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "enum ProjectRegistry.ReviewAction",
+        "name": "action",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "commentCID",
+        "type": "string"
+      }
+    ],
+    "name": "ProposalReviewed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "enum ProjectRegistry.ProposalStatus",
+        "name": "newStatus",
+        "type": "uint8"
+      }
+    ],
+    "name": "ProposalStatusChanged",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "id", "type": "uint256" },
+      {
+        "internalType": "enum ProjectRegistry.ReviewAction",
+        "name": "action",
+        "type": "uint8"
+      },
+      { "internalType": "string", "name": "commentCID", "type": "string" }
+    ],
+    "name": "auditProof",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "creditToken",
+    "outputs": [
+      {
+        "internalType": "contract ICarbonCreditToken",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "projectId", "type": "uint256" }
+    ],
+    "name": "getProject",
+    "outputs": [
+      { "internalType": "string", "name": "name", "type": "string" },
+      { "internalType": "address", "name": "developer", "type": "address" },
+      {
+        "internalType": "enum ProjectRegistry.ProjectStatus",
+        "name": "status",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint256",
+        "name": "approvedCredits",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "id", "type": "uint256" }],
+    "name": "getProjectBasic",
+    "outputs": [
+      { "internalType": "string", "name": "name", "type": "string" },
+      { "internalType": "address", "name": "developer", "type": "address" },
+      {
+        "internalType": "enum ProjectRegistry.ProposalStatus",
+        "name": "proposalStatus",
+        "type": "uint8"
+      },
+      {
+        "internalType": "enum ProjectRegistry.ProjectStatus",
+        "name": "projectStatus",
+        "type": "uint8"
+      },
+      { "internalType": "bool", "name": "creditsIssued", "type": "bool" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "id", "type": "uint256" }],
+    "name": "getProjectProof",
+    "outputs": [
+      { "internalType": "string", "name": "proofCID", "type": "string" },
+      { "internalType": "uint256", "name": "approvals", "type": "uint256" },
+      { "internalType": "uint256", "name": "rejections", "type": "uint256" },
+      {
+        "internalType": "enum ProjectRegistry.ProjectStatus",
+        "name": "status",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "id", "type": "uint256" }],
+    "name": "getProposalTallies",
+    "outputs": [
+      { "internalType": "uint256", "name": "approvals", "type": "uint256" },
+      { "internalType": "uint256", "name": "rejections", "type": "uint256" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "projectCounter",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "proofApprovalThreshold",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "proposalApprovalThreshold",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "id", "type": "uint256" },
+      {
+        "components": [
+          { "internalType": "string", "name": "name", "type": "string" },
+          { "internalType": "string", "name": "description", "type": "string" },
+          { "internalType": "string", "name": "location", "type": "string" },
+          {
+            "internalType": "uint256",
+            "name": "estimatedCredits",
+            "type": "uint256"
+          },
+          {
+            "internalType": "enum ProjectRegistry.Standard",
+            "name": "standard",
+            "type": "uint8"
+          },
+          { "internalType": "uint16", "name": "vintage", "type": "uint16" },
+          { "internalType": "string", "name": "methodology", "type": "string" },
+          {
+            "internalType": "string",
+            "name": "projectPlanCID",
+            "type": "string"
+          },
+          { "internalType": "string", "name": "eiaCID", "type": "string" },
+          {
+            "internalType": "string",
+            "name": "otherDocsCID",
+            "type": "string"
+          },
+          { "internalType": "string", "name": "metadataCID", "type": "string" }
+        ],
+        "internalType": "struct ProjectRegistry.ProposalMeta",
+        "name": "newMeta",
+        "type": "tuple"
+      }
+    ],
+    "name": "resubmitProposal",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "id", "type": "uint256" },
+      {
+        "internalType": "enum ProjectRegistry.ReviewAction",
+        "name": "action",
+        "type": "uint8"
+      },
+      { "internalType": "string", "name": "commentCID", "type": "string" }
+    ],
+    "name": "reviewProposal",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "roleToken",
+    "outputs": [
+      { "internalType": "contract IRoleToken", "name": "", "type": "address" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "id", "type": "uint256" },
+      { "internalType": "string", "name": "proofCID", "type": "string" }
+    ],
+    "name": "submitProof",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          { "internalType": "string", "name": "name", "type": "string" },
+          { "internalType": "string", "name": "description", "type": "string" },
+          { "internalType": "string", "name": "location", "type": "string" },
+          {
+            "internalType": "uint256",
+            "name": "estimatedCredits",
+            "type": "uint256"
+          },
+          {
+            "internalType": "enum ProjectRegistry.Standard",
+            "name": "standard",
+            "type": "uint8"
+          },
+          { "internalType": "uint16", "name": "vintage", "type": "uint16" },
+          { "internalType": "string", "name": "methodology", "type": "string" },
+          {
+            "internalType": "string",
+            "name": "projectPlanCID",
+            "type": "string"
+          },
+          { "internalType": "string", "name": "eiaCID", "type": "string" },
+          {
+            "internalType": "string",
+            "name": "otherDocsCID",
+            "type": "string"
+          },
+          { "internalType": "string", "name": "metadataCID", "type": "string" }
+        ],
+        "internalType": "struct ProjectRegistry.ProposalMeta",
+        "name": "meta",
+        "type": "tuple"
+      }
+    ],
+    "name": "submitProposal",
+    "outputs": [{ "internalType": "uint256", "name": "id", "type": "uint256" }],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]

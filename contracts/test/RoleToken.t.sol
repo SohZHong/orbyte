@@ -72,4 +72,11 @@ contract RoleTokenTest is Test {
         vm.expectRevert("Soulbound: Transfers disabled");
         roleToken.transferFrom(alice, bob, 0);
     }
+
+    function test_RoleOf() public {
+        roleToken.mint(alice, RoleToken.Role.Developer);
+
+        vm.prank(alice);
+        assertEq(roleToken.roleOf(alice), uint(RoleToken.Role.Developer));
+    }
 }
