@@ -1,0 +1,81 @@
+type CreditsIssued @entity(immutable: true) {
+  id: Bytes!
+  internal_id: BigInt! # uint256
+  developer: Bytes! # address
+  amount: BigInt! # uint256
+  tokenId: BigInt! # uint256
+  tokenURI: String! # string
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type ProjectProposed @entity(immutable: true) {
+  id: Bytes!
+  internal_id: BigInt! # uint256
+  developer: Bytes! # address
+  meta_name: String! # string
+  meta_description: String! # string
+  meta_location: String! # string
+  meta_estimatedCredits: BigInt! # uint256
+  meta_standard: Int! # uint8
+  meta_vintage: Int! # uint16
+  meta_methodology: String! # string
+  meta_projectPlanCID: String! # string
+  meta_eiaCID: String! # string
+  meta_otherDocsCID: String! # string
+  meta_metadataCID: String! # string
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type ProjectStatusChanged @entity(immutable: true) {
+  id: Bytes!
+  internal_id: BigInt! # uint256
+  newStatus: Int! # uint8
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type ProofAudited @entity(immutable: true) {
+  id: Bytes!
+  internal_id: BigInt! # uint256
+  auditor: Bytes! # address
+  action: Int! # uint8
+  commentCID: String! # string
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type ProofSubmitted @entity(immutable: true) {
+  id: Bytes!
+  internal_id: BigInt! # uint256
+  developer: Bytes! # address
+  proofCID: String! # string
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type ProposalReviewed @entity(immutable: true) {
+  id: Bytes!
+  internal_id: BigInt! # uint256
+  auditor: Bytes! # address
+  action: Int! # uint8
+  commentCID: String! # string
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type ProposalStatusChanged @entity(immutable: true) {
+  id: Bytes!
+  internal_id: BigInt! # uint256
+  newStatus: Int! # uint8
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
