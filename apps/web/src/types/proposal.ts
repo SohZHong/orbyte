@@ -18,3 +18,9 @@ export enum ReviewAction {
   REQUEST_CHANGES,
   REJECT,
 }
+
+export const standardMap: Record<Standard, string> = {
+  0: 'Gold Standard',
+  1: 'VCS',
+  2: 'Shariah',
+};

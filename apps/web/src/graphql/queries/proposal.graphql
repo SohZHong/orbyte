@@ -1,0 +1,20 @@
+query Proposals($first: Int!, $skip: Int!) {
+  proposals(first: $first, skip: $skip) {
+    id
+    developer {
+      id
+    }
+    name
+    description
+    location
+    metadataCID
+    methodology
+    otherDocsCID
+    projectPlanCID
+    standard
+    status
+    vintage
+    eiaCID
+    estimatedCredits
+  }
+}

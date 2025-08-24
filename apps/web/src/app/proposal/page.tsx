@@ -19,23 +19,57 @@ import { ProposalStatus } from '@/generated/graphql';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useProposals } from '@/hooks/use-proposal';
+import { Standard, standardMap } from '@/types/proposal';
+import { Badge } from '@/components/ui/badge';
 
 const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Dashboard', href: '/dashboard' },
   { title: 'Proposal', href: '#' },
 ];
 
+export const statusMap: Record<
+  ProposalStatus,
+  { text: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }
+> = {
+  [ProposalStatus.PendingReview]: {
+    text: 'Pending Review',
+    variant: 'secondary',
+  },
+  [ProposalStatus.ChangesRequested]: {
+    text: 'Changes Requested',
+    variant: 'outline',
+  },
+  [ProposalStatus.Approved]: {
+    text: 'Approved',
+    variant: 'default',
+  },
+  [ProposalStatus.Rejected]: {
+    text: 'Rejected',
+    variant: 'destructive',
+  },
+};
+
 export default function ProposalSubmissionPage() {
   const { user: privyUser } = usePrivy();
   const address = privyUser?.smartWallet?.address;
-  const { data: user, isLoading } = useUser(address);
+  const { data: user, isLoading: isUserLoading } = useUser(address);
   const router = useRouter();
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading: isProposalLoading,
+    error,
+  } = useProposals();
+
   return (
     <AppSidebarLayout breadcrumbs={breadcrumbs}>
       <div className='flex flex-col gap-6 p-6'>
         <div className='flex flex-col gap-4 md:flex-row md:items-center md:justify-between'>
           <div>
-            {isLoading ? (
+            {isUserLoading ? (
               <React.Fragment>
                 <Skeleton className='h-8 w-[200px] my-2' />
                 <Skeleton className='h-4 w-[300px] my-2' />
@@ -59,7 +93,7 @@ export default function ProposalSubmissionPage() {
         <div className='flex flex-wrap gap-3 items-center'>
           {/* Search bar */}
           <div className='flex-1 min-w-[250px]'>
-            {isLoading ? (
+            {isUserLoading ? (
               <Skeleton className='h-10 w-full' />
             ) : (
               <Input
@@ -88,54 +122,62 @@ export default function ProposalSubmissionPage() {
         </div>
         {/* Table */}
         <div className='overflow-x-auto rounded-lg border'>
-          {isLoading ? (
+          {isProposalLoading ? (
             <div className='flex flex-col gap-2 p-4'>
               {Array.from({ length: 5 }).map((_, i) => (
                 <Skeleton key={i} className='h-10 w-full' />
               ))}
             </div>
           ) : (
-            <table className='min-w-[900px] w-full text-sm'>
-              <thead>
-                {/* <div class="grid grid-cols-[2fr_2fr_2fr_2fr_1fr_3fr] items-center bg-muted text-sm font-semibold text-muted-foreground"> */}
-                <tr className='bg-muted font-semibold text-muted-foreground text-left'>
-                  <th className='px-4 py-3 font-medium'>Project Title</th>
-                  <th className='px-4 py-3 font-medium'>Submission Date</th>
-                  <th className='px-4 py-3 font-medium'>Status</th>
-                  <th className='px-4 py-3 font-medium'>Summary</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr className='border-t'>
-                  <td className='px-4 py-2'>Eco-Friendly Farming Initiative</td>
-                  <td className='px-4 py-2 text-muted-foreground'>
-                    2023-08-15
-                  </td>
-                  <td className='px-4 py-2'>
-                    <Button size='sm' variant='secondary'>
-                      In Review
-                    </Button>
-                  </td>
-                  <td className='px-4 py-2 text-muted-foreground'>
-                    Sustainable farming practices to reduce emissions.
-                  </td>
-                </tr>
-                <tr className='border-t'>
-                  <td className='px-4 py-2'>Renewable Energy Expansion</td>
-                  <td className='px-4 py-2 text-muted-foreground'>
-                    2023-07-22
-                  </td>
-                  <td className='px-4 py-2'>
-                    <Button size='sm' variant='secondary'>
-                      Approved
-                    </Button>
-                  </td>
-                  <td className='px-4 py-2 text-muted-foreground'>
-                    Expanding solar and wind energy capacity.
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <>
+              <table className='min-w-[900px] w-full text-sm'>
+                <thead>
+                  <tr className='bg-muted font-semibold text-muted-foreground text-left'>
+                    <th className='px-4 py-3 font-medium'>Project Title</th>
+                    <th className='px-4 py-3 font-medium w-[200px]'>
+                      Developer
+                    </th>
+                    <th className='px-4 py-3 font-medium'>Standard</th>
+                    <th className='px-4 py-3 font-medium'>Status</th>
+                    <th className='px-4 py-3 font-medium w-[300px]'>Summary</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data?.pages.flat().map((p, index) => (
+                    <tr className='border-t' key={index}>
+                      <td className='px-4 py-2'>{p.name}</td>
+                      <td className='px-4 py-2 text-muted-foreground truncate max-w-[200px]'>
+                        <div className='overflow-x-auto'>{p.developer.id}</div>
+                      </td>
+                      <td className='px-4 py-2'>
+                        {standardMap[p.standard as Standard]}
+                      </td>
+                      <td className='px-4 py-2'>
+                        <Badge variant={statusMap[p.status].variant}>
+                          {statusMap[p.status].text}
+                        </Badge>
+                      </td>
+                      <td className='px-4 py-2 text-muted-foreground truncate max-w-[300px]'>
+                        <div className='overflow-x-auto'>{p.description}</div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              {/* Load More */}
+              {hasNextPage && (
+                <div className='flex justify-center p-4'>
+                  <Button
+                    variant='outline'
+                    onClick={() => fetchNextPage()}
+                    disabled={isFetchingNextPage}
+                  >
+                    {isFetchingNextPage ? 'Loading…' : 'Load more'}
+                  </Button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
