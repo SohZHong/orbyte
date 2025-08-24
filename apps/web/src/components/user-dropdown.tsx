@@ -27,7 +27,7 @@ export function UserDropdown() {
     );
   }
 
-  const address = user?.wallet?.address ?? 'Loading...';
+  const address = user?.smartWallet?.address ?? 'Loading...';
 
   return (
     <DropdownMenu>

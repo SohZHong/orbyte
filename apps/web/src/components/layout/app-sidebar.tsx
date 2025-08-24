@@ -1,5 +1,6 @@
-import { BookOpen, Folder, History, Home, Settings } from 'lucide-react';
+'use client';
 
+import Link from 'next/link';
 import {
   Sidebar,
   SidebarContent,
@@ -9,66 +10,39 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import Link from 'next/link';
 import { NavMain } from './nav-main';
-import type { NavItem } from '@/types/nav';
 import NavUser from './nav-user';
 import { NavFooter } from './nav-footer';
-
-// Menu items
-const mainNavItems: NavItem[] = [
-  {
-    title: 'Dashboard',
-    href: '/dashboard',
-    icon: Home,
-  },
-  {
-    title: 'Transaction',
-    href: '/transaction',
-    icon: History,
-  },
-  {
-    title: 'Settings',
-    href: '/settings',
-    icon: Settings,
-  },
-];
-
-const footerNavItems: NavItem[] = [
-  {
-    title: 'Github Repo',
-    href: 'https://github.com/laravel/vue-starter-kit',
-    icon: Folder,
-  },
-  {
-    title: 'Documentation',
-    href: 'https://laravel.com/docs/starter-kits#vue',
-    icon: BookOpen,
-  },
-];
+import { navItems, footerNavItems } from '@/config/navigation';
+import { useUser } from '@/hooks/use-user';
+import { usePrivy } from '@privy-io/react-auth';
 
 export function AppSidebar() {
+  const { user: privyUser } = usePrivy();
+  const address = privyUser?.smartWallet?.address;
+  const { data: user } = useUser(address);
+
+  const role = user?.role ?? 'Public';
+  const items = navItems[role];
+
   return (
     <Sidebar collapsible='icon' variant='floating'>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size='lg' asChild>
-              {/* <Link :href="route('dashboard')">
-                            <AppLogo />
-                        </Link> */}
               <Link href={'/'}>Orbyte</Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
+
       <SidebarContent>
-        <NavMain items={mainNavItems} />
+        <NavMain items={items} />
       </SidebarContent>
 
       <SidebarFooter>
         <NavFooter items={footerNavItems} />
-        {/* <NavNotifications /> */}
         <NavUser />
       </SidebarFooter>
     </Sidebar>

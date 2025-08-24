@@ -21,7 +21,7 @@ import { ModeToggle } from '../mode-toggle';
 export default function NavUser() {
   const { user, login, logout } = usePrivy();
 
-  const walletAddress = user?.wallet?.address ?? null;
+  const walletAddress = user?.smartWallet?.address ?? null;
 
   const { data: ensName } = useEnsName({
     address: walletAddress as `0x${string}` | undefined,

@@ -36,6 +36,9 @@ import type { BreadcrumbItem, NavItem } from '@/types/nav';
 import Breadcrumbs from './breadcrumbs';
 import { UserDropdown } from '../user-dropdown';
 import { ModeToggle } from '../mode-toggle';
+import { usePrivy } from '@privy-io/react-auth';
+import { useUser } from '@/hooks/use-user';
+import { footerNavItems, navItems } from '@/config/navigation';
 
 interface Props {
   breadcrumbs?: BreadcrumbItem[];
@@ -50,54 +53,13 @@ export default function AppHeader({ breadcrumbs = [] }: Props) {
       ? 'text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100'
       : '';
 
-  //   // Example: role-based menu (replace with your user role logic)
-  //   const role = user?.role ?? 'guest';
+  const { user: privyUser } = usePrivy();
 
-  const mainNavItems: NavItem[] = [
-    { title: 'Home', href: '/', icon: LayoutGrid },
-    { title: 'Professional Application', href: '/apply', icon: IdCard },
-  ];
+  const address = privyUser?.smartWallet?.address;
+  const { data: user } = useUser(address);
 
-  //   if (
-  //     role === 'healthcare_professional' ||
-  //     role === 'health_campaign_manager' ||
-  //     role === 'system_admin'
-  //   ) {
-  //     mainNavItems.push({
-  //       title: 'Healthcare',
-  //       href: '/healthcare',
-  //       icon: Heart,
-  //     });
-  //   }
-
-  //   if (role === 'health_campaign_manager' || role === 'system_admin') {
-  //     mainNavItems.push({
-  //       title: 'Campaigns',
-  //       href: '/campaigns',
-  //       icon: Megaphone,
-  //     });
-  //   }
-
-  //   if (role === 'system_admin') {
-  //     mainNavItems.push({
-  //       title: 'Admin',
-  //       href: '/admin',
-  //       icon: Shield,
-  //     });
-  //   }
-
-  const rightNavItems: NavItem[] = [
-    {
-      title: 'Repository',
-      href: 'https://github.com/laravel/vue-starter-kit',
-      icon: Folder,
-    },
-    {
-      title: 'Documentation',
-      href: 'https://laravel.com/docs/starter-kits#vue',
-      icon: BookOpen,
-    },
-  ];
+  const role = user?.role ?? 'Public';
+  const mainNavItems = navItems[role];
 
   return (
     <div>
@@ -133,7 +95,7 @@ export default function AppHeader({ breadcrumbs = [] }: Props) {
                     ))}
                   </nav>
                   <div className='flex flex-col space-y-4'>
-                    {rightNavItems.map((item) => (
+                    {footerNavItems.map((item) => (
                       <a
                         key={item.title}
                         href={item.href}
@@ -190,7 +152,7 @@ export default function AppHeader({ breadcrumbs = [] }: Props) {
 
               {/* External links with tooltips */}
               <div className='hidden space-x-1 lg:flex'>
-                {rightNavItems.map((item) => (
+                {footerNavItems.map((item) => (
                   <TooltipProvider key={item.title} delayDuration={0}>
                     <Tooltip>
                       <TooltipTrigger asChild>
