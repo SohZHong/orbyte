@@ -16,10 +16,13 @@ contract CounterScript is Script {
         vm.startBroadcast();
 
         CarbonCreditToken creditToken = new CarbonCreditToken("ipfs://");
+        token = new RoleToken(
+            "https://ipfs.io/ipfs/bafybeifhexq5qszws7xng6cwifaonkjaz676iu5hsuhjazk44liqzyn2xy/"
+        );
 
-        // 3️⃣ Deploy ProjectRegistry with thresholds
+        // 3️Deploy ProjectRegistry with thresholds
         ProjectRegistry registry = new ProjectRegistry(
-            address(0xEcB1c140b9Cb899323DF33f6a3966B80fBe267B4),
+            address(token),
             address(creditToken),
             2,
             2
@@ -30,6 +33,7 @@ contract CounterScript is Script {
 
         console.log("Deployment complete!");
         console.log("Registry address:", address(registry));
+        console.log("Role Token address:", address(token));
         console.log("CreditToken address:", address(creditToken));
     }
 }

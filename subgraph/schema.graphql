@@ -38,7 +38,7 @@ enum ReviewAction {
 }
 
 type User @entity {
-  id: Bytes! # address
+  id: ID!
   role: Role!
   documentCid: String
   proofOfAddressCid: String

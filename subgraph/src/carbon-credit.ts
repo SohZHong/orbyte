@@ -1,4 +1,4 @@
-import { Address, Bytes } from '@graphprotocol/graph-ts';
+import { Address } from '@graphprotocol/graph-ts';
 import {
   TransferBatch as TransferBatchEvent,
   TransferSingle as TransferSingleEvent,
@@ -33,11 +33,8 @@ export function handleTransferBatch(event: TransferBatchEvent): void {
 
     // decrease sender balance
     if (event.params.from.notEqual(Address.zero())) {
-      let sender = loadUser(event.params.from);
-      let fromBalanceId = getBalanceId(
-        Address.fromBytes(sender.id),
-        tokenId.toString()
-      );
+      let sender = loadUser(event.params.from.toHexString());
+      let fromBalanceId = getBalanceId(event.params.from, tokenId.toString());
       let fromBalance = loadCreditBalance(fromBalanceId);
 
       fromBalance.user = sender.id;
@@ -49,11 +46,8 @@ export function handleTransferBatch(event: TransferBatchEvent): void {
 
     // increase receiver balance
     if (event.params.to.notEqual(Address.zero())) {
-      let receiver = loadUser(event.params.to);
-      let toBalanceId = getBalanceId(
-        Address.fromBytes(receiver.id),
-        tokenId.toString()
-      );
+      let receiver = loadUser(event.params.to.toHexString());
+      let toBalanceId = getBalanceId(event.params.to, tokenId.toString());
       let toBalance = loadCreditBalance(toBalanceId);
 
       toBalance.user = receiver.id;
@@ -83,11 +77,8 @@ export function handleTransferSingle(event: TransferSingleEvent): void {
 
   // decrease sender balance
   if (event.params.from.notEqual(Address.zero())) {
-    let sender = loadUser(event.params.from);
-    let fromBalanceId = getBalanceId(
-      Address.fromBytes(sender.id),
-      tokenId.toString()
-    );
+    let sender = loadUser(event.params.from.toHexString());
+    let fromBalanceId = getBalanceId(event.params.from, tokenId.toString());
     let fromBalance = loadCreditBalance(fromBalanceId);
 
     fromBalance.user = sender.id;
@@ -99,11 +90,8 @@ export function handleTransferSingle(event: TransferSingleEvent): void {
 
   // increase receiver balance
   if (event.params.to.notEqual(Address.zero())) {
-    let receiver = loadUser(event.params.to);
-    let toBalanceId = getBalanceId(
-      Address.fromBytes(receiver.id),
-      tokenId.toString()
-    );
+    let receiver = loadUser(event.params.to.toHexString());
+    let toBalanceId = getBalanceId(event.params.to, tokenId.toString());
     let toBalance = loadCreditBalance(toBalanceId);
 
     toBalance.user = receiver.id;

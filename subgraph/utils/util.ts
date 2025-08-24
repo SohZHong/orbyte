@@ -10,7 +10,7 @@ import {
   CreditBalance,
 } from '../generated/schema';
 
-export function loadUser(id: Bytes): User {
+export function loadUser(id: string): User {
   let user = User.load(id);
   if (!user) {
     user = new User(id);
@@ -38,7 +38,6 @@ export function loadProposal(id: string): Proposal {
     proposal.otherDocsCID = '';
     proposal.metadataCID = '';
     proposal.status = 'Pending Review';
-    proposal.save();
   }
   return proposal;
 }
@@ -50,7 +49,6 @@ export function loadProposalReview(id: string): ProposalReview {
     review.action = 'Approve'; // Approve
     review.commentCID = '';
     review.timestamp = BigInt.fromI32(0);
-    review.save();
   }
   return review;
 }
@@ -60,7 +58,6 @@ export function loadProject(id: string): Project {
   if (!project) {
     project = new Project(id);
     project.status = 'None';
-    project.save();
   }
   return project;
 }
@@ -71,7 +68,6 @@ export function loadProof(id: string): Proof {
     proof = new Proof(id);
     proof.proofCID = '';
     proof.status = 'Pending';
-    proof.save();
   }
   return proof;
 }
@@ -83,7 +79,6 @@ export function loadProofAudit(id: string): ProofAudit {
     audit.action = 'Approve';
     audit.commentCID = '';
     audit.timestamp = BigInt.fromI32(0);
-    audit.save();
   }
   return audit;
 }
@@ -94,7 +89,6 @@ export function loadCreditBatch(id: string): CreditBatch {
     batch = new CreditBatch(id);
     batch.amount = BigInt.fromI32(0);
     batch.tokenURI = '';
-    batch.save();
   }
   return batch;
 }
@@ -104,7 +98,6 @@ export function loadCreditBalance(id: string): CreditBalance {
   if (!balance) {
     balance = new CreditBalance(id);
     balance.balance = BigInt.zero();
-    balance.save();
   }
   return balance;
 }

@@ -6,6 +6,8 @@ import {
   Folder,
   BookOpen,
   IdCard,
+  Coins,
+  File,
 } from 'lucide-react';
 import type { NavItem } from '@/types/nav';
 
@@ -16,8 +18,9 @@ export const navItems: Record<'Public' | 'Developer' | 'Auditor', NavItem[]> = {
   ],
   Developer: [
     { title: 'Dashboard', href: '/dashboard', icon: Home },
-    { title: 'My Projects', href: '/projects', icon: Folder },
-    { title: 'Transactions', href: '/transaction', icon: History },
+    { title: 'Projects', href: '/projects', icon: Folder },
+    { title: 'Proposals', href: '/proposal', icon: File },
+    { title: 'Credits', href: '/credit', icon: Coins },
     { title: 'Settings', href: '/settings', icon: Settings },
   ],
   Auditor: [

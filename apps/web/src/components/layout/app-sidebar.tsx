@@ -16,6 +16,7 @@ import { NavFooter } from './nav-footer';
 import { navItems, footerNavItems } from '@/config/navigation';
 import { useUser } from '@/hooks/use-user';
 import { usePrivy } from '@privy-io/react-auth';
+import Image from 'next/image';
 
 export function AppSidebar() {
   const { user: privyUser } = usePrivy();
@@ -31,7 +32,9 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size='lg' asChild>
-              <Link href={'/'}>Orbyte</Link>
+              <Link href={'/'}>
+                <Image height={100} width={100} src='/logo.png' alt='Logo' />
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

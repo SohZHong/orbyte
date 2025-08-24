@@ -7,31 +7,20 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import AppHeaderLayout from '@/components/app-header-layout';
-import { z } from 'zod';
-import { UserRole } from '@/types/role';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import api from '@/config/axios';
 import { useKycContract } from '@/hooks/use-kyc-contract';
+import { KycSchema, type KycForm } from '@/schema/kyc';
+import { UserRole } from '@/types/user';
 
 export default function ApplyAsProfessionalPage() {
-  const FormSchema = z.object({
-    role: z.enum(UserRole).nonoptional('Please select a user role'),
-    document: z
-      .instanceof(File)
-      .refine((file) => file instanceof File, 'Document is required'),
-    proofOfAddress: z
-      .instanceof(File)
-      .refine((file) => file instanceof File, 'Proof of address is required'),
-    certification: z.instanceof(File).optional(),
-  });
-
   const { submitKYC } = useKycContract();
   const [loading, setLoading] = useState<boolean>(false);
 
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+  const form = useForm<KycForm>({
+    resolver: zodResolver(KycSchema),
     defaultValues: {
       role: UserRole.AUDITOR,
     },
@@ -53,7 +42,7 @@ export default function ApplyAsProfessionalPage() {
   const totalSteps = 4;
   const progress = (completedSteps / totalSteps) * 100;
 
-  const onSubmit = async (data: z.infer<typeof FormSchema>) => {
+  const onSubmit = async (data: KycForm) => {
     try {
       setLoading(true);
       // Build FormData for KYC + event

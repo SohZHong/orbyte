@@ -59,7 +59,10 @@ export default function NavUser() {
           >
             {walletAddress ? (
               <div className='p-2'>
-                <p className='text-sm text-muted-foreground'>Connected as</p>
+                <div className='flex justify-between items-center'>
+                  <p className='text-sm text-muted-foreground'>Connected as</p>
+                  <ModeToggle />
+                </div>
                 <p className='font-medium'>{displayName}</p>
                 <Button
                   onClick={logout}
@@ -78,7 +81,6 @@ export default function NavUser() {
                 </Button>
               </div>
             )}
-            <ModeToggle />
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>

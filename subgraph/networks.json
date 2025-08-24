@@ -1,17 +1,20 @@
 {
   "celo-alfajores": {
     "ProjectRegistry": {
-      "address": "0x70BB0f04930f8e299a3720Ca6Cb3F434A6Fd5d60",
-      "startBlock": 55002476
+      "address": "0x556f8931C4b1E00b1B27a975fA90F87518Be6C7e",
+      "startBlock": 55090432
     },
     "KYC": {
-      "address": "0x2f698DEC0A381Dfa330F0f67287AF95726a36C9F"
+      "address": "0x2f698DEC0A381Dfa330F0f67287AF95726a36C9F",
+      "startBlock": 54971212
     },
     "RoleToken": {
-      "address": "0x477E01b4DfD8d4E895c9DAf4eB8077f5D85e59Bd"
+      "address": "0x69b447e31efAAf60E455d00363c652C8e71a6b33",
+      "startBlock": 55090432
     },
     "CarbonCredit": {
-      "address": "0xcc5819A9B4536b7122C09E2CB131FeF44Fe6e5d0"
+      "address": "0xf9dfdac93c9571d2c75891ba4a5f748d31be2c5a",
+      "startBlock": 55090432
     }
   }
 }

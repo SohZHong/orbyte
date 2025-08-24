@@ -4,8 +4,8 @@ import { useState } from 'react';
 import { useSmartWallets } from '@privy-io/react-auth/smart-wallets';
 import { encodeFunctionData } from 'viem';
 import { KYC_ABI, KYC_CONTRACT_ADDRESS } from '@/constants';
-import type { UserRole } from '@/types/role';
 import type { TxState } from '@/types/transaction';
+import type { UserRole } from '@/types/user';
 
 export const useKycContract = () => {
   const { client } = useSmartWallets();
@@ -34,7 +34,7 @@ export const useKycContract = () => {
         args: [role, documentCid, proofOfAddressCid, certificationCid ?? ''],
       });
 
-      // 🚀 Send gasless tx
+      // Send gasless tx
       const txHash = await client.sendTransaction({
         to: KYC_CONTRACT_ADDRESS,
         data,

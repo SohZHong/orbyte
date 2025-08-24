@@ -318,6 +318,22 @@
     "type": "function"
   },
   {
+    "inputs": [{ "internalType": "address", "name": "who", "type": "address" }],
+    "name": "roleOf",
+    "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "name": "roleOfAccount",
+    "outputs": [
+      { "internalType": "enum RoleToken.Role", "name": "", "type": "uint8" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       { "internalType": "address", "name": "from", "type": "address" },
       { "internalType": "address", "name": "to", "type": "address" },
