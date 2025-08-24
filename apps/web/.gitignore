@@ -11,6 +11,9 @@
 # Testing
 /coverage
 
+# Generated mappings
+/src/generated
+
 # Build outputs
 /.next/
 /out/
