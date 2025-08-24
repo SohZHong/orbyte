@@ -1,91 +1,124 @@
+import { Address, Bytes } from '@graphprotocol/graph-ts';
 import {
-  ApprovalForAll as ApprovalForAllEvent,
-  OwnershipTransferred as OwnershipTransferredEvent,
   TransferBatch as TransferBatchEvent,
   TransferSingle as TransferSingleEvent,
   URI as URIEvent,
-} from "../generated/CarbonCredit/CarbonCredit"
-import {
-  ApprovalForAll,
-  OwnershipTransferred,
-  TransferBatch,
-  TransferSingle,
-  URI,
-} from "../generated/schema"
+} from '../generated/CarbonCredit/CarbonCredit';
+import { loadCreditBalance, loadCreditBatch, loadUser } from '../utils/util';
+import { Transaction } from '../generated/schema';
 
-export function handleApprovalForAll(event: ApprovalForAllEvent): void {
-  let entity = new ApprovalForAll(
-    event.transaction.hash.concatI32(event.logIndex.toI32()),
-  )
-  entity.account = event.params.account
-  entity.operator = event.params.operator
-  entity.approved = event.params.approved
-
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
-}
-
-export function handleOwnershipTransferred(
-  event: OwnershipTransferredEvent,
-): void {
-  let entity = new OwnershipTransferred(
-    event.transaction.hash.concatI32(event.logIndex.toI32()),
-  )
-  entity.previousOwner = event.params.previousOwner
-  entity.newOwner = event.params.newOwner
-
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
+function getBalanceId(user: Address, batchId: string): string {
+  return user.toHex() + '-' + batchId;
 }
 
 export function handleTransferBatch(event: TransferBatchEvent): void {
-  let entity = new TransferBatch(
-    event.transaction.hash.concatI32(event.logIndex.toI32()),
-  )
-  entity.operator = event.params.operator
-  entity.from = event.params.from
-  entity.to = event.params.to
-  entity.ids = event.params.ids
-  entity.values = event.params.values
+  let ids = event.params.ids;
+  let values = event.params.values;
 
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
+  for (let i = 0; i < ids.length; i++) {
+    let tokenId = ids[i];
+    let amount = values[i];
 
-  entity.save()
+    let txId = event.transaction.hash.concatI32(i).toHex();
+    let transfer = new Transaction(txId);
+
+    transfer.from = event.params.from;
+    transfer.to = event.params.to;
+    transfer.tokenId = tokenId;
+    transfer.value = amount;
+    transfer.blockNumber = event.block.number;
+    transfer.timestamp = event.block.timestamp.toI64();
+    transfer.transactionHash = event.transaction.hash;
+    transfer.save();
+
+    // decrease sender balance
+    if (event.params.from.notEqual(Address.zero())) {
+      let sender = loadUser(event.params.from);
+      let fromBalanceId = getBalanceId(
+        Address.fromBytes(sender.id),
+        tokenId.toString()
+      );
+      let fromBalance = loadCreditBalance(fromBalanceId);
+
+      fromBalance.user = sender.id;
+      fromBalance.batch = tokenId.toString();
+
+      fromBalance.balance = fromBalance.balance.minus(amount);
+      fromBalance.save();
+    }
+
+    // increase receiver balance
+    if (event.params.to.notEqual(Address.zero())) {
+      let receiver = loadUser(event.params.to);
+      let toBalanceId = getBalanceId(
+        Address.fromBytes(receiver.id),
+        tokenId.toString()
+      );
+      let toBalance = loadCreditBalance(toBalanceId);
+
+      toBalance.user = receiver.id;
+      toBalance.batch = tokenId.toString();
+
+      toBalance.balance = toBalance.balance.plus(amount);
+      toBalance.save();
+    }
+  }
 }
 
 export function handleTransferSingle(event: TransferSingleEvent): void {
-  let entity = new TransferSingle(
-    event.transaction.hash.concatI32(event.logIndex.toI32()),
-  )
-  entity.operator = event.params.operator
-  entity.from = event.params.from
-  entity.to = event.params.to
-  entity.internal_id = event.params.id
-  entity.value = event.params.value
+  let tokenId = event.params.id;
+  let amount = event.params.value;
 
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
+  let txId = event.transaction.hash.concatI32(event.logIndex.toI32()).toHex();
+  let transfer = new Transaction(txId);
 
-  entity.save()
+  transfer.from = event.params.from;
+  transfer.to = event.params.to;
+  transfer.tokenId = tokenId;
+  transfer.value = amount;
+  transfer.blockNumber = event.block.number;
+  transfer.timestamp = event.block.timestamp.toI64();
+  transfer.transactionHash = event.transaction.hash;
+  transfer.save();
+
+  // decrease sender balance
+  if (event.params.from.notEqual(Address.zero())) {
+    let sender = loadUser(event.params.from);
+    let fromBalanceId = getBalanceId(
+      Address.fromBytes(sender.id),
+      tokenId.toString()
+    );
+    let fromBalance = loadCreditBalance(fromBalanceId);
+
+    fromBalance.user = sender.id;
+    fromBalance.batch = tokenId.toString();
+
+    fromBalance.balance = fromBalance.balance.minus(amount);
+    fromBalance.save();
+  }
+
+  // increase receiver balance
+  if (event.params.to.notEqual(Address.zero())) {
+    let receiver = loadUser(event.params.to);
+    let toBalanceId = getBalanceId(
+      Address.fromBytes(receiver.id),
+      tokenId.toString()
+    );
+    let toBalance = loadCreditBalance(toBalanceId);
+
+    toBalance.user = receiver.id;
+    toBalance.batch = tokenId.toString();
+
+    toBalance.balance = toBalance.balance.plus(amount);
+    toBalance.save();
+  }
 }
 
 export function handleURI(event: URIEvent): void {
-  let entity = new URI(event.transaction.hash.concatI32(event.logIndex.toI32()))
-  entity.value = event.params.value
-  entity.internal_id = event.params.id
+  let tokenId = event.params.id;
+  let batchId = tokenId.toString();
+  let batch = loadCreditBatch(batchId);
 
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
+  batch.tokenURI = event.params.value;
+  batch.save();
 }

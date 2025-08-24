@@ -40,9 +40,9 @@ enum ReviewAction {
 type User @entity {
   id: Bytes! # address
   role: Role!
-  documentCid: String!
-  proofOfAddressCid: String!
-  certificationCid: String!
+  documentCid: String
+  proofOfAddressCid: String
+  certificationCid: String
   proposals: [Proposal!]! @derivedFrom(field: "developer")
   reviews: [ProposalReview!]! @derivedFrom(field: "auditor")
   proofs: [Proof!]! @derivedFrom(field: "developer")
@@ -110,15 +110,20 @@ type CreditBatch @entity {
   project: Project!
   developer: User!
   amount: BigInt!
-  standard: String!
-  vintage: Int!
   tokenURI: String!
+}
+
+type CreditBalance @entity {
+  id: ID!
+  user: User!
+  batch: CreditBatch!
+  balance: BigInt!
 }
 
 # Transactions / Events for Statistics
 
 type CreditsIssued @entity(timeseries: true) {
-  id: Bytes!
+  id: Int8!
   internal_id: BigInt! # uint256
   developer: Bytes! # address
   amount: BigInt! # uint256
@@ -130,7 +135,7 @@ type CreditsIssued @entity(timeseries: true) {
 }
 
 type ProjectProposed @entity(timeseries: true) {
-  id: Bytes!
+  id: Int8!
   internal_id: BigInt! # uint256
   developer: Bytes! # address
   meta_name: String! # string
@@ -150,11 +155,22 @@ type ProjectProposed @entity(timeseries: true) {
 }
 
 type ProofAudited @entity(timeseries: true) {
-  id: Bytes!
+  id: Int8!
   internal_id: BigInt! # uint256
   auditor: Bytes! # address
-  action: ReviewAction! # uint8
+  action: BigInt! # uint8
   commentCID: String! # string
+  blockNumber: BigInt!
+  timestamp: Timestamp!
+  transactionHash: Bytes!
+}
+
+type Transaction @entity(timeseries: true) {
+  id: Int8!
+  from: Bytes! # address
+  to: Bytes! # address
+  tokenId: BigInt! # uint256
+  value: BigInt! # uint256
   blockNumber: BigInt!
   timestamp: Timestamp!
   transactionHash: Bytes!
@@ -162,13 +178,13 @@ type ProofAudited @entity(timeseries: true) {
 
 type DailyProjectStats
   @aggregation(intervals: ["day"], source: "ProjectProposed") {
-  id: ID!
+  id: Int8!
   timestamp: Timestamp!
   total: BigInt! @aggregate(fn: "count")
 }
 
 type DailyVoteStats @aggregation(intervals: ["day"], source: "ProofAudited") {
-  id: ID!
+  id: Int8!
   timestamp: Timestamp!
 
   approvals: BigInt!
@@ -178,10 +194,19 @@ type DailyVoteStats @aggregation(intervals: ["day"], source: "ProofAudited") {
     @aggregate(fn: "count", arg: "case when action = 2 then 1 else null end")
 }
 
-type DailyCreditStats @aggregation(intervals: ["day"], source: "CreditIssued") {
-  id: ID!
+type DailyCreditStats
+  @aggregation(intervals: ["day"], source: "CreditsIssued") {
+  id: Int8!
   timestamp: Timestamp!
   total: BigInt! @aggregate(fn: "sum", arg: "amount")
+}
+
+type DailyTransactionStats
+  @aggregation(intervals: ["day"], source: "Transaction") {
+  id: Int8!
+  timestamp: Timestamp!
+  total: BigInt! @aggregate(fn: "sum", arg: "value")
+  count: BigInt! @aggregate(fn: "count")
 }
 
 # type ProofSubmitted @entity(immutable: true) {
