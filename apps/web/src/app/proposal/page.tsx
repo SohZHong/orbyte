@@ -22,6 +22,7 @@ import { useProposals } from '@/hooks/use-proposal';
 import { graphQLStandardMap, statusMap } from '@/types/proposal';
 import { Badge } from '@/components/ui/badge';
 import { useDebounce } from 'use-debounce';
+import { Spinner } from '@/components/ui/shadcn-io/spinner';
 
 const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Dashboard', href: '/dashboard' },
@@ -190,7 +191,13 @@ export default function ProposalsPage() {
                     onClick={() => fetchNextPage()}
                     disabled={isFetchingNextPage}
                   >
-                    {isFetchingNextPage ? 'Loading…' : 'Load more'}
+                    {isFetchingNextPage ? (
+                      <span className='inline-flex gap-1 items-center'>
+                        <Spinner variant='circle' /> Loading
+                      </span>
+                    ) : (
+                      <span>Load more</span>
+                    )}{' '}
                   </Button>
                 </div>
               )}
