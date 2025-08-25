@@ -1,3 +1,5 @@
+import { Standard as GeneratedStandard } from '@/generated/graphql';
+
 // Standards supported
 export enum Standard {
   GOLD_STANDARD,
@@ -23,4 +25,10 @@ export const standardMap: Record<Standard, string> = {
   0: 'Gold Standard',
   1: 'VCS',
   2: 'Shariah',
+};
+
+export const graphQLStandardMap: Record<GeneratedStandard, string> = {
+  GoldStandard: 'Gold Standard',
+  VCS: 'VCS',
+  Shariah: 'Shariah',
 };

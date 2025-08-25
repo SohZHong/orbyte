@@ -30,14 +30,12 @@ export function loadProposal(id: string): Proposal {
     proposal.description = '';
     proposal.location = '';
     proposal.estimatedCredits = BigInt.fromI32(0);
-    proposal.standard = 0;
     proposal.vintage = 0;
     proposal.methodology = '';
     proposal.projectPlanCID = '';
     proposal.eiaCID = '';
     proposal.otherDocsCID = '';
     proposal.metadataCID = '';
-    proposal.status = 'Pending Review';
   }
   return proposal;
 }

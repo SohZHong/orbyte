@@ -55,7 +55,6 @@ type Proposal @entity {
   description: String!
   location: String!
   estimatedCredits: BigInt!
-  standard: Int!
   vintage: Int!
   methodology: String!
   projectPlanCID: String!
@@ -63,6 +62,7 @@ type Proposal @entity {
   otherDocsCID: String!
   metadataCID: String!
 
+  standard: Standard!
   status: ProposalStatus!
   reviews: [ProposalReview!]! @derivedFrom(field: "proposal")
   project: Project @derivedFrom(field: "proposal")
@@ -125,7 +125,7 @@ type CreditBalance @entity {
 type CreditsIssued @entity(timeseries: true) {
   id: Int8!
   internal_id: BigInt! # uint256
-  developer: Bytes! # address
+  developer: User! # address
   amount: BigInt! # uint256
   tokenId: BigInt! # uint256
   tokenURI: String! # string
@@ -137,12 +137,12 @@ type CreditsIssued @entity(timeseries: true) {
 type ProjectProposed @entity(timeseries: true) {
   id: Int8!
   internal_id: BigInt! # uint256
-  developer: Bytes! # address
+  developer: User! # address
   meta_name: String! # string
   meta_description: String! # string
   meta_location: String! # string
   meta_estimatedCredits: BigInt! # uint256
-  meta_standard: Int! # uint8
+  meta_standard: Standard! # uint8
   meta_vintage: Int! # uint16
   meta_methodology: String! # string
   meta_projectPlanCID: String! # string
@@ -157,7 +157,7 @@ type ProjectProposed @entity(timeseries: true) {
 type ProofAudited @entity(timeseries: true) {
   id: Int8!
   internal_id: BigInt! # uint256
-  auditor: Bytes! # address
+  auditor: User! # address
   action: BigInt! # uint8
   commentCID: String! # string
   blockNumber: BigInt!

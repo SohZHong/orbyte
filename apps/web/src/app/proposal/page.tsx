@@ -15,13 +15,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { ProposalStatus } from '@/generated/graphql';
+import { ProposalStatus, Standard } from '@/generated/graphql';
 import { Button } from '@/components/ui/button';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useProposals } from '@/hooks/use-proposal';
-import { Standard, standardMap } from '@/types/proposal';
+import { graphQLStandardMap, standardMap } from '@/types/proposal';
 import { Badge } from '@/components/ui/badge';
+import { useDebounce } from 'use-debounce';
 
 const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Dashboard', href: '/dashboard' },
@@ -55,15 +55,25 @@ export default function ProposalSubmissionPage() {
   const address = privyUser?.smartWallet?.address;
   const { data: user, isLoading: isUserLoading } = useUser(address);
   const router = useRouter();
+  const [search, setSearch] = React.useState('');
+  const [status, setStatus] = React.useState<ProposalStatus | undefined>(
+    undefined
+  );
+  const [standard, setStandard] = React.useState<Standard | undefined>(
+    undefined
+  );
+  const [debouncedSearch] = useDebounce(search, 300);
   const {
     data,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
     isLoading: isProposalLoading,
-    error,
-  } = useProposals();
-
+  } = useProposals({
+    name: debouncedSearch || undefined,
+    status,
+    standard,
+  });
   return (
     <AppSidebarLayout breadcrumbs={breadcrumbs}>
       <div className='flex flex-col gap-6 p-6'>
@@ -98,13 +108,15 @@ export default function ProposalSubmissionPage() {
             ) : (
               <Input
                 placeholder='Search project proposals'
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
                 className='w-full'
               />
             )}
           </div>
 
           {/* Filters (Tabs) */}
-          <Select>
+          <Select onValueChange={(value) => setStatus(value as ProposalStatus)}>
             <SelectTrigger className='w-[180px]'>
               <SelectValue placeholder='Status' />
             </SelectTrigger>
@@ -117,6 +129,20 @@ export default function ProposalSubmissionPage() {
               </SelectItem>
               <SelectItem value={ProposalStatus.Approved}>Approved</SelectItem>
               <SelectItem value={ProposalStatus.Rejected}>Rejected</SelectItem>
+            </SelectContent>
+          </Select>
+
+          {/* Filters (Tabs) */}
+          <Select onValueChange={(value) => setStandard(value as Standard)}>
+            <SelectTrigger className='w-[180px]'>
+              <SelectValue placeholder='Standard' />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={Standard.GoldStandard}>
+                Gold Standard
+              </SelectItem>
+              <SelectItem value={Standard.Vcs}>VCS</SelectItem>
+              <SelectItem value={Standard.Shariah}>Shariah</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -150,7 +176,7 @@ export default function ProposalSubmissionPage() {
                         <div className='overflow-x-auto'>{p.developer.id}</div>
                       </td>
                       <td className='px-4 py-2'>
-                        {standardMap[p.standard as Standard]}
+                        {graphQLStandardMap[p.standard]}
                       </td>
                       <td className='px-4 py-2'>
                         <Badge variant={statusMap[p.status].variant}>

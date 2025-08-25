@@ -1,5 +1,15 @@
-query Proposals($first: Int!, $skip: Int!) {
-  proposals(first: $first, skip: $skip) {
+query Proposals(
+  $first: Int!
+  $skip: Int!
+  $name: String
+  $standard: Standard
+  $status: ProposalStatus
+) {
+  proposals(
+    first: $first
+    skip: $skip
+    where: { name_contains: $name, standard: $standard, status: $status }
+  ) {
     id
     developer {
       id

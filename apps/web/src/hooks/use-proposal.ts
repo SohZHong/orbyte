@@ -2,26 +2,41 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { graphClient } from '../graphql/client';
 import {
   ProposalsDocument,
+  ProposalStatus,
+  Standard,
   type ProposalsQuery,
   type ProposalsQueryVariables,
 } from '@/generated/graphql';
 import { PAGE_SIZE } from '@/constants';
 
-export function useProposals() {
+interface UseProposalsParams {
+  name?: string;
+  location?: string;
+  standard?: Standard;
+  vintage?: number;
+  status?: ProposalStatus;
+}
+
+export function useProposals(filters: UseProposalsParams = {}) {
   return useInfiniteQuery({
-    queryKey: ['proposals'],
+    queryKey: ['proposals', filters],
     queryFn: async ({ pageParam = 0 }) => {
+      const variables: ProposalsQueryVariables = {
+        first: PAGE_SIZE,
+        skip: pageParam,
+        name: filters.name ?? '',
+        standard: filters.standard ?? Standard.Shariah,
+        status: filters.status ?? ProposalStatus.PendingReview,
+      };
+
       const data = await graphClient.request<
         ProposalsQuery,
         ProposalsQueryVariables
-      >(ProposalsDocument, {
-        first: PAGE_SIZE,
-        skip: pageParam,
-      });
-      return data.proposals;
+      >(ProposalsDocument, variables);
+
+      return data.proposals ?? [];
     },
     getNextPageParam: (lastPage, allPages) => {
-      // If we got less than PAGE_SIZE, no more data
       if (!lastPage || lastPage.length < PAGE_SIZE) return undefined;
       return allPages.length * PAGE_SIZE; // next skip value
     },

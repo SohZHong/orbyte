@@ -26,6 +26,7 @@ import {
   proofStatusFromIndex,
   proposalStatusFromIndex,
   reviewActionFromIndex,
+  standardFromIndex,
 } from '../utils/util';
 
 export function handleCreditsIssued(event: CreditsIssuedEvent): void {
@@ -43,7 +44,7 @@ export function handleCreditsIssued(event: CreditsIssuedEvent): void {
     event.transaction.hash.concatI32(event.logIndex.toI32()).toHex()
   );
   entity.internal_id = event.params.id;
-  entity.developer = event.params.developer;
+  entity.developer = user.id;
   entity.amount = event.params.amount;
   entity.tokenId = event.params.tokenId;
   entity.tokenURI = event.params.tokenURI;
@@ -65,7 +66,7 @@ export function handleProjectProposed(event: ProjectProposedEvent): void {
   proposal.description = event.params.meta.description;
   proposal.location = event.params.meta.location;
   proposal.estimatedCredits = event.params.meta.estimatedCredits;
-  proposal.standard = event.params.meta.standard;
+  proposal.standard = standardFromIndex(event.params.meta.standard);
   proposal.vintage = event.params.meta.vintage;
   proposal.methodology = event.params.meta.methodology;
   proposal.projectPlanCID = event.params.meta.projectPlanCID;
@@ -80,12 +81,12 @@ export function handleProjectProposed(event: ProjectProposedEvent): void {
     event.transaction.hash.concatI32(event.logIndex.toI32()).toHex()
   );
   entity.internal_id = event.params.id;
-  entity.developer = event.params.developer;
+  entity.developer = user.id;
   entity.meta_name = event.params.meta.name;
   entity.meta_description = event.params.meta.description;
   entity.meta_location = event.params.meta.location;
   entity.meta_estimatedCredits = event.params.meta.estimatedCredits;
-  entity.meta_standard = event.params.meta.standard;
+  entity.meta_standard = standardFromIndex(event.params.meta.standard);
   entity.meta_vintage = event.params.meta.vintage;
   entity.meta_methodology = event.params.meta.methodology;
   entity.meta_projectPlanCID = event.params.meta.projectPlanCID;
@@ -140,7 +141,7 @@ export function handleProofAudited(event: ProofAuditedEvent): void {
     event.transaction.hash.concatI32(event.logIndex.toI32()).toHex()
   );
   entity.internal_id = event.params.id;
-  entity.auditor = event.params.auditor;
+  entity.auditor = user.id;
   entity.action = BigInt.fromI32(event.params.action);
   entity.commentCID = event.params.commentCID;
 
