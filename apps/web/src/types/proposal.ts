@@ -1,4 +1,7 @@
-import { Standard as GeneratedStandard } from '@/generated/graphql';
+import {
+  Standard as GeneratedStandard,
+  ProposalStatus as GeneratedProposalStatus,
+} from '@/generated/graphql';
 
 // Standards supported
 export enum Standard {
@@ -31,4 +34,26 @@ export const graphQLStandardMap: Record<GeneratedStandard, string> = {
   GoldStandard: 'Gold Standard',
   VCS: 'VCS',
   Shariah: 'Shariah',
+};
+
+export const statusMap: Record<
+  GeneratedProposalStatus,
+  { text: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }
+> = {
+  [GeneratedProposalStatus.PendingReview]: {
+    text: 'Pending Review',
+    variant: 'secondary',
+  },
+  [GeneratedProposalStatus.ChangesRequested]: {
+    text: 'Changes Requested',
+    variant: 'outline',
+  },
+  [GeneratedProposalStatus.Approved]: {
+    text: 'Approved',
+    variant: 'default',
+  },
+  [GeneratedProposalStatus.Rejected]: {
+    text: 'Rejected',
+    variant: 'destructive',
+  },
 };

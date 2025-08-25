@@ -20,6 +20,9 @@ dist/
 /.next/
 .vercel
 
+# graphql
+src/generated
+
 # deps
 node_modules/
 /node_modules

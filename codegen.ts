@@ -4,9 +4,13 @@ const config: CodegenConfig = {
   overwrite: true,
   schema:
     'https://api.studio.thegraph.com/query/90479/orbyte-celo/version/latest',
-  documents: 'apps/web/src/graphql/queries/**/*.graphql',
+  documents: ['apps/**/src/graphql/**/*.graphql'],
   generates: {
     'apps/web/src/generated/': {
+      preset: 'client',
+      plugins: [],
+    },
+    'apps/server/src/generated/': {
       preset: 'client',
       plugins: [],
     },

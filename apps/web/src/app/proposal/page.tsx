@@ -19,7 +19,7 @@ import { ProposalStatus, Standard } from '@/generated/graphql';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { useProposals } from '@/hooks/use-proposal';
-import { graphQLStandardMap, standardMap } from '@/types/proposal';
+import { graphQLStandardMap, statusMap } from '@/types/proposal';
 import { Badge } from '@/components/ui/badge';
 import { useDebounce } from 'use-debounce';
 
@@ -27,28 +27,6 @@ const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Dashboard', href: '/dashboard' },
   { title: 'Proposal', href: '#' },
 ];
-
-export const statusMap: Record<
-  ProposalStatus,
-  { text: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }
-> = {
-  [ProposalStatus.PendingReview]: {
-    text: 'Pending Review',
-    variant: 'secondary',
-  },
-  [ProposalStatus.ChangesRequested]: {
-    text: 'Changes Requested',
-    variant: 'outline',
-  },
-  [ProposalStatus.Approved]: {
-    text: 'Approved',
-    variant: 'default',
-  },
-  [ProposalStatus.Rejected]: {
-    text: 'Rejected',
-    variant: 'destructive',
-  },
-};
 
 export default function ProposalSubmissionPage() {
   const { user: privyUser } = usePrivy();
@@ -166,6 +144,7 @@ export default function ProposalSubmissionPage() {
                     <th className='px-4 py-3 font-medium'>Standard</th>
                     <th className='px-4 py-3 font-medium'>Status</th>
                     <th className='px-4 py-3 font-medium w-[300px]'>Summary</th>
+                    <th className='px-4 py-3 font-medium'>Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -185,6 +164,14 @@ export default function ProposalSubmissionPage() {
                       </td>
                       <td className='px-4 py-2 text-muted-foreground truncate max-w-[300px]'>
                         <div className='overflow-x-auto'>{p.description}</div>
+                      </td>
+                      <td className='px-4 py-2'>
+                        <Button
+                          variant='outline'
+                          onClick={() => router.push(`/proposal/${p.id}`)}
+                        >
+                          View
+                        </Button>
                       </td>
                     </tr>
                   ))}

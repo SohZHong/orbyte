@@ -1,9 +1,12 @@
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { graphClient } from '../graphql/client';
 import {
+  ProposalDocument,
   ProposalsDocument,
   ProposalStatus,
   Standard,
+  type ProposalQuery,
+  type ProposalQueryVariables,
   type ProposalsQuery,
   type ProposalsQueryVariables,
 } from '@/generated/graphql';
@@ -15,6 +18,19 @@ interface UseProposalsParams {
   standard?: Standard;
   vintage?: number;
   status?: ProposalStatus;
+}
+
+export function useProposal(id: string) {
+  return useQuery({
+    queryKey: ['proposal', id],
+    queryFn: async () => {
+      const data = await graphClient.request<
+        ProposalQuery,
+        ProposalQueryVariables
+      >(ProposalDocument, { id });
+      return data.proposal;
+    },
+  });
 }
 
 export function useProposals(filters: UseProposalsParams = {}) {
