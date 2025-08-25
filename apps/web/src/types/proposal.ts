@@ -36,6 +36,15 @@ export const graphQLStandardMap: Record<GeneratedStandard, string> = {
   Shariah: 'Shariah',
 };
 
+export const generatedToProjectStandardMap: Record<
+  GeneratedStandard,
+  Standard
+> = {
+  GoldStandard: Standard.GOLD_STANDARD,
+  VCS: Standard.VCS,
+  Shariah: Standard.SHARIAH,
+};
+
 export const statusMap: Record<
   GeneratedProposalStatus,
   { text: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }

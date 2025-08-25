@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import AppSidebarLayout from '@/components/app-sidebar-layout';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
@@ -16,10 +16,11 @@ import { AuditorFeedbackList } from '@/components/auditor-feedback-list';
 import api from '@/config/axios';
 import { toast } from 'sonner';
 import { Spinner } from '@/components/ui/shadcn-io/spinner';
+import { ProposalStatus } from '@/generated/graphql';
 
 export default function ProposalDetailsPage() {
   const { id } = useParams<{ id: string }>();
-
+  const router = useRouter();
   const { data: proposal, isLoading } = useProposal(id);
   const [isDownload, setIsDownloading] = useState<boolean>(false);
 
@@ -172,7 +173,16 @@ export default function ProposalDetailsPage() {
 
         {/* Actions */}
         <div className='flex justify-end gap-3 px-4 py-6'>
-          <Button variant='secondary'>Resubmit</Button>
+          {proposal.status === ProposalStatus.ChangesRequested && (
+            <Button
+              variant='secondary'
+              onClick={() =>
+                router.push(`/proposal/${proposal.id}/resubmission`)
+              }
+            >
+              Resubmit
+            </Button>
+          )}
           <Button disabled={isDownload} onClick={(e) => downloadProposal(e)}>
             {isDownload ? (
               <span className='inline-flex gap-1 items-center'>

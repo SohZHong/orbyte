@@ -1,29 +1,17 @@
 'use client';
 
-import AppHeaderLayout from '@/components/app-header-layout';
-import { Skeleton } from '@/components/ui/skeleton';
-import type { BreadcrumbItem } from '@/types/nav';
+import { useEffect, useState } from 'react';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { toast } from 'sonner';
+
 import AppSidebarLayout from '@/components/app-sidebar-layout';
-import { usePrivy } from '@privy-io/react-auth';
-import { useUser } from '@/hooks/use-user';
-import React, { useState } from 'react';
+import ProposalFormSkeleton from '@/components/proposal-form-skeleton';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
-import { useForm } from 'react-hook-form';
-import {
-  ProposalMetaSchema,
-  type ProposalMetaFormOutput,
-} from '@/schema/proposal';
-import { zodResolver } from '@hookform/resolvers/zod';
-
 import {
   Form,
   FormControl,
@@ -32,30 +20,56 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import ProposalFormSkeleton from '@/components/proposal-form-skeleton';
-import { Standard } from '@/types/proposal';
-import { toast } from 'sonner';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+
+import {
+  ProposalMetaSchema,
+  ProposalResubmitMetaSchema,
+  type ProposalMetaFormOutput,
+  type ProposalResubmitMetaFormInput,
+  type ProposalResubmitMetaFormOutput,
+} from '@/schema/proposal';
+import { generatedToProjectStandardMap, Standard } from '@/types/proposal';
+import type { BreadcrumbItem } from '@/types/nav';
 import api from '@/config/axios';
 import { useProjectRegistryContract } from '@/hooks/use-project-registry-contract';
-import { useRouter } from 'next/navigation';
+import { usePrivy } from '@privy-io/react-auth';
+import { useUser } from '@/hooks/use-user';
+import React from 'react';
+import { useProposal } from '@/hooks/use-proposal';
+import { Spinner } from '@/components/ui/shadcn-io/spinner';
 
-const breadcrumbs: BreadcrumbItem[] = [
-  { title: 'Dashboard', href: '/dashboard' },
-  { title: 'Proposal', href: '/proposal' },
-  { title: 'Submission', href: '/proposa/submission' },
-];
+export default function ProposalResubmissionPage() {
+  const router = useRouter();
+  const { id: proposalId } = useParams<{ id: string }>();
+  const { data: proposal, isLoading: isProposalLoading } =
+    useProposal(proposalId);
 
-export default function ProposalSubmissionPage() {
+  const breadcrumbs: BreadcrumbItem[] = [
+    { title: 'Dashboard', href: '/dashboard' },
+    { title: 'Proposals', href: '/proposal' },
+    { title: proposal?.name ?? 'Loading...', href: `/proposal/${proposalId}` },
+    {
+      title: proposal ? 'Resubmission' : 'Loading...',
+      href: `#`,
+    },
+  ];
+
   const { user: privyUser } = usePrivy();
   const address = privyUser?.smartWallet?.address;
   const { isLoading } = useUser(address);
-  const { submitProposal } = useProjectRegistryContract();
-  const router = useRouter();
+  const { resubmitProposal } = useProjectRegistryContract();
 
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const form = useForm({
-    resolver: zodResolver(ProposalMetaSchema),
+  const form = useForm<ProposalResubmitMetaFormInput>({
+    resolver: zodResolver(ProposalResubmitMetaSchema),
     defaultValues: {
       name: '',
       description: '',
@@ -67,11 +81,24 @@ export default function ProposalSubmissionPage() {
     },
   });
 
-  const onSubmit = async (data: ProposalMetaFormOutput) => {
+  useEffect(() => {
+    if (!proposal) return;
+
+    form.reset({
+      name: proposal.name,
+      description: proposal.description,
+      location: proposal.location,
+      estimatedCredits: Number(proposal.estimatedCredits),
+      standard: generatedToProjectStandardMap[proposal.standard],
+      vintage: proposal.vintage,
+      methodology: proposal.methodology,
+    });
+  }, [proposal, form]);
+
+  const onSubmit = async (data: ProposalResubmitMetaFormOutput) => {
     try {
       setIsSubmitting(true);
 
-      // Build FormData for Proposal Submission
       const formData = new FormData();
 
       formData.append('name', data.name);
@@ -81,48 +108,55 @@ export default function ProposalSubmissionPage() {
       formData.append('standard', String(data.standard));
       formData.append('vintage', String(data.vintage));
       formData.append('methodology', data.methodology);
-      formData.append('projectPlan', data.projectPlan);
-      formData.append('eia', data.eia);
+
+      // Append only files that were re-uploaded
+      if (data.projectPlan) formData.append('projectPlan', data.projectPlan);
+      if (data.eia) formData.append('eia', data.eia);
       if (data.otherDocs) formData.append('otherDocs', data.otherDocs);
 
-      await api
-        .post('/proposal/submit', formData, {
+      // Call backend only if any file was uploaded
+      let uploadedCids = {
+        projectPlanCid: proposal?.projectPlanCID,
+        eiaCid: proposal?.eiaCID,
+        otherDocsCid: proposal?.otherDocsCID,
+        metadataCid: proposal?.metadataCID,
+      };
+
+      if (data.projectPlan || data.eia || data.otherDocs) {
+        const res = await api.post('/proposal/submit', formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
-        })
-        .then(async (res) => {
-          const { projectPlanCid, eiaCid, metadataCid, otherDocsCid } =
-            res.data.data;
-
-          // Submit Transaction
-          const tx = await submitProposal({
-            name: data.name,
-            description: data.description,
-            location: data.location,
-            estimatedCredits: BigInt(data.estimatedCredits),
-            standard: data.standard,
-            vintage: data.vintage,
-            methodology: data.methodology,
-            projectPlanCID: projectPlanCid,
-            eiaCID: eiaCid,
-            otherDocsCID: otherDocsCid,
-            metadataCID: metadataCid,
-          });
-
-          toast('Proposal Submitted', {
-            description: `Transaction Hash: ${tx.hash}`,
-            action: {
-              label: 'Close',
-              onClick: () => toast.dismiss(),
-            },
-          });
-
-          setTimeout(() => {
-            router.replace('/proposal');
-          }, 1000);
         });
+
+        uploadedCids = res.data.data;
+      }
+
+      // Resubmit Proposal
+      const tx = await resubmitProposal(BigInt(proposalId!), {
+        name: data.name,
+        description: data.description,
+        location: data.location,
+        estimatedCredits: BigInt(data.estimatedCredits),
+        standard: data.standard,
+        vintage: data.vintage,
+        methodology: data.methodology,
+        projectPlanCID: uploadedCids.projectPlanCid!,
+        eiaCID: uploadedCids.eiaCid!,
+        otherDocsCID: uploadedCids.otherDocsCid!,
+        metadataCID: uploadedCids.metadataCid!,
+      });
+
+      toast.success('Proposal Resubmitted', {
+        description: `Tx Hash: ${tx.hash}`,
+        action: {
+          label: 'Close',
+          onClick: () => toast.dismiss(),
+        },
+      });
+
+      setTimeout(() => router.replace('/proposal'), 1000);
     } catch (error) {
       console.error(error);
-      toast('Proposal Submission Failed', {
+      toast.error('Proposal Resubmission Failed', {
         description: (error as Error).message,
         action: {
           label: 'Close',
@@ -147,17 +181,17 @@ export default function ProposalSubmissionPage() {
             ) : (
               <React.Fragment>
                 <h1 className='text-3xl font-bold tracking-tight'>
-                  Submit Project Proposal
+                  Resubmit Project Proposal
                 </h1>
                 <p className='text-muted-foreground'>
-                  Provide detailed information about your carbon reduction
-                  project for evaluation and potential listing
+                  Update your project proposal and resubmit for evaluation
                 </p>
               </React.Fragment>
             )}
           </div>
         </div>
-        {isLoading ? (
+
+        {isLoading || isProposalLoading ? (
           <ProposalFormSkeleton />
         ) : (
           <Form {...form}>
@@ -362,7 +396,13 @@ export default function ProposalSubmissionPage() {
 
               {/* Submit Button */}
               <Button disabled={isSubmitting} type='submit' className='w-full'>
-                Submit Proposal
+                {isSubmitting ? (
+                  <span className='inline-flex gap-1 items-center'>
+                    <Spinner variant='circle' /> Submitting
+                  </span>
+                ) : (
+                  <span>Resubmit Proposal</span>
+                )}
               </Button>
             </form>
           </Form>
