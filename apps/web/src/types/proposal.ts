@@ -2,6 +2,13 @@ import {
   Standard as GeneratedStandard,
   ProposalStatus as GeneratedProposalStatus,
 } from '@/generated/graphql';
+import type { LucideIcon } from 'lucide-react';
+import {
+  BadgeAlertIcon,
+  BadgeCheckIcon,
+  BadgeHelpIcon,
+  BanIcon,
+} from 'lucide-react';
 
 // Standards supported
 export enum Standard {
@@ -47,22 +54,30 @@ export const generatedToProjectStandardMap: Record<
 
 export const statusMap: Record<
   GeneratedProposalStatus,
-  { text: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }
+  {
+    text: string;
+    variant: 'default' | 'secondary' | 'destructive' | 'outline';
+    icon: LucideIcon;
+  }
 > = {
   [GeneratedProposalStatus.PendingReview]: {
     text: 'Pending Review',
     variant: 'secondary',
+    icon: BadgeAlertIcon,
   },
   [GeneratedProposalStatus.ChangesRequested]: {
     text: 'Changes Requested',
     variant: 'outline',
+    icon: BadgeHelpIcon,
   },
   [GeneratedProposalStatus.Approved]: {
     text: 'Approved',
     variant: 'default',
+    icon: BadgeCheckIcon,
   },
   [GeneratedProposalStatus.Rejected]: {
     text: 'Rejected',
     variant: 'destructive',
+    icon: BanIcon,
   },
 };

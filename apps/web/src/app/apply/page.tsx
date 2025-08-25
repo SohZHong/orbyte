@@ -14,6 +14,7 @@ import api from '@/config/axios';
 import { useKycContract } from '@/hooks/use-kyc-contract';
 import { KycSchema, type KycForm } from '@/schema/kyc';
 import { UserRole } from '@/types/user';
+import { Spinner } from '@/components/ui/shadcn-io/spinner';
 
 export default function ApplyAsProfessionalPage() {
   const { submitKYC } = useKycContract();
@@ -219,7 +220,13 @@ export default function ApplyAsProfessionalPage() {
         {/* Submit */}
         <div className='flex justify-end'>
           <Button onClick={form.handleSubmit(onSubmit)} disabled={loading}>
-            {loading ? 'Submitting...' : 'Submit Documents'}
+            {loading ? (
+              <span className='inline-flex gap-1 items-center'>
+                <Spinner variant='circle' /> Submitting
+              </span>
+            ) : (
+              <span>Submit Documents</span>
+            )}
           </Button>
         </div>
       </div>

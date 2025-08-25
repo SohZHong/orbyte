@@ -22,13 +22,14 @@ import { useProposals } from '@/hooks/use-proposal';
 import { graphQLStandardMap, statusMap } from '@/types/proposal';
 import { Badge } from '@/components/ui/badge';
 import { useDebounce } from 'use-debounce';
+import { BadgeAlertIcon } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Dashboard', href: '/dashboard' },
-  { title: 'Proposal', href: '#' },
+  { title: 'Audits', href: '#' },
 ];
 
-export default function ProposalsPage() {
+export default function AuditsPage() {
   const { user: privyUser } = usePrivy();
   const address = privyUser?.smartWallet?.address;
   const { data: user, isLoading: isUserLoading } = useUser(address);
@@ -64,19 +65,13 @@ export default function ProposalsPage() {
               </React.Fragment>
             ) : (
               <React.Fragment>
-                <h1 className='text-3xl font-bold tracking-tight'>
-                  Project Proposals
-                </h1>
+                <h1 className='text-3xl font-bold tracking-tight'>Audits</h1>
                 <p className='text-muted-foreground'>
-                  Manage your submitted project proposals and track their
-                  progress
+                  Manage and review proposal submissions
                 </p>
               </React.Fragment>
             )}
           </div>
-          <Button onClick={() => router.push('/proposal/submission')}>
-            Submit a Proposal
-          </Button>
         </div>
         <div className='flex flex-wrap gap-3 items-center'>
           {/* Search bar */}
@@ -105,8 +100,6 @@ export default function ProposalsPage() {
               <SelectItem value={ProposalStatus.ChangesRequested}>
                 Changes Requested
               </SelectItem>
-              <SelectItem value={ProposalStatus.Approved}>Approved</SelectItem>
-              <SelectItem value={ProposalStatus.Rejected}>Rejected</SelectItem>
             </SelectContent>
           </Select>
 
@@ -138,12 +131,11 @@ export default function ProposalsPage() {
                 <thead>
                   <tr className='bg-muted font-semibold text-muted-foreground text-left'>
                     <th className='px-4 py-3 font-medium'>Project Title</th>
-                    <th className='px-4 py-3 font-medium w-[200px]'>
+                    <th className='px-4 py-3 font-medium w-[350px]'>
                       Developer
                     </th>
                     <th className='px-4 py-3 font-medium'>Standard</th>
                     <th className='px-4 py-3 font-medium'>Status</th>
-                    <th className='px-4 py-3 font-medium w-[300px]'>Summary</th>
                     <th className='px-4 py-3 font-medium'>Action</th>
                   </tr>
                 </thead>
@@ -166,15 +158,12 @@ export default function ProposalsPage() {
                           {statusMap[p.status].text}
                         </Badge>
                       </td>
-                      <td className='px-4 py-2 text-muted-foreground truncate max-w-[300px]'>
-                        <div className='overflow-x-auto'>{p.description}</div>
-                      </td>
                       <td className='px-4 py-2'>
                         <Button
                           variant='outline'
-                          onClick={() => router.push(`/proposal/${p.id}`)}
+                          onClick={() => router.push(`/audit/proposal/${p.id}`)}
                         >
-                          View
+                          Review
                         </Button>
                       </td>
                     </tr>

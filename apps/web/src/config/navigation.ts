@@ -18,15 +18,16 @@ export const navItems: Record<'Public' | 'Developer' | 'Auditor', NavItem[]> = {
   ],
   Developer: [
     { title: 'Dashboard', href: '/dashboard', icon: Home },
-    { title: 'Projects', href: '/projects', icon: Folder },
+    { title: 'Projects', href: '/project', icon: Folder },
     { title: 'Proposals', href: '/proposal', icon: File },
     { title: 'Credits', href: '/credit', icon: Coins },
     { title: 'Settings', href: '/settings', icon: Settings },
   ],
   Auditor: [
     { title: 'Dashboard', href: '/dashboard', icon: Home },
-    { title: 'Audits', href: '/audits', icon: CheckCircle },
-    { title: 'Transactions', href: '/transaction', icon: History },
+    { title: 'Audits', href: '/audit', icon: CheckCircle },
+    { title: 'Review History', href: '/review-history', icon: History },
+    { title: 'Projects', href: '/project', icon: Folder },
     { title: 'Settings', href: '/settings', icon: Settings },
   ],
 };
