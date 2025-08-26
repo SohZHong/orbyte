@@ -34,30 +34,39 @@ query Proposal($id: ID!) {
 query Proposals(
   $first: Int!
   $skip: Int!
+  $developer: String
   $name: String
-  $standard: Standard
-  $status: ProposalStatus
+  $status_in: [ProposalStatus!]
+  $standard_in: [Standard!]
 ) {
   proposals(
     first: $first
     skip: $skip
-    where: { name_contains: $name, standard: $standard, status: $status }
+    where: {
+      developer_contains: $developer
+      name_contains: $name
+      status_in: $status_in
+      standard_in: $standard_in
+    }
+    orderBy: submittedAt
+    orderDirection: desc
   ) {
     id
+    name
     developer {
       id
     }
-    name
     description
     location
-    metadataCID
+    estimatedCredits
+    vintage
     methodology
-    otherDocsCID
     projectPlanCID
+    eiaCID
+    otherDocsCID
+    metadataCID
     standard
     status
-    vintage
-    eiaCID
-    estimatedCredits
+    submittedAt
   }
 }

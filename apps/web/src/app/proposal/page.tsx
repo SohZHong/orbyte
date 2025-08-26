@@ -49,6 +49,7 @@ export default function ProposalsPage() {
     isFetchingNextPage,
     isLoading: isProposalLoading,
   } = useProposals({
+    developer: user?.id,
     name: debouncedSearch || undefined,
     status,
     standard,
@@ -127,7 +128,7 @@ export default function ProposalsPage() {
         </div>
         {/* Table */}
         <div className='overflow-x-auto rounded-lg border'>
-          {isProposalLoading ? (
+          {isProposalLoading || isUserLoading ? (
             <div className='flex flex-col gap-2 p-4'>
               {Array.from({ length: 5 }).map((_, i) => (
                 <Skeleton key={i} className='h-10 w-full' />

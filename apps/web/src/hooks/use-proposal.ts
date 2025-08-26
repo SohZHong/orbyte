@@ -13,6 +13,7 @@ import {
 import { PAGE_SIZE } from '@/constants';
 
 interface UseProposalsParams {
+  developer?: string;
   name?: string;
   location?: string;
   standard?: Standard;
@@ -37,12 +38,28 @@ export function useProposals(filters: UseProposalsParams = {}) {
   return useInfiniteQuery({
     queryKey: ['proposals', filters],
     queryFn: async ({ pageParam = 0 }) => {
+      // Default: all statuses
+      const statuses = filters.status
+        ? [filters.status]
+        : [
+            ProposalStatus.PendingReview,
+            ProposalStatus.ChangesRequested,
+            ProposalStatus.Rejected,
+            ProposalStatus.Approved,
+          ];
+
+      // Default: all standards
+      const standards = filters.standard
+        ? [filters.standard]
+        : [Standard.GoldStandard, Standard.Vcs, Standard.Shariah];
+
       const variables: ProposalsQueryVariables = {
         first: PAGE_SIZE,
         skip: pageParam,
+        developer: filters.developer ?? '',
         name: filters.name ?? '',
-        standard: filters.standard ?? Standard.Shariah,
-        status: filters.status ?? ProposalStatus.PendingReview,
+        status_in: statuses,
+        standard_in: standards,
       };
 
       const data = await graphClient.request<
