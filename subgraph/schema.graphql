@@ -25,12 +25,6 @@ enum ProjectStatus {
   Finalized
 }
 
-enum ProofStatus {
-  Pending
-  Approved
-  Rejected
-}
-
 enum ReviewAction {
   Approve
   RequestChanges
@@ -49,8 +43,8 @@ type User @entity {
 }
 
 type Proposal @entity {
-  id: ID! # projectId onchain
-  developer: User! # relationship
+  id: ID!
+  developer: User!
   name: String!
   description: String!
   location: String!
@@ -61,7 +55,7 @@ type Proposal @entity {
   eiaCID: String!
   otherDocsCID: String!
   metadataCID: String!
-
+  submittedAt: Timestamp!
   standard: Standard!
   status: ProposalStatus!
   reviews: [ProposalReview!]! @derivedFrom(field: "proposal")
@@ -74,7 +68,7 @@ type ProposalReview @entity {
   auditor: User!
   action: ReviewAction!
   commentCID: String
-  timestamp: BigInt!
+  timestamp: Timestamp!
 }
 
 type Project @entity {
@@ -84,6 +78,7 @@ type Project @entity {
   status: ProjectStatus!
   proofs: [Proof!]! @derivedFrom(field: "project")
   credits: [CreditBatch!]! @derivedFrom(field: "project")
+  createdAt: Timestamp!
 }
 
 type Proof @entity {
@@ -92,7 +87,7 @@ type Proof @entity {
   developer: User!
   proofCID: String!
   audits: [ProofAudit!]! @derivedFrom(field: "proof")
-  status: ProofStatus!
+  submittedAt: Timestamp!
 }
 
 type ProofAudit @entity {
@@ -101,7 +96,7 @@ type ProofAudit @entity {
   auditor: User!
   action: ReviewAction!
   commentCID: String
-  timestamp: BigInt!
+  timestamp: Timestamp!
 }
 
 # CreditBatch (ERC1155 issuances)
@@ -110,6 +105,7 @@ type CreditBatch @entity {
   project: Project!
   developer: User!
   amount: BigInt!
+  issuedAt: Timestamp!
   tokenURI: String!
 }
 
@@ -154,6 +150,17 @@ type ProjectProposed @entity(timeseries: true) {
   transactionHash: Bytes!
 }
 
+type ProposalReviewed @entity(timeseries: true) {
+  id: Int8!
+  internal_id: BigInt! # uint256
+  auditor: User! # address
+  action: Int! # uint8
+  commentCID: String! # string
+  blockNumber: BigInt!
+  timestamp: Timestamp!
+  transactionHash: Bytes!
+}
+
 type ProofAudited @entity(timeseries: true) {
   id: Int8!
   internal_id: BigInt! # uint256
@@ -183,10 +190,22 @@ type DailyProjectStats
   total: BigInt! @aggregate(fn: "count")
 }
 
-type DailyVoteStats @aggregation(intervals: ["day"], source: "ProofAudited") {
+type DailyProofStats @aggregation(intervals: ["day"], source: "ProofAudited") {
   id: Int8!
   timestamp: Timestamp!
 
+  approvals: BigInt!
+    @aggregate(fn: "count", arg: "case when action = 0 then 1 else null end")
+
+  rejections: BigInt!
+    @aggregate(fn: "count", arg: "case when action = 2 then 1 else null end")
+}
+
+type DailyReviewStats
+  @aggregation(intervals: ["day"], source: "ProposalReviewed") {
+  id: Int8!
+  timestamp: Timestamp!
+  count: BigInt! @aggregate(fn: "count")
   approvals: BigInt!
     @aggregate(fn: "count", arg: "case when action = 0 then 1 else null end")
 
@@ -225,136 +244,6 @@ type DailyTransactionStats
 #   auditor: Bytes! # address
 #   action: Int! # uint8
 #   commentCID: String! # string
-#   blockNumber: BigInt!
-#   blockTimestamp: BigInt!
-#   transactionHash: Bytes!
-# }
-
-# type ProposalStatusChanged @entity(immutable: true) {
-#   id: Bytes!
-#   internal_id: BigInt! # uint256
-#   newStatus: Int! # uint8
-#   blockNumber: BigInt!
-#   blockTimestamp: BigInt!
-#   transactionHash: Bytes!
-# }
-# type KYCSubmitted @entity(immutable: true) {
-#   id: Bytes!
-#   user: Bytes! # address
-#   role: Int! # uint8
-#   documentCid: String! # string
-#   proofOfAddressCid: String! # string
-#   certificationCid: String! # string
-#   timestamp: BigInt! # uint256
-#   blockNumber: BigInt!
-#   blockTimestamp: BigInt!
-#   transactionHash: Bytes!
-# }
-# type Approval @entity(immutable: true) {
-#   id: Bytes!
-#   owner: Bytes! # address
-#   approved: Bytes! # address
-#   tokenId: BigInt! # uint256
-#   blockNumber: BigInt!
-#   blockTimestamp: BigInt!
-#   transactionHash: Bytes!
-# }
-
-# type ApprovalForAll @entity(immutable: true) {
-#   id: Bytes!
-#   owner: Bytes! # address
-#   operator: Bytes! # address
-#   approved: Boolean! # bool
-#   blockNumber: BigInt!
-#   blockTimestamp: BigInt!
-#   transactionHash: Bytes!
-# }
-
-# type OwnershipTransferred @entity(immutable: true) {
-#   id: Bytes!
-#   previousOwner: Bytes! # address
-#   newOwner: Bytes! # address
-#   blockNumber: BigInt!
-#   blockTimestamp: BigInt!
-#   transactionHash: Bytes!
-# }
-
-# type RoleBurned @entity(immutable: true) {
-#   id: Bytes!
-#   account: Bytes! # address
-#   tokenId: BigInt! # uint256
-#   role: Int! # uint8
-#   blockNumber: BigInt!
-#   blockTimestamp: BigInt!
-#   transactionHash: Bytes!
-# }
-
-# type RoleMinted @entity(immutable: true) {
-#   id: Bytes!
-#   account: Bytes! # address
-#   tokenId: BigInt! # uint256
-#   role: Int! # uint8
-#   blockNumber: BigInt!
-#   blockTimestamp: BigInt!
-#   transactionHash: Bytes!
-# }
-
-# type Transfer @entity(immutable: true) {
-#   id: Bytes!
-#   from: Bytes! # address
-#   to: Bytes! # address
-#   tokenId: BigInt! # uint256
-#   blockNumber: BigInt!
-#   blockTimestamp: BigInt!
-#   transactionHash: Bytes!
-# }
-# type CarbonCreditApprovalForAll @entity(immutable: true) {
-#   id: Bytes!
-#   account: Bytes! # address
-#   operator: Bytes! # address
-#   approved: Boolean! # bool
-#   blockNumber: BigInt!
-#   blockTimestamp: BigInt!
-#   transactionHash: Bytes!
-# }
-
-# type CarbonCreditOwnershipTransferred @entity(immutable: true) {
-#   id: Bytes!
-#   previousOwner: Bytes! # address
-#   newOwner: Bytes! # address
-#   blockNumber: BigInt!
-#   blockTimestamp: BigInt!
-#   transactionHash: Bytes!
-# }
-
-# type TransferBatch @entity(immutable: true) {
-#   id: Bytes!
-#   operator: Bytes! # address
-#   from: Bytes! # address
-#   to: Bytes! # address
-#   ids: [BigInt!]! # uint256[]
-#   values: [BigInt!]! # uint256[]
-#   blockNumber: BigInt!
-#   blockTimestamp: BigInt!
-#   transactionHash: Bytes!
-# }
-
-# type TransferSingle @entity(immutable: true) {
-#   id: Bytes!
-#   operator: Bytes! # address
-#   from: Bytes! # address
-#   to: Bytes! # address
-#   internal_id: BigInt! # uint256
-#   value: BigInt! # uint256
-#   blockNumber: BigInt!
-#   blockTimestamp: BigInt!
-#   transactionHash: Bytes!
-# }
-
-# type URI @entity(immutable: true) {
-#   id: Bytes!
-#   value: String! # string
-#   internal_id: BigInt! # uint256
 #   blockNumber: BigInt!
 #   blockTimestamp: BigInt!
 #   transactionHash: Bytes!

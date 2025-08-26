@@ -46,7 +46,6 @@ export function loadProposalReview(id: string): ProposalReview {
     review = new ProposalReview(id);
     review.action = 'Approve'; // Approve
     review.commentCID = '';
-    review.timestamp = BigInt.fromI32(0);
   }
   return review;
 }
@@ -65,20 +64,8 @@ export function loadProof(id: string): Proof {
   if (!proof) {
     proof = new Proof(id);
     proof.proofCID = '';
-    proof.status = 'Pending';
   }
   return proof;
-}
-
-export function loadProofAudit(id: string): ProofAudit {
-  let audit = ProofAudit.load(id);
-  if (!audit) {
-    audit = new ProofAudit(id);
-    audit.action = 'Approve';
-    audit.commentCID = '';
-    audit.timestamp = BigInt.fromI32(0);
-  }
-  return audit;
 }
 
 export function loadCreditBatch(id: string): CreditBatch {
@@ -133,11 +120,6 @@ export function projectStatusFromIndex(index: i32): string {
     'Finalized',
   ];
   return index >= 0 && index < statuses.length ? statuses[index] : 'None';
-}
-
-export function proofStatusFromIndex(index: i32): string {
-  let statuses: string[] = ['Pending', 'Approved', 'Rejected'];
-  return index >= 0 && index < statuses.length ? statuses[index] : 'Pending';
 }
 
 export function reviewActionFromIndex(index: i32): string {

@@ -12,18 +12,17 @@ import {
   CreditsIssued,
   ProjectProposed,
   Proof,
+  ProofAudit,
   ProofAudited,
   ProposalReview,
+  ProposalReviewed,
 } from '../generated/schema';
 import {
   loadCreditBatch,
   loadProject,
-  loadProof,
-  loadProofAudit,
   loadProposal,
   loadUser,
   projectStatusFromIndex,
-  proofStatusFromIndex,
   proposalStatusFromIndex,
   reviewActionFromIndex,
   standardFromIndex,
@@ -38,6 +37,7 @@ export function handleCreditsIssued(event: CreditsIssuedEvent): void {
   batch.developer = user.id;
   batch.amount = event.params.amount;
   batch.tokenURI = event.params.tokenURI;
+  batch.issuedAt = event.block.timestamp.toI64();
   batch.save();
 
   let entity = new CreditsIssued(
@@ -57,8 +57,9 @@ export function handleCreditsIssued(event: CreditsIssuedEvent): void {
 }
 
 export function handleProjectProposed(event: ProjectProposedEvent): void {
-  let proposalId = event.params.id.toString();
-  let proposal = loadProposal(proposalId);
+  let projectId = event.params.id.toString();
+  let project = loadProject(projectId);
+  let proposal = loadProposal(projectId);
   let user = loadUser(event.params.developer.toHexString());
 
   proposal.developer = user.id;
@@ -74,9 +75,16 @@ export function handleProjectProposed(event: ProjectProposedEvent): void {
   proposal.otherDocsCID = event.params.meta.otherDocsCID;
   proposal.metadataCID = event.params.meta.metadataCID;
   proposal.status = 'PendingReview';
-
+  proposal.submittedAt = event.block.timestamp.toI64();
   proposal.save();
 
+  // initialize Project
+  project.proposal = proposal.id;
+  project.developer = user.id;
+  project.createdAt = event.block.timestamp.toI64();
+  project.save();
+
+  // create Proposal snapshot
   let entity = new ProjectProposed(
     event.transaction.hash.concatI32(event.logIndex.toI32()).toHex()
   );
@@ -106,9 +114,9 @@ export function handleProjectStatusChanged(
 ): void {
   let projectId = event.params.id.toString();
   let project = loadProject(projectId);
-  if (project == null) return;
 
   project.status = projectStatusFromIndex(event.params.newStatus);
+
   project.save();
 }
 
@@ -116,26 +124,15 @@ export function handleProofAudited(event: ProofAuditedEvent): void {
   let auditId = event.transaction.hash
     .concatI32(event.logIndex.toI32())
     .toHex();
-  let audit = loadProofAudit(auditId);
+  let audit = new ProofAudit(auditId);
   let user = loadUser(event.params.auditor.toHexString());
 
   audit.proof = event.params.id.toString();
   audit.auditor = user.id;
   audit.action = reviewActionFromIndex(event.params.action);
   audit.commentCID = event.params.commentCID;
-  audit.timestamp = event.block.timestamp;
+  audit.timestamp = event.block.timestamp.toI64();
   audit.save();
-
-  // update proof status
-  let proof = loadProof(event.params.id.toString());
-  if (event.params.action == 0) {
-    // Approve
-    proof.status = proofStatusFromIndex(1);
-  } else if (event.params.action == 2) {
-    // Reject
-    proof.status = proofStatusFromIndex(2);
-  }
-  proof.save();
 
   let entity = new ProofAudited(
     event.transaction.hash.concatI32(event.logIndex.toI32()).toHex()
@@ -160,7 +157,6 @@ export function handleProofSubmitted(event: ProofSubmittedEvent): void {
   proof.project = event.params.id.toString();
   proof.developer = user.id;
   proof.proofCID = event.params.proofCID;
-  proof.status = 'Pending';
 
   proof.save();
 }
@@ -177,19 +173,19 @@ export function handleProposalReviewed(event: ProposalReviewedEvent): void {
   review.auditor = user.id;
   review.action = action;
   review.commentCID = event.params.commentCID;
-  review.timestamp = event.block.timestamp;
+  review.timestamp = event.block.timestamp.toI64();
   review.save();
 
-  let proposal = loadProposal(event.params.id.toString());
+  let entity = new ProposalReviewed(reviewId);
+  entity.internal_id = event.params.id;
+  entity.auditor = user.id;
+  entity.action = event.params.action;
+  entity.commentCID = event.params.commentCID;
+  entity.blockNumber = event.block.number;
+  entity.timestamp = event.block.timestamp.toI64();
+  entity.transactionHash = event.transaction.hash;
 
-  if (action == 'Approve') {
-    proposal.status = 'Approved';
-  } else if (action == 'Reject') {
-    proposal.status = 'Rejected';
-  } else if (action == 'RequestChanges') {
-    proposal.status = 'ChangesRequested';
-  }
-  proposal.save();
+  entity.save();
 }
 
 export function handleProposalStatusChanged(
