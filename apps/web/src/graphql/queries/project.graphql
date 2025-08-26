@@ -1,0 +1,29 @@
+query Projects(
+  $first: Int!
+  $skip: Int!
+  $developer: String
+  $status_in: [ProjectStatus!]
+  $name: String
+) {
+  projects(
+    skip: $skip
+    first: $first
+    where: {
+      developer_contains: $developer
+      status_in: $status_in
+      proposal_: { name_contains: $name }
+    }
+    orderBy: createdAt
+    orderDirection: desc
+  ) {
+    id
+    status
+    proposal {
+      description
+      id
+      name
+      standard
+    }
+    createdAt
+  }
+}
