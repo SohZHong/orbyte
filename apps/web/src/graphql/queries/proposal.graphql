@@ -28,6 +28,7 @@ query Proposal($id: ID!) {
     developer {
       id
     }
+    submittedAt
   }
 }
 

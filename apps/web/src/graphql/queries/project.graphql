@@ -1,3 +1,33 @@
+# fragment AuditorFeedbackFields on ProposalReview {
+#   id
+#   timestamp
+#   commentCID
+#   auditor {
+#     id
+#   }
+# }
+
+query Project($id: ID!) {
+  project(id: $id) {
+    id
+    status
+    proposal {
+      description
+      id
+      name
+      standard
+      location
+      methodology
+      projectPlanCID
+      eiaCID
+      estimatedCredits
+      otherDocsCID
+      vintage
+    }
+    createdAt
+  }
+}
+
 query Projects(
   $first: Int!
   $skip: Int!

@@ -6,7 +6,7 @@ import type { BreadcrumbItem } from '@/types/nav';
 import AppSidebarLayout from '@/components/app-sidebar-layout';
 import { usePrivy } from '@privy-io/react-auth';
 import { useUser } from '@/hooks/use-user';
-import React from 'react';
+import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -35,10 +35,8 @@ export default function ProjectsPage() {
   const address = privyUser?.smartWallet?.address;
   const { data: user, isLoading: isUserLoading } = useUser(address);
   const router = useRouter();
-  const [search, setSearch] = React.useState('');
-  const [status, setStatus] = React.useState<ProjectStatus | undefined>(
-    undefined
-  );
+  const [search, setSearch] = useState('');
+  const [status, setStatus] = useState<ProjectStatus | undefined>(undefined);
   const [debouncedSearch] = useDebounce(search, 300);
   const {
     data,
@@ -65,7 +63,8 @@ export default function ProjectsPage() {
               <React.Fragment>
                 <h1 className='text-3xl font-bold tracking-tight'>Projects</h1>
                 <p className='text-muted-foreground'>
-                  Manage your projects and track their progress
+                  Manage your projects and track their progress. Select a
+                  project to view details or submit completion proof
                 </p>
               </React.Fragment>
             )}

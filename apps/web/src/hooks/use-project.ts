@@ -1,5 +1,8 @@
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import {
+  ProjectDocument,
+  type ProjectQuery,
+  type ProjectQueryVariables,
   ProjectsDocument,
   type ProjectsQuery,
   type ProjectsQueryVariables,
@@ -12,6 +15,19 @@ interface UseProjectsParams {
   developer?: string;
   status?: ProjectStatus;
   name?: string;
+}
+
+export function useProject(id: string) {
+  return useQuery({
+    queryKey: ['project', id],
+    queryFn: async () => {
+      const data = await graphClient.request<
+        ProjectQuery,
+        ProjectQueryVariables
+      >(ProjectDocument, { id });
+      return data.project;
+    },
+  });
 }
 
 export function useProjects(filters: UseProjectsParams = {}) {

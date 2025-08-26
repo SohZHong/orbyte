@@ -17,6 +17,7 @@ import api from '@/config/axios';
 import { toast } from 'sonner';
 import { Spinner } from '@/components/ui/shadcn-io/spinner';
 import { ProposalStatus } from '@/generated/graphql';
+import { getTimeFromBlockchainTimestamp } from '@/lib/utils';
 
 export default function ProposalDetailsPage() {
   const { id } = useParams<{ id: string }>();
@@ -94,7 +95,10 @@ export default function ProposalDetailsPage() {
               {proposal.name}
             </h1>
             <p className='text-muted-foreground'>
-              Submitted by {proposal.developer.id}
+              Submitted on{' '}
+              {getTimeFromBlockchainTimestamp(
+                proposal.submittedAt
+              ).toLocaleString()}
             </p>
           </div>
         </div>
@@ -112,7 +116,11 @@ export default function ProposalDetailsPage() {
           <DetailRow
             label='Status'
             value={
-              <Badge variant={statusMap[proposal.status].variant}>
+              <Badge>
+                {(() => {
+                  const Icon = statusMap[proposal.status].icon;
+                  return <Icon className='w-4 h-4 mr-1' />;
+                })()}
                 {statusMap[proposal.status].text}
               </Badge>
             }
@@ -154,7 +162,7 @@ export default function ProposalDetailsPage() {
           />
 
           <DetailRow
-            label='Financial Projections'
+            label='Other documents'
             value={
               <Link
                 href={`${ipfsGateway}/${proposal.otherDocsCID}`}
