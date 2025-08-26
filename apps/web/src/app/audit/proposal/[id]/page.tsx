@@ -15,6 +15,7 @@ import { Spinner } from '@/components/ui/shadcn-io/spinner';
 import { Separator } from '@/components/ui/separator';
 import { useProjectRegistryContract } from '@/hooks/use-project-registry-contract';
 import { ProposalReviewConfirmationDialog } from '@/components/dialog/proposal-review-confirmation-dialog';
+import { ProposalStatus } from '@/generated/graphql';
 
 export default function ProposalDetailsPage() {
   const { id } = useParams<{ id: string }>();
@@ -95,10 +96,14 @@ export default function ProposalDetailsPage() {
           <div className='flex flex-col gap-4 md:flex-row md:items-center md:justify-between'>
             <div>
               <h1 className='text-3xl font-bold tracking-tight'>
-                Project Proposal Review
+                {proposal.status === ProposalStatus.Approved
+                  ? 'Project Proposal Details'
+                  : 'Project Proposal Review'}
               </h1>
               <p className='text-muted-foreground'>
-                Review the project proposal details and take necessary actions
+                {proposal.status === ProposalStatus.Approved
+                  ? 'View project proposal details'
+                  : 'Review the project proposal details and take necessary actions'}
               </p>
             </div>
           </div>
@@ -109,6 +114,7 @@ export default function ProposalDetailsPage() {
             <DetailRow label='Project Name' value={proposal.name} />
             <DetailRow label='Developer' value={proposal.developer.id} />
             <DetailRow label='Location' value={proposal.location} />
+            <DetailRow label='Status' value={proposal.status} />
             <DetailRow
               label='Estimated Credits'
               value={proposal.estimatedCredits?.toString()}
@@ -140,46 +146,48 @@ export default function ProposalDetailsPage() {
           <AuditorFeedbackList reviews={proposal.reviews} />
 
           {/* Actions */}
-          <div className='flex justify-end gap-3 px-4 py-6'>
-            <Button
-              disabled={isPending}
-              onClick={() => handleActionClick(ReviewAction.APPROVE)}
-            >
-              {isPending ? (
-                <span className='inline-flex gap-1 items-center'>
-                  <Spinner variant='circle' /> Submitting
-                </span>
-              ) : (
-                <span>Approve</span>
-              )}
-            </Button>
-            <Button
-              disabled={isPending}
-              variant='destructive'
-              onClick={() => handleActionClick(ReviewAction.REJECT)}
-            >
-              {isPending ? (
-                <span className='inline-flex gap-1 items-center'>
-                  <Spinner variant='circle' /> Submitting
-                </span>
-              ) : (
-                <span>Decline</span>
-              )}
-            </Button>
-            <Button
-              disabled={isPending}
-              variant='outline'
-              onClick={() => handleActionClick(ReviewAction.REQUEST_CHANGES)}
-            >
-              {isPending ? (
-                <span className='inline-flex gap-1 items-center'>
-                  <Spinner variant='circle' /> Submitting
-                </span>
-              ) : (
-                <span>Request Changes</span>
-              )}
-            </Button>
-          </div>
+          {proposal.status === ProposalStatus.PendingReview && (
+            <div className='flex justify-end gap-3 px-4 py-6'>
+              <Button
+                disabled={isPending}
+                onClick={() => handleActionClick(ReviewAction.APPROVE)}
+              >
+                {isPending ? (
+                  <span className='inline-flex gap-1 items-center'>
+                    <Spinner variant='circle' /> Submitting
+                  </span>
+                ) : (
+                  <span>Approve</span>
+                )}
+              </Button>
+              <Button
+                disabled={isPending}
+                variant='destructive'
+                onClick={() => handleActionClick(ReviewAction.REJECT)}
+              >
+                {isPending ? (
+                  <span className='inline-flex gap-1 items-center'>
+                    <Spinner variant='circle' /> Submitting
+                  </span>
+                ) : (
+                  <span>Decline</span>
+                )}
+              </Button>
+              <Button
+                disabled={isPending}
+                variant='outline'
+                onClick={() => handleActionClick(ReviewAction.REQUEST_CHANGES)}
+              >
+                {isPending ? (
+                  <span className='inline-flex gap-1 items-center'>
+                    <Spinner variant='circle' /> Submitting
+                  </span>
+                ) : (
+                  <span>Request Changes</span>
+                )}
+              </Button>
+            </div>
+          )}
         </div>
       </AppSidebarLayout>
     </React.Fragment>

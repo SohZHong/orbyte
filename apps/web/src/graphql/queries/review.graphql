@@ -1,0 +1,29 @@
+query ProposalReviews(
+  $first: Int!
+  $skip: Int!
+  $auditor: String!
+  $name: String
+) {
+  proposalRevieweds(
+    where: { auditor: $auditor }
+    skip: $skip
+    first: $first
+    orderBy: timestamp
+  ) {
+    id
+    timestamp
+    auditor {
+      id
+      reviews(where: { proposal_: { name_contains: $name } }) {
+        action
+        id
+        timestamp
+        proposal {
+          id
+          name
+          submittedAt
+        }
+      }
+    }
+  }
+}
