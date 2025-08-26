@@ -1,5 +1,6 @@
 import { useFragment, type FragmentType } from '@/generated';
 import { AuditorFeedbackFieldsFragmentDoc } from '@/generated/graphql';
+import { getTimeFromBlockchainTimestamp } from '@/lib/utils';
 import React from 'react';
 
 interface AuditorFeedbackListProps {
@@ -19,13 +20,15 @@ export function AuditorFeedbackList({ reviews }: AuditorFeedbackListProps) {
       ) : (
         parsed.map((review, idx) => (
           <div key={idx} className='flex gap-3 py-3 border-t border-t-accent'>
-            <div className='flex flex-col'>
-              <div className='flex gap-3 items-center'>
+            <div className='flex flex-col gap-3'>
+              <div className='flex flex-wrap gap-3 md:gap-6  md:items-center'>
                 <p className='font-bold truncate max-w-[200px]'>
                   {review.auditor.id}
                 </p>
                 <p className='text-muted-foreground text-sm'>
-                  {new Date(review.timestamp).toLocaleDateString()}
+                  {getTimeFromBlockchainTimestamp(
+                    review.timestamp
+                  ).toLocaleString()}
                 </p>
               </div>
               <p className=''>{review.commentCID}</p>
