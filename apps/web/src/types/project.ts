@@ -37,8 +37,8 @@ export const statusMap: Record<
     icon: BanIcon,
   },
   [ProjectStatus.Finalized]: {
-    text: 'Rejected',
-    variant: 'destructive',
+    text: 'Finalized',
+    variant: 'default',
     icon: BadgeCheckIcon,
   },
 };

@@ -6,3 +6,21 @@ query User($id: ID!) {
     proofOfAddressCid
   }
 }
+
+query UserCredits($id: ID!, $first: Int!, $skip: Int!) {
+  user(id: $id) {
+    creditBalances(where: { balance_not: "0" }, first: $first, skip: $skip) {
+      balance
+      id
+      batch {
+        project {
+          proposal {
+            vintage
+            name
+          }
+        }
+        id
+      }
+    }
+  }
+}
