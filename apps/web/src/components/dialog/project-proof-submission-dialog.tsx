@@ -69,7 +69,6 @@ export function ProjectProofSubmissionDialog({
                   <FormControl>
                     <Input
                       type='file'
-                      accept='.pdf,.doc,.docx,.png,.jpg'
                       onChange={(e) => {
                         const file = e.target.files?.[0];
                         field.onChange(file);

@@ -30,7 +30,7 @@ const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Proposal Audit', href: '#' },
 ];
 
-export default function AuditsPage() {
+export default function ProposalAuditPage() {
   const { user: privyUser } = usePrivy();
   const address = privyUser?.smartWallet?.address;
   const { data: user, isLoading: isUserLoading } = useUser(address);
@@ -67,7 +67,9 @@ export default function AuditsPage() {
                 </React.Fragment>
               ) : (
                 <React.Fragment>
-                  <h1 className='text-3xl font-bold tracking-tight'>Audits</h1>
+                  <h1 className='text-3xl font-bold tracking-tight'>
+                    Proposal Audits
+                  </h1>
                   <p className='text-muted-foreground'>
                     Manage and review proposal submissions
                   </p>

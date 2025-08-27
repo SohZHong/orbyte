@@ -26,27 +26,35 @@ query Proof($id: ID!) {
   }
 }
 
-query Proofs($first: Int!, $skip: Int!, $developer: String, $name: String) {
-  proofs(
+query ProjectsWithProof(
+  $first: Int!
+  $skip: Int!
+  $developer: String
+  $name: String
+  $standard_in: [Standard!]
+) {
+  projects(
     first: $first
     skip: $skip
     where: {
-      developer_contains: $developer
-      project_: { proposal_: { name_contains: $name } }
+      status: ProofSubmitted
+      proposal_: {
+        name_contains: $name
+        standard_in: $standard_in
+        developer_contains: $developer
+      }
     }
     orderDirection: desc
-    orderBy: submittedAt
   ) {
-    proofCID
-    submittedAt
-    id
-    developer {
+    proofs {
       id
+      proofCID
+      submittedAt
     }
-    project {
-      proposal {
-        name
-      }
+    proposal {
+      name
+      standard
+      estimatedCredits
     }
   }
 }

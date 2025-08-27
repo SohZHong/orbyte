@@ -3,7 +3,7 @@
 import { usePrivy } from '@privy-io/react-auth';
 import { useUser } from '@/hooks/use-user';
 import type { BreadcrumbItem } from '@/types/nav';
-import DashboardContainer from '@/components//-container';
+import DashboardContainer from '@/components/dashboard/dashboard-container';
 
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'Dashboard', href: '/' }];
 

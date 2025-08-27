@@ -1,11 +1,12 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import {
+  ProjectsWithProofDocument,
+  type ProjectsWithProofQuery,
+  type ProjectsWithProofQueryVariables,
   ProofDocument,
   type ProofQuery,
   type ProofQueryVariables,
-  ProofsDocument,
-  type ProofsQuery,
-  type ProofsQueryVariables,
+  Standard,
 } from '@/generated/graphql';
 import { PAGE_SIZE } from '@/constants';
 import { graphClient } from '@/graphql/client';
@@ -13,6 +14,7 @@ import { graphClient } from '@/graphql/client';
 interface UseProofsParams {
   developer?: string;
   name?: string;
+  standard?: Standard;
 }
 
 export function useProof(id: string) {
@@ -28,23 +30,28 @@ export function useProof(id: string) {
   });
 }
 
-export function useProjects(filters: UseProofsParams = {}) {
+export function useProofs(filters: UseProofsParams = {}) {
   return useInfiniteQuery({
     queryKey: ['proofs', filters],
     queryFn: async ({ pageParam = 0 }) => {
-      const variables: ProofsQueryVariables = {
+      const standards = filters.standard
+        ? [filters.standard]
+        : [Standard.GoldStandard, Standard.Vcs, Standard.Shariah];
+
+      const variables: ProjectsWithProofQueryVariables = {
         first: PAGE_SIZE,
         skip: pageParam,
         developer: filters.developer ?? '',
         name: filters.name ?? '',
+        standard_in: standards,
       };
 
-      const data = await graphClient.request<ProofsQuery, ProofsQueryVariables>(
-        ProofsDocument,
-        variables
-      );
+      const data = await graphClient.request<
+        ProjectsWithProofQuery,
+        ProjectsWithProofQueryVariables
+      >(ProjectsWithProofDocument, variables);
 
-      return data.proofs ?? [];
+      return data.projects ?? [];
     },
     getNextPageParam: (lastPage, allPages) => {
       if (!lastPage || lastPage.length < PAGE_SIZE) return undefined;

@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import type { BreadcrumbItem } from '@/types/nav';
 import { useProposal } from '@/hooks/use-proposal';
 import DetailRow from '@/components/detail-row';
-import { graphQLStandardMap, ReviewAction } from '@/types/proposal';
+import { graphQLStandardMap, ReviewAction, statusMap } from '@/types/proposal';
 import { AuditorFeedbackList } from '@/components/auditor-feedback-list';
 import { toast } from 'sonner';
 import { Spinner } from '@/components/ui/shadcn-io/spinner';
@@ -114,7 +114,7 @@ export default function ProposalDetailsPage() {
             <DetailRow label='Project Name' value={proposal.name} />
             <DetailRow label='Developer' value={proposal.developer.id} />
             <DetailRow label='Location' value={proposal.location} />
-            <DetailRow label='Status' value={proposal.status} />
+            <DetailRow label='Status' value={statusMap[proposal.status].text} />
             <DetailRow
               label='Estimated Credits'
               value={proposal.estimatedCredits?.toString()}
