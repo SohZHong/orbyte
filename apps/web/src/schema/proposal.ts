@@ -18,6 +18,7 @@ export const ProposalMetaSchema = z.object({
     .instanceof(File)
     .refine((file) => file instanceof File, 'EIA is required'),
   otherDocs: z.instanceof(File).optional(),
+  cover: z.instanceof(File).optional(),
 });
 
 export const ProposalResubmitMetaSchema = z.object({
@@ -33,6 +34,7 @@ export const ProposalResubmitMetaSchema = z.object({
   projectPlan: z.instanceof(File).optional(),
   eia: z.instanceof(File).optional(),
   otherDocs: z.instanceof(File).optional(),
+  cover: z.instanceof(File).optional(),
 });
 
 export type ProposalMetaFormInput = z.input<typeof ProposalMetaSchema>;

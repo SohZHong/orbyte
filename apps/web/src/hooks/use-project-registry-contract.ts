@@ -102,6 +102,15 @@ export const useProjectRegistryContract = () => {
     return sendTx('auditProof', [projectId, action, commentCID]);
   };
 
+  // Carbon credit owner retires credits
+  const retireCredits = (
+    tokenId: bigint,
+    amount: bigint,
+    retirementCID: string
+  ) => {
+    return sendTx('retireCredits', [tokenId, amount, retirementCID]);
+  };
+
   return {
     hash,
     isPending,
@@ -112,5 +121,6 @@ export const useProjectRegistryContract = () => {
     resubmitProposal,
     submitProof,
     auditProof,
+    retireCredits,
   };
 };

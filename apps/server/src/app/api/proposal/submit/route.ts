@@ -31,6 +31,7 @@ export async function POST(request: NextRequest) {
     const projectPlan = formData.get('projectPlan') as File | null;
     const eia = formData.get('eia') as File | null;
     const otherDocs = formData.get('otherDocs') as File | null;
+    const cover = formData.get('cover') as File | null;
 
     if (!projectPlan || !eia) {
       return fail('Missing required proposal documents', 400);
@@ -39,6 +40,11 @@ export async function POST(request: NextRequest) {
     // Upload files to Pinata
     const projectPlanRes = await pinataSdk.upload.file(projectPlan);
     const eiaRes = await pinataSdk.upload.file(eia);
+
+    let coverRes = null;
+    if (cover) {
+      coverRes = await pinataSdk.upload.file(cover);
+    }
 
     let otherDocsRes = null;
     if (otherDocs) {
@@ -49,6 +55,7 @@ export async function POST(request: NextRequest) {
     const metadata = {
       name,
       description,
+      image: coverRes ? `ipfs://${coverRes.IpfsHash}` : null,
       attributes: [
         { trait_type: 'Location', value: location },
         { trait_type: 'Standard', value: standard },
