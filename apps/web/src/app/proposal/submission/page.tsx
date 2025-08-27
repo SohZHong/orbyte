@@ -42,7 +42,7 @@ import ProtectedRoute from '@/components/routing/protected-route';
 import { Role } from '@/generated/graphql';
 
 const breadcrumbs: BreadcrumbItem[] = [
-  { title: 'Dashboard', href: '/dashboard' },
+  { title: 'Dashboard', href: '/' },
   { title: 'Proposal', href: '/proposal' },
   { title: 'Submission', href: '/proposa/submission' },
 ];

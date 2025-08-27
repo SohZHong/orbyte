@@ -32,7 +32,7 @@ export default function ProjectDetailsPage() {
   const { submitProof } = useProjectRegistryContract();
 
   const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Dashboard', href: '/dashboard' },
+    { title: 'Dashboard', href: '/' },
     { title: 'Projects', href: '/project' },
     { title: 'Project Details', href: '#' },
   ];

@@ -26,8 +26,8 @@ import { Spinner } from '@/components/ui/shadcn-io/spinner';
 import ProtectedRoute from '@/components/routing/protected-route';
 
 const breadcrumbs: BreadcrumbItem[] = [
-  { title: 'Dashboard', href: '/dashboard' },
-  { title: 'Audits', href: '#' },
+  { title: 'Dashboard', href: '/' },
+  { title: 'Proof Audit', href: '#' },
 ];
 
 export default function AuditsPage() {
@@ -168,7 +168,7 @@ export default function AuditsPage() {
                           <Button
                             variant='outline'
                             onClick={() =>
-                              router.push(`/audit/proposal/${p.id}`)
+                              router.push(`/proposal-audit/${p.id}`)
                             }
                           >
                             Review

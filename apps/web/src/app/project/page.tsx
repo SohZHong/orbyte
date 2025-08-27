@@ -27,7 +27,7 @@ import { statusMap } from '@/types/project';
 import ProtectedRoute from '@/components/routing/protected-route';
 
 const breadcrumbs: BreadcrumbItem[] = [
-  { title: 'Dashboard', href: '/dashboard' },
+  { title: 'Dashboard', href: '/' },
   { title: 'Project', href: '#' },
 ];
 

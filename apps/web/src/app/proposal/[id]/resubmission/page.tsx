@@ -54,7 +54,7 @@ export default function ProposalResubmissionPage() {
     useProposal(proposalId);
 
   const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Dashboard', href: '/dashboard' },
+    { title: 'Dashboard', href: '/' },
     { title: 'Proposals', href: '/proposal' },
     { title: proposal?.name ?? 'Loading...', href: `/proposal/${proposalId}` },
     {

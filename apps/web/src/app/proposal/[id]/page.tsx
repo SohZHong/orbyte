@@ -27,7 +27,7 @@ export default function ProposalDetailsPage() {
   const [isDownload, setIsDownloading] = useState<boolean>(false);
 
   const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Dashboard', href: '/dashboard' },
+    { title: 'Dashboard', href: '/' },
     { title: 'Proposals', href: '/proposal' },
     { title: proposal?.name ?? 'Loading...', href: '#' },
   ];

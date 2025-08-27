@@ -3,11 +3,9 @@
 import { usePrivy } from '@privy-io/react-auth';
 import { useUser } from '@/hooks/use-user';
 import type { BreadcrumbItem } from '@/types/nav';
-import DashboardContainer from '@/components/dashboard/dashboard-container';
+import DashboardContainer from '@/components//-container';
 
-const breadcrumbs: BreadcrumbItem[] = [
-  { title: 'Dashboard', href: '/dashboard' },
-];
+const breadcrumbs: BreadcrumbItem[] = [{ title: 'Dashboard', href: '/' }];
 
 export default function DashboardPage() {
   const { user: privyUser } = usePrivy();

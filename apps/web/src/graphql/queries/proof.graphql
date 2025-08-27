@@ -1,0 +1,52 @@
+query Proof($id: ID!) {
+  proof(id: $id) {
+    proofCID
+    submittedAt
+    id
+    audits {
+      commentCID
+      id
+      action
+      timestamp
+      auditor {
+        id
+      }
+    }
+    project {
+      proposal {
+        location
+        methodology
+        standard
+        vintage
+        estimatedCredits
+        name
+        id
+      }
+    }
+  }
+}
+
+query Proofs($first: Int!, $skip: Int!, $developer: String, $name: String) {
+  proofs(
+    first: $first
+    skip: $skip
+    where: {
+      developer_contains: $developer
+      project_: { proposal_: { name_contains: $name } }
+    }
+    orderDirection: desc
+    orderBy: submittedAt
+  ) {
+    proofCID
+    submittedAt
+    id
+    developer {
+      id
+    }
+    project {
+      proposal {
+        name
+      }
+    }
+  }
+}

@@ -25,9 +25,8 @@ export default function ProposalDetailsPage() {
   const { reviewProposal, isPending } = useProjectRegistryContract();
 
   const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Dashboard', href: '/dashboard' },
-    { title: 'Audit', href: '/audit' },
-    { title: 'Proposal', href: '/audit/proposal' },
+    { title: 'Dashboard', href: '/' },
+    { title: 'Proposal Audit', href: '/proposal-audit' },
     { title: proposal?.name ?? 'Loading...', href: '#' },
   ];
 
@@ -54,7 +53,7 @@ export default function ProposalDetailsPage() {
         });
 
         setTimeout(() => {
-          router.replace('/audit');
+          router.replace('/proposal-audit');
         }, 1000);
       })
       .catch((error) => {

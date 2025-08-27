@@ -114,7 +114,7 @@ export default function AppHeader({ breadcrumbs = [] }: Props) {
           </div>
 
           {/* Logo */}
-          <Link href='/dashboard' className='flex items-center gap-x-2'>
+          <Link href='/' className='flex items-center gap-x-2'>
             <AppLogo />
           </Link>
 

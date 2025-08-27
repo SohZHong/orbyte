@@ -26,7 +26,7 @@ import { Spinner } from '@/components/ui/shadcn-io/spinner';
 import ProtectedRoute from '@/components/routing/protected-route';
 
 const breadcrumbs: BreadcrumbItem[] = [
-  { title: 'Dashboard', href: '/dashboard' },
+  { title: 'Dashboard', href: '/' },
   { title: 'Proposal', href: '#' },
 ];
 
