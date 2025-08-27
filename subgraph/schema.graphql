@@ -109,8 +109,8 @@ type ProofAudit @entity {
 # CreditBatch (ERC1155 issuances)
 type CreditBatch @entity {
   id: ID! # tokenId
-  project: Project!
-  developer: User!
+  project: Project
+  developer: User
   amount: BigInt!
   issuedAt: Timestamp!
   tokenURI: String!

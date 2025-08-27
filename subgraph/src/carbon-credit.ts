@@ -108,5 +108,7 @@ export function handleURI(event: URIEvent): void {
   let batch = loadCreditBatch(batchId);
 
   batch.tokenURI = event.params.value;
+  // Assigned here because event triggered before creditsIssued at
+  batch.issuedAt = event.block.timestamp.toI64();
   batch.save();
 }
