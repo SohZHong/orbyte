@@ -15,6 +15,7 @@ import { useKycContract } from '@/hooks/use-kyc-contract';
 import { KycSchema, type KycForm } from '@/schema/kyc';
 import { UserRole } from '@/types/user';
 import { Spinner } from '@/components/ui/shadcn-io/spinner';
+import PublicOnlyRoute from '@/components/routing/public-only-route';
 
 export default function ApplyAsProfessionalPage() {
   const { submitKYC } = useKycContract();
@@ -94,142 +95,144 @@ export default function ApplyAsProfessionalPage() {
   };
 
   return (
-    <AppHeaderLayout>
-      <div className='flex flex-col gap-6 p-6'>
-        <div>
-          <h1 className='text-3xl font-bold tracking-tight'>
-            Professional Application
-          </h1>
-          <p className='text-muted-foreground'>
-            Apply as an Auditor or Project Developer through KYC Verification
-          </p>
-        </div>
-        <Card>
-          <CardHeader>
-            <CardTitle>KYC Progress</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className='h-2 w-full rounded bg-accent'>
-              <div
-                className='h-2 rounded bg-[#14b881] transition-all'
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-            <p className='mt-2 text-sm text-muted-foreground'>
-              Step {completedSteps} of {totalSteps}
+    <PublicOnlyRoute>
+      <AppHeaderLayout>
+        <div className='flex flex-col gap-6 p-6'>
+          <div>
+            <h1 className='text-3xl font-bold tracking-tight'>
+              Professional Application
+            </h1>
+            <p className='text-muted-foreground'>
+              Apply as an Auditor or Project Developer through KYC Verification
             </p>
-          </CardContent>
-        </Card>
+          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>KYC Progress</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className='h-2 w-full rounded bg-accent'>
+                <div
+                  className='h-2 rounded bg-[#14b881] transition-all'
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+              <p className='mt-2 text-sm text-muted-foreground'>
+                Step {completedSteps} of {totalSteps}
+              </p>
+            </CardContent>
+          </Card>
 
-        {/* Role Selection */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Role Selection</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Controller
-              control={form.control}
-              name='role'
-              render={({ field }) => (
-                <RadioGroup
-                  value={String(field.value)}
-                  onValueChange={field.onChange}
-                  className='space-y-3'
-                >
-                  <Label
-                    htmlFor='auditor'
-                    className={`flex w-full items-center space-x-3 rounded-lg border p-4 cursor-pointer ${
-                      field.value === UserRole.AUDITOR && 'border-accent'
-                    }`}
+          {/* Role Selection */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Role Selection</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Controller
+                control={form.control}
+                name='role'
+                render={({ field }) => (
+                  <RadioGroup
+                    value={String(field.value)}
+                    onValueChange={field.onChange}
+                    className='space-y-3'
                   >
-                    <RadioGroupItem
-                      value={String(UserRole.AUDITOR)}
-                      id='auditor'
-                    />
+                    <Label
+                      htmlFor='auditor'
+                      className={`flex w-full items-center space-x-3 rounded-lg border p-4 cursor-pointer ${
+                        field.value === UserRole.AUDITOR && 'border-accent'
+                      }`}
+                    >
+                      <RadioGroupItem
+                        value={String(UserRole.AUDITOR)}
+                        id='auditor'
+                      />
 
-                    <div className='flex flex-col'>
-                      <span className='font-medium'>Auditor</span>
-                      <span className='text-sm text-muted-foreground'>
-                        Verify and validate carbon offset projects.
-                      </span>
-                    </div>
-                  </Label>
-                  <Label
-                    htmlFor='developer'
-                    className={`flex w-full items-center space-x-3 rounded-lg border p-4 cursor-pointer ${
-                      field.value === UserRole.DEVELOPER && 'border-accent'
-                    }`}
-                  >
-                    <RadioGroupItem
-                      value={String(UserRole.DEVELOPER)}
-                      id='developer'
-                    />
+                      <div className='flex flex-col'>
+                        <span className='font-medium'>Auditor</span>
+                        <span className='text-sm text-muted-foreground'>
+                          Verify and validate carbon offset projects.
+                        </span>
+                      </div>
+                    </Label>
+                    <Label
+                      htmlFor='developer'
+                      className={`flex w-full items-center space-x-3 rounded-lg border p-4 cursor-pointer ${
+                        field.value === UserRole.DEVELOPER && 'border-accent'
+                      }`}
+                    >
+                      <RadioGroupItem
+                        value={String(UserRole.DEVELOPER)}
+                        id='developer'
+                      />
 
-                    <div className='flex flex-col'>
-                      <span className='font-medium'>Project Developer</span>
-                      <span className='text-sm text-muted-foreground'>
-                        Create and manage carbon offset projects.
-                      </span>
-                    </div>
-                  </Label>
-                </RadioGroup>
+                      <div className='flex flex-col'>
+                        <span className='font-medium'>Project Developer</span>
+                        <span className='text-sm text-muted-foreground'>
+                          Create and manage carbon offset projects.
+                        </span>
+                      </div>
+                    </Label>
+                  </RadioGroup>
+                )}
+              />
+            </CardContent>
+          </Card>
+
+          {/* Document Uploads */}
+          <Card className=''>
+            <CardHeader>
+              <CardTitle>Document Submission</CardTitle>
+            </CardHeader>
+            <CardContent className='space-y-4'>
+              <div>
+                <Label>ID Document</Label>
+                <Input
+                  type='file'
+                  onChange={(e) =>
+                    form.setValue('document', e.target.files?.[0] as File)
+                  }
+                  className='mt-2 border-accent text-muted-foreground'
+                />
+              </div>
+              <div>
+                <Label>Proof of Address</Label>
+                <Input
+                  type='file'
+                  onChange={(e) =>
+                    form.setValue('proofOfAddress', e.target.files?.[0] as File)
+                  }
+                  className='mt-2 border-accent text-muted-foreground'
+                />
+              </div>
+              <div>
+                <Label>Professional Certification (if applicable)</Label>
+                <Input
+                  type='file'
+                  onChange={(e) =>
+                    form.setValue('certification', e.target.files?.[0] as File)
+                  }
+                  className='mt-2 border-accent text-muted-foreground'
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Submit */}
+          <div className='flex justify-end'>
+            <Button onClick={form.handleSubmit(onSubmit)} disabled={loading}>
+              {loading ? (
+                <span className='inline-flex gap-1 items-center'>
+                  <Spinner variant='circle' /> Submitting
+                </span>
+              ) : (
+                <span>Submit Documents</span>
               )}
-            />
-          </CardContent>
-        </Card>
-
-        {/* Document Uploads */}
-        <Card className=''>
-          <CardHeader>
-            <CardTitle>Document Submission</CardTitle>
-          </CardHeader>
-          <CardContent className='space-y-4'>
-            <div>
-              <Label>ID Document</Label>
-              <Input
-                type='file'
-                onChange={(e) =>
-                  form.setValue('document', e.target.files?.[0] as File)
-                }
-                className='mt-2 border-accent text-muted-foreground'
-              />
-            </div>
-            <div>
-              <Label>Proof of Address</Label>
-              <Input
-                type='file'
-                onChange={(e) =>
-                  form.setValue('proofOfAddress', e.target.files?.[0] as File)
-                }
-                className='mt-2 border-accent text-muted-foreground'
-              />
-            </div>
-            <div>
-              <Label>Professional Certification (if applicable)</Label>
-              <Input
-                type='file'
-                onChange={(e) =>
-                  form.setValue('certification', e.target.files?.[0] as File)
-                }
-                className='mt-2 border-accent text-muted-foreground'
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Submit */}
-        <div className='flex justify-end'>
-          <Button onClick={form.handleSubmit(onSubmit)} disabled={loading}>
-            {loading ? (
-              <span className='inline-flex gap-1 items-center'>
-                <Spinner variant='circle' /> Submitting
-              </span>
-            ) : (
-              <span>Submit Documents</span>
-            )}
-          </Button>
+            </Button>
+          </div>
         </div>
-      </div>
-    </AppHeaderLayout>
+      </AppHeaderLayout>
+    </PublicOnlyRoute>
   );
 }

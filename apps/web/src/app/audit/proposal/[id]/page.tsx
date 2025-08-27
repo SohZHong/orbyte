@@ -15,7 +15,8 @@ import { Spinner } from '@/components/ui/shadcn-io/spinner';
 import { Separator } from '@/components/ui/separator';
 import { useProjectRegistryContract } from '@/hooks/use-project-registry-contract';
 import { ProposalReviewConfirmationDialog } from '@/components/dialog/proposal-review-confirmation-dialog';
-import { ProposalStatus } from '@/generated/graphql';
+import { ProposalStatus, Role } from '@/generated/graphql';
+import ProtectedRoute from '@/components/routing/protected-route';
 
 export default function ProposalDetailsPage() {
   const { id } = useParams<{ id: string }>();
@@ -81,7 +82,7 @@ export default function ProposalDetailsPage() {
   }
 
   return (
-    <React.Fragment>
+    <ProtectedRoute allowedRoles={[Role.Auditor]}>
       {action !== null && (
         <ProposalReviewConfirmationDialog
           open={dialogOpen}
@@ -190,6 +191,6 @@ export default function ProposalDetailsPage() {
           )}
         </div>
       </AppSidebarLayout>
-    </React.Fragment>
+    </ProtectedRoute>
   );
 }

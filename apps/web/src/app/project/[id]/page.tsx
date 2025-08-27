@@ -14,12 +14,13 @@ import Link from 'next/link';
 import api from '@/config/axios';
 import { toast } from 'sonner';
 import { Spinner } from '@/components/ui/shadcn-io/spinner';
-import { ProjectStatus } from '@/generated/graphql';
+import { ProjectStatus, Role } from '@/generated/graphql';
 import { useProject } from '@/hooks/use-project';
 import { getTimeFromBlockchainTimestamp } from '@/lib/utils';
 import { statusMap } from '@/types/project';
 import { useProjectRegistryContract } from '@/hooks/use-project-registry-contract';
 import { ProjectProofSubmissionDialog } from '@/components/dialog/project-proof-submission-dialog';
+import ProtectedRoute from '@/components/routing/protected-route';
 
 export default function ProjectDetailsPage() {
   const { id } = useParams<{ id: string }>();
@@ -132,7 +133,7 @@ export default function ProjectDetailsPage() {
   };
 
   return (
-    <React.Fragment>
+    <ProtectedRoute allowedRoles={[Role.Auditor, Role.Developer]}>
       <ProjectProofSubmissionDialog
         open={isDialogOpen}
         onOpenChange={setIsDialogOpen}
@@ -256,6 +257,6 @@ export default function ProjectDetailsPage() {
           </div>
         </div>
       </AppSidebarLayout>
-    </React.Fragment>
+    </ProtectedRoute>
   );
 }

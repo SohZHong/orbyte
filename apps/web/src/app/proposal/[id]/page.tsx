@@ -16,8 +16,9 @@ import { AuditorFeedbackList } from '@/components/auditor-feedback-list';
 import api from '@/config/axios';
 import { toast } from 'sonner';
 import { Spinner } from '@/components/ui/shadcn-io/spinner';
-import { ProposalStatus } from '@/generated/graphql';
+import { ProposalStatus, Role } from '@/generated/graphql';
 import { getTimeFromBlockchainTimestamp } from '@/lib/utils';
+import ProtectedRoute from '@/components/routing/protected-route';
 
 export default function ProposalDetailsPage() {
   const { id } = useParams<{ id: string }>();
@@ -86,122 +87,127 @@ export default function ProposalDetailsPage() {
   }
 
   return (
-    <AppSidebarLayout breadcrumbs={breadcrumbs}>
-      <div className='flex flex-col gap-6 p-6'>
-        {/* Title */}
-        <div className='flex flex-col gap-4 md:flex-row md:items-center md:justify-between'>
-          <div>
-            <h1 className='text-3xl font-bold tracking-tight'>
-              {proposal.name}
-            </h1>
-            <p className='text-muted-foreground'>
-              Submitted on{' '}
-              {getTimeFromBlockchainTimestamp(
-                proposal.submittedAt
-              ).toLocaleString()}
-            </p>
+    <ProtectedRoute allowedRoles={[Role.Developer]}>
+      <AppSidebarLayout breadcrumbs={breadcrumbs}>
+        <div className='flex flex-col gap-6 p-6'>
+          {/* Title */}
+          <div className='flex flex-col gap-4 md:flex-row md:items-center md:justify-between'>
+            <div>
+              <h1 className='text-3xl font-bold tracking-tight'>
+                {proposal.name}
+              </h1>
+              <p className='text-muted-foreground'>
+                Submitted on{' '}
+                {getTimeFromBlockchainTimestamp(
+                  proposal.submittedAt
+                ).toLocaleString()}
+              </p>
+            </div>
+          </div>
+
+          {/* Project Details */}
+          <h2 className='text-xl font-bold'>Project Details</h2>
+          <div className='grid grid-cols-[20%_1fr] gap-x-6'>
+            <DetailRow label='Project Name' value={proposal.name} />
+            <DetailRow
+              label='Project Description'
+              value={proposal.description}
+            />
+            <DetailRow label='Location' value={proposal.location} />
+            <DetailRow
+              label='Estimated Credits'
+              value={proposal.estimatedCredits?.toString()}
+            />
+            <DetailRow
+              label='Status'
+              value={
+                <Badge>
+                  {(() => {
+                    const Icon = statusMap[proposal.status].icon;
+                    return <Icon className='w-4 h-4 mr-1' />;
+                  })()}
+                  {statusMap[proposal.status].text}
+                </Badge>
+              }
+            />
+            <DetailRow
+              label='Standard'
+              value={graphQLStandardMap[proposal.standard]}
+            />
+          </div>
+
+          {/* Submitted Information */}
+          <h2 className='text-xl font-bold'>Submitted Information</h2>
+          <div className='grid grid-cols-[20%_1fr] gap-x-6'>
+            <DetailRow
+              label='Project Plan'
+              value={
+                <Link
+                  href={`${ipfsGateway}/${proposal.projectPlanCID}`}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  download
+                >
+                  View Document
+                </Link>
+              }
+            />
+            <DetailRow
+              label='Environmental Impact Assessment'
+              value={
+                <Link
+                  href={`${ipfsGateway}/${proposal.eiaCID}`}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  download
+                >
+                  View Document
+                </Link>
+              }
+            />
+
+            <DetailRow
+              label='Other documents'
+              value={
+                <Link
+                  href={`${ipfsGateway}/${proposal.otherDocsCID}`}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  download
+                >
+                  View Document
+                </Link>
+              }
+            />
+          </div>
+
+          {/* Auditor Feedback */}
+          <AuditorFeedbackList reviews={proposal.reviews} />
+
+          {/* Actions */}
+          <div className='flex justify-end gap-3 px-4 py-6'>
+            {proposal.status === ProposalStatus.ChangesRequested && (
+              <Button
+                variant='secondary'
+                onClick={() =>
+                  router.push(`/proposal/${proposal.id}/resubmission`)
+                }
+              >
+                Resubmit
+              </Button>
+            )}
+            <Button disabled={isDownload} onClick={(e) => downloadProposal(e)}>
+              {isDownload ? (
+                <span className='inline-flex gap-1 items-center'>
+                  <Spinner variant='circle' /> Downloading
+                </span>
+              ) : (
+                <span>Download Proposal</span>
+              )}
+            </Button>
           </div>
         </div>
-
-        {/* Project Details */}
-        <h2 className='text-xl font-bold'>Project Details</h2>
-        <div className='grid grid-cols-[20%_1fr] gap-x-6'>
-          <DetailRow label='Project Name' value={proposal.name} />
-          <DetailRow label='Project Description' value={proposal.description} />
-          <DetailRow label='Location' value={proposal.location} />
-          <DetailRow
-            label='Estimated Credits'
-            value={proposal.estimatedCredits?.toString()}
-          />
-          <DetailRow
-            label='Status'
-            value={
-              <Badge>
-                {(() => {
-                  const Icon = statusMap[proposal.status].icon;
-                  return <Icon className='w-4 h-4 mr-1' />;
-                })()}
-                {statusMap[proposal.status].text}
-              </Badge>
-            }
-          />
-          <DetailRow
-            label='Standard'
-            value={graphQLStandardMap[proposal.standard]}
-          />
-        </div>
-
-        {/* Submitted Information */}
-        <h2 className='text-xl font-bold'>Submitted Information</h2>
-        <div className='grid grid-cols-[20%_1fr] gap-x-6'>
-          <DetailRow
-            label='Project Plan'
-            value={
-              <Link
-                href={`${ipfsGateway}/${proposal.projectPlanCID}`}
-                target='_blank'
-                rel='noopener noreferrer'
-                download
-              >
-                View Document
-              </Link>
-            }
-          />
-          <DetailRow
-            label='Environmental Impact Assessment'
-            value={
-              <Link
-                href={`${ipfsGateway}/${proposal.eiaCID}`}
-                target='_blank'
-                rel='noopener noreferrer'
-                download
-              >
-                View Document
-              </Link>
-            }
-          />
-
-          <DetailRow
-            label='Other documents'
-            value={
-              <Link
-                href={`${ipfsGateway}/${proposal.otherDocsCID}`}
-                target='_blank'
-                rel='noopener noreferrer'
-                download
-              >
-                View Document
-              </Link>
-            }
-          />
-        </div>
-
-        {/* Auditor Feedback */}
-        <AuditorFeedbackList reviews={proposal.reviews} />
-
-        {/* Actions */}
-        <div className='flex justify-end gap-3 px-4 py-6'>
-          {proposal.status === ProposalStatus.ChangesRequested && (
-            <Button
-              variant='secondary'
-              onClick={() =>
-                router.push(`/proposal/${proposal.id}/resubmission`)
-              }
-            >
-              Resubmit
-            </Button>
-          )}
-          <Button disabled={isDownload} onClick={(e) => downloadProposal(e)}>
-            {isDownload ? (
-              <span className='inline-flex gap-1 items-center'>
-                <Spinner variant='circle' /> Downloading
-              </span>
-            ) : (
-              <span>Download Proposal</span>
-            )}
-          </Button>
-        </div>
-      </div>
-    </AppSidebarLayout>
+      </AppSidebarLayout>
+    </ProtectedRoute>
   );
 }
