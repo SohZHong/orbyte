@@ -4,7 +4,7 @@ pragma solidity ^0.8.13;
 import {Script, console} from "forge-std/Script.sol";
 import {RoleToken} from "../src/RoleToken.sol";
 
-contract CounterScript is Script {
+contract RoleTokenScript is Script {
     RoleToken public token;
 
     function setUp() public {}

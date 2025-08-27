@@ -14,6 +14,13 @@ interface ICarbonCreditToken {
         uint256 amount,
         string calldata tokenURI_
     ) external returns (uint256 tokenId);
+
+    function burn(address from, uint256 id, uint256 amount) external;
+
+    function balanceOf(
+        address account,
+        uint256 id
+    ) external view returns (uint256);
 }
 
 /**
@@ -133,6 +140,13 @@ contract ProjectRegistry {
     );
     event ProjectStatusChanged(uint256 indexed id, ProjectStatus newStatus);
 
+    event CreditsRetired(
+        address indexed holder,
+        uint256 indexed tokenId,
+        uint256 amount,
+        string retirementCID
+    );
+
     event CreditsIssued(
         uint256 indexed id,
         address indexed developer,
@@ -172,7 +186,10 @@ contract ProjectRegistry {
         return roleToken.roleOf(who) == ROLE_AUDITOR;
     }
 
-    // ---- Submit proposal (Developer only) ----
+    /**
+     * @notice Allows a developer to submit a project proposal
+     * @param meta The project metadata
+     */
     function submitProposal(
         ProposalMeta calldata meta
     ) external returns (uint256 id) {
@@ -195,7 +212,12 @@ contract ProjectRegistry {
         emit ProposalStatusChanged(id, ProposalStatus.PendingReview);
     }
 
-    // ---- Auditor reviews the proposal ----
+    /**
+     * @notice Allows an auditor to submit their decision on a proposal
+     * @param id The project id
+     * @param action The decision made by auditor.
+     * @param commentCID Optional comments.
+     */
     function reviewProposal(
         uint256 id,
         ReviewAction action,
@@ -245,7 +267,11 @@ contract ProjectRegistry {
         emit ProposalReviewed(id, msg.sender, action, commentCID);
     }
 
-    // ---- Resubmit updated proposal metadata (Developer only) ----
+    /**
+     * @notice Allows a developer to resubmit their proposal
+     * @param id The project id
+     * @param newMeta The new metadata of the proposal
+     */
     function resubmitProposal(
         uint256 id,
         ProposalMeta calldata newMeta
@@ -268,7 +294,11 @@ contract ProjectRegistry {
         emit ProposalStatusChanged(id, ProposalStatus.PendingReview);
     }
 
-    // ---- Developer submits proof after work is done ----
+    /**
+     * @notice Allows a developer to submit their proof of project completion
+     * @param id The project id
+     * @param proofCID The proof document
+     */
     function submitProof(uint256 id, string calldata proofCID) external {
         Project storage p = projects[id];
         require(p.id != 0, "no project");
@@ -296,7 +326,12 @@ contract ProjectRegistry {
         emit ProjectStatusChanged(id, ProjectStatus.ProofSubmitted);
     }
 
-    // ---- Auditor audits the proof ----
+    /**
+     * @notice Allows an auditor to submit their decision on a proof
+     * @param id The project id
+     * @param action The decision made by auditor.
+     * @param commentCID Optional comments.
+     */
     function auditProof(
         uint256 id,
         ReviewAction action,
@@ -339,7 +374,30 @@ contract ProjectRegistry {
         emit ProofAudited(id, msg.sender, action, commentCID);
     }
 
-    // ---- Internal: mint credits & finalize ----
+    /**
+     * @notice Allow a holder of OCC credits to retire (burn) them permanently.
+     * @param tokenId The batch id of the carbon credits.
+     * @param amount The number of tons (ERC-1155 units) to retire.
+     * @param retirementCID Optional IPFS/Arweave CID documenting retirement beneficiary, purpose, etc.
+     */
+    function retireCredits(
+        uint256 tokenId,
+        uint256 amount,
+        string calldata retirementCID
+    ) external {
+        require(amount > 0, "zero amount");
+
+        // cast to extended interface with burn()
+        creditToken.burn(msg.sender, tokenId, amount);
+
+        emit CreditsRetired(msg.sender, tokenId, amount, retirementCID);
+    }
+
+    /**
+     * @notice Internally allows the registry to issue credits to developer.
+     * @param id The project id.
+     * @param p The project entity.
+     */
     function _issueCredits(uint256 id, Project storage p) internal {
         require(!p.creditsIssued, "already issued");
         // Use the proposal's metadataCID as the tokenURI (embed standard/vintage/etc in that JSON).
@@ -362,6 +420,10 @@ contract ProjectRegistry {
         emit ProjectStatusChanged(id, ProjectStatus.Finalized);
     }
 
+    /**
+     * @notice Retrieve details of specific project
+     * @param projectId Project ID
+     */
     function getProject(
         uint256 projectId
     )
@@ -383,6 +445,10 @@ contract ProjectRegistry {
         );
     }
 
+    /**
+     * @notice Retrieve basic information of a project
+     * @param id The project id
+     */
     function getProjectBasic(
         uint256 id
     )
@@ -407,7 +473,10 @@ contract ProjectRegistry {
         );
     }
 
-    // Proposal tallies
+    /**
+     * @notice Retrieve the vote tallies of a proposal
+     * @param id The project id
+     */
     function getProposalTallies(
         uint256 id
     ) external view returns (uint256 approvals, uint256 rejections) {
@@ -416,7 +485,10 @@ contract ProjectRegistry {
         return (p.proposalVotes.approvals, p.proposalVotes.rejections);
     }
 
-    // Proof info
+    /**
+     * @notice Retrieve project proof
+     * @param id The project id
+     */
     function getProjectProof(
         uint256 id
     )

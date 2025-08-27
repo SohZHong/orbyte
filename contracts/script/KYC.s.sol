@@ -4,7 +4,7 @@ pragma solidity ^0.8.13;
 import {Script, console} from "forge-std/Script.sol";
 import {KYC} from "../src/KYC.sol";
 
-contract CounterScript is Script {
+contract KYCScript is Script {
     KYC public kyc;
 
     function setUp() public {}

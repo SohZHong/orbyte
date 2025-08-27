@@ -3,6 +3,7 @@ pragma solidity ^0.8.20;
 
 import "forge-std/Test.sol";
 import "../src/ProjectRegistry.sol";
+import "../src/CarbonCreditToken.sol";
 
 contract MockRoleToken {
     mapping(address => uint8) public roles;
@@ -36,12 +37,19 @@ contract MockCarbonCreditToken {
         tokenId = nextId++;
         credits[tokenId] = Credit(to, amount, tokenURI_);
     }
+
+    function burn(address from, uint256 tokenId, uint256 amount) external {
+        Credit storage c = credits[tokenId];
+        require(c.to == from, "not token owner");
+        require(c.amount >= amount, "insufficient balance");
+        c.amount -= amount;
+    }
 }
 
 contract ProjectRegistryTest is Test {
     ProjectRegistry registry;
     MockRoleToken roleToken;
-    MockCarbonCreditToken creditToken;
+    CarbonCreditToken creditToken;
 
     address dev = address(0x1);
     address auditor1 = address(0x2);
@@ -50,7 +58,7 @@ contract ProjectRegistryTest is Test {
 
     function setUp() public {
         roleToken = new MockRoleToken();
-        creditToken = new MockCarbonCreditToken();
+        creditToken = new CarbonCreditToken("");
 
         // roles: 0 = Developer, 1 = Auditor
         roleToken.setRole(dev, 0);
@@ -86,7 +94,7 @@ contract ProjectRegistryTest is Test {
             });
     }
 
-    function testSubmitProposal() public {
+    function test_SubmitProposal() public {
         vm.prank(dev);
         uint256 id = registry.submitProposal(_defaultMeta());
         (
@@ -99,7 +107,7 @@ contract ProjectRegistryTest is Test {
         assertEq(uint(status), uint(ProjectRegistry.ProjectStatus.None));
     }
 
-    function testReviewProposalAndApprove() public {
+    function test_ReviewProposalAndApprove() public {
         vm.startPrank(dev);
         uint256 id = registry.submitProposal(_defaultMeta());
         vm.stopPrank();
@@ -121,7 +129,7 @@ contract ProjectRegistryTest is Test {
         assertEq(uint(status), uint(ProjectRegistry.ProjectStatus.InProgress));
     }
 
-    function testReviewProposalRequestChanges() public {
+    function test_ReviewProposalRequestChanges() public {
         vm.prank(dev);
         uint256 id = registry.submitProposal(_defaultMeta());
 
@@ -140,7 +148,7 @@ contract ProjectRegistryTest is Test {
         );
     }
 
-    function testResubmitProposal() public {
+    function test_ResubmitProposal() public {
         vm.startPrank(dev);
         uint256 id = registry.submitProposal(_defaultMeta());
         vm.stopPrank();
@@ -162,7 +170,7 @@ contract ProjectRegistryTest is Test {
         assertEq(name, "Updated Solar Project");
     }
 
-    function testSubmitAndApproveProof() public {
+    function test_SubmitAndApproveProof() public {
         vm.startPrank(dev);
         uint256 id = registry.submitProposal(_defaultMeta());
         vm.stopPrank();
@@ -194,7 +202,7 @@ contract ProjectRegistryTest is Test {
         assertEq(uint(status), uint(ProjectRegistry.ProjectStatus.Finalized));
     }
 
-    function testAuditProofReject() public {
+    function test_AuditProofReject() public {
         vm.startPrank(dev);
         uint256 id = registry.submitProposal(_defaultMeta());
         vm.stopPrank();
@@ -246,7 +254,7 @@ contract ProjectRegistryTest is Test {
         );
     }
 
-    function testCannotDoubleVoteProposal() public {
+    function test_CannotDoubleVoteProposal() public {
         vm.prank(dev);
         uint256 id = registry.submitProposal(_defaultMeta());
 
@@ -266,7 +274,7 @@ contract ProjectRegistryTest is Test {
         );
     }
 
-    function testCannotDoubleVoteProof() public {
+    function test_CannotDoubleVoteProof() public {
         vm.startPrank(dev);
         uint256 id = registry.submitProposal(_defaultMeta());
         vm.stopPrank();
@@ -293,5 +301,21 @@ contract ProjectRegistryTest is Test {
         vm.expectRevert("already voted");
         vm.prank(auditor1);
         registry.auditProof(id, ProjectRegistry.ReviewAction.APPROVE, "audit2");
+    }
+
+    function test_RetireCredits() public {
+        // Mint credits to dev (simulating issuance)
+        uint256 tokenId = creditToken.mint(dev, 100, "uri");
+
+        // Expect the retirement event
+        vm.expectEmit(true, true, false, true);
+        emit ProjectRegistry.CreditsRetired(dev, tokenId, 40, "retirementCID");
+
+        // Retire 40 credits
+        vm.prank(dev);
+        registry.retireCredits(tokenId, 40, "retirementCID");
+
+        // Verify dev balance reduced
+        assertEq(creditToken.balanceOf(dev, tokenId), 60);
     }
 }

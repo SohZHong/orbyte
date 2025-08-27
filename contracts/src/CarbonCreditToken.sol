@@ -6,9 +6,11 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
  * @title CarbonCreditToken (ERC-1155)
- * @notice Mint/burn restricted to the *owner*, which should be the ProjectRegistry contract.
- *         Set owner by calling transferOwnership(registryAddr) once.
- *         Each tokenId = one issuance batch; amount = tons of CO2e.
+ * @notice
+ * - Minting restricted to the *owner* (ProjectRegistry).
+ * - Burning (retirement) allowed by the *token holder themselves*.
+ * - Optional: registry can also burn on behalf (for corrections, if needed).
+ * - Each tokenId = one issuance batch; amount = tons of CO2e.
  */
 contract CarbonCreditToken is ERC1155, Ownable {
     uint256 public nextTokenId;
@@ -16,12 +18,11 @@ contract CarbonCreditToken is ERC1155, Ownable {
     string public name = "Orbyte Carbon Credit";
     string public symbol = "OCC";
 
+    mapping(uint256 => string) private _tokenURIs;
+
     constructor(
         string memory defaultURI
     ) ERC1155(defaultURI) Ownable(msg.sender) {}
-
-    // tokenId-specific URIs
-    mapping(uint256 => string) private _tokenURIs;
 
     function uri(uint256 id) public view override returns (string memory) {
         string memory stored = _tokenURIs[id];
@@ -34,7 +35,7 @@ contract CarbonCreditToken is ERC1155, Ownable {
     }
 
     /**
-     * @dev Only the registry (owner) can mint.
+     * @dev Only the registry (owner) can mint new credits.
      */
     function mint(
         address to,
@@ -47,9 +48,17 @@ contract CarbonCreditToken is ERC1155, Ownable {
     }
 
     /**
-     * @dev Only the registry (owner) can burn (e.g., retirement/corrections).
+     * @dev Burn (retire) credits.
+     * - Allow holder to burn their own tokens (msg.sender == from).
+     * - Also allow contract owner (ProjectRegistry) to burn on behalf of holder, so registry.retireCredits can forward.
      */
-    function burn(address from, uint256 id, uint256 amount) external onlyOwner {
+    function burn(address from, uint256 id, uint256 amount) external {
+        require(
+            msg.sender == from || msg.sender == owner(),
+            "Not authorized to burn"
+        );
+        // check balance of the actual holder
+        require(balanceOf(from, id) >= amount, "insufficient balance");
         _burn(from, id, amount);
     }
 }

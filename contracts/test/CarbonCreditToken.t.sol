@@ -123,4 +123,65 @@ contract CarbonCreditTokenTest is Test {
         vm.expectRevert();
         creditToken.burn(dev, 1, 10);
     }
+
+    function test_RetireCredits() public {
+        // Simulate registry issuing credits directly
+        vm.startPrank(address(registry));
+        uint256 tokenId = creditToken.mint(dev, 100, "ipfs://credits");
+        vm.stopPrank();
+
+        // Expect event
+        vm.expectEmit();
+        emit ProjectRegistry.CreditsRetired(
+            dev,
+            tokenId,
+            40,
+            "ipfs://retire-info"
+        );
+
+        vm.prank(dev);
+        registry.retireCredits(tokenId, 40, "ipfs://retire-info");
+
+        // Balance reduced
+        assertEq(creditToken.balanceOf(dev, tokenId), 60);
+    }
+
+    function test_UserCannotRetireOthersCredits() public {
+        vm.startPrank(address(registry));
+        uint256 tokenIdDev = creditToken.mint(dev, 100, "ipfs://credits-dev");
+        uint256 tokenIdAuditor = creditToken.mint(
+            auditor1,
+            100,
+            "ipfs://credits-auditor"
+        );
+        vm.stopPrank();
+
+        // Auditor tries to burn Dev's credits which should fail
+        vm.expectRevert();
+        vm.prank(auditor1);
+        registry.retireCredits(tokenIdDev, 10, "ipfs://retire-info");
+
+        // Balances remain unchanged
+        assertEq(creditToken.balanceOf(dev, tokenIdDev), 100);
+        assertEq(creditToken.balanceOf(auditor1, tokenIdAuditor), 100);
+    }
+
+    function test_UserCanRetireOwnCredits() public {
+        vm.startPrank(address(registry));
+        uint256 tokenIdDev = creditToken.mint(dev, 100, "ipfs://credits-dev");
+        uint256 tokenIdAuditor = creditToken.mint(
+            auditor1,
+            100,
+            "ipfs://credits-auditor"
+        );
+        vm.stopPrank();
+
+        // Auditor retires 10 of their own credits → should succeed
+        vm.prank(auditor1);
+        registry.retireCredits(tokenIdAuditor, 10, "ipfs://retire-info");
+
+        // Balances updated correctly
+        assertEq(creditToken.balanceOf(dev, tokenIdDev), 100); // untouched
+        assertEq(creditToken.balanceOf(auditor1, tokenIdAuditor), 90); // 100 - 10
+    }
 }
