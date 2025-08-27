@@ -52,6 +52,9 @@ query ProjectsWithProof(
       submittedAt
     }
     proposal {
+      developer {
+        id
+      }
       name
       standard
       estimatedCredits

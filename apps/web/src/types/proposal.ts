@@ -113,17 +113,17 @@ export const actionUIMap: Record<
   }
 > = {
   [GeneratedReviewAction.Approve]: {
-    text: 'Approved',
+    text: 'Approve',
     variant: 'default',
     icon: BadgeCheckIcon,
   },
   [GeneratedReviewAction.RequestChanges]: {
-    text: 'Changes Requested',
+    text: 'Requested Changes',
     variant: 'outline',
     icon: BadgeAlertIcon,
   },
   [GeneratedReviewAction.Reject]: {
-    text: 'Rejected',
+    text: 'Reject',
     variant: 'destructive',
     icon: BanIcon,
   },

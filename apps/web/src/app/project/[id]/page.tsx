@@ -21,6 +21,7 @@ import { statusMap } from '@/types/project';
 import { useProjectRegistryContract } from '@/hooks/use-project-registry-contract';
 import { ProjectProofSubmissionDialog } from '@/components/dialog/project-proof-submission-dialog';
 import ProtectedRoute from '@/components/routing/protected-route';
+import FileRow from '@/components/file-row';
 
 export default function ProjectDetailsPage() {
   const { id } = useParams<{ id: string }>();
@@ -195,48 +196,20 @@ export default function ProjectDetailsPage() {
 
           {/* Submitted Information */}
           <h2 className='text-xl font-bold'>Submitted Information</h2>
-          <div className='grid grid-cols-[20%_1fr] gap-x-6'>
-            <DetailRow
-              label='Project Plan'
-              value={
-                <Link
-                  href={`${ipfsGateway}/${project.proposal.projectPlanCID}`}
-                  target='_blank'
-                  rel='noopener noreferrer'
-                  download
-                >
-                  View Document
-                </Link>
-              }
+          <FileRow
+            fileCID={project.proposal.projectPlanCID}
+            value='Project Plan'
+          />
+          <FileRow
+            fileCID={project.proposal.eiaCID}
+            value='Environmental Impact Assessment'
+          />
+          {project.proposal.otherDocsCID && (
+            <FileRow
+              fileCID={project.proposal.otherDocsCID}
+              value='Other Documents'
             />
-            <DetailRow
-              label='Environmental Impact Assessment'
-              value={
-                <Link
-                  href={`${ipfsGateway}/${project.proposal.eiaCID}`}
-                  target='_blank'
-                  rel='noopener noreferrer'
-                  download
-                >
-                  View Document
-                </Link>
-              }
-            />
-
-            <DetailRow
-              label='Other Documents'
-              value={
-                <Link
-                  href={`${ipfsGateway}/${project.proposal.otherDocsCID}`}
-                  target='_blank'
-                  rel='noopener noreferrer'
-                  download
-                >
-                  View Document
-                </Link>
-              }
-            />
-          </div>
+          )}
 
           {/* Actions */}
           <div className='flex justify-end gap-3 px-4 py-6'>

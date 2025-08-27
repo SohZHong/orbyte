@@ -21,19 +21,19 @@ import {
   FormMessage,
 } from '../ui/form';
 
-interface ProposalReviewConfirmationDialogProps {
+interface ReviewConfirmationDialogProps {
   open: boolean;
   action: ReviewAction;
   onOpenChange: (open: boolean) => void;
   onConfirm: (action: ReviewAction, commentCID: string) => void;
 }
 
-export function ProposalReviewConfirmationDialog({
+export function ReviewConfirmationDialog({
   open,
   action,
   onOpenChange,
   onConfirm,
-}: ProposalReviewConfirmationDialogProps) {
+}: ReviewConfirmationDialogProps) {
   const form = useForm<ReviewForm>({
     defaultValues: { comment: '' },
   });

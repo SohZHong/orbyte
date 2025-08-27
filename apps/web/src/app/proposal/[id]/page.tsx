@@ -19,6 +19,7 @@ import { Spinner } from '@/components/ui/shadcn-io/spinner';
 import { ProposalStatus, Role } from '@/generated/graphql';
 import { getTimeFromBlockchainTimestamp } from '@/lib/utils';
 import ProtectedRoute from '@/components/routing/protected-route';
+import FileRow from '@/components/file-row';
 
 export default function ProposalDetailsPage() {
   const { id } = useParams<{ id: string }>();
@@ -138,48 +139,15 @@ export default function ProposalDetailsPage() {
 
           {/* Submitted Information */}
           <h2 className='text-xl font-bold'>Submitted Information</h2>
-          <div className='grid grid-cols-[20%_1fr] gap-x-6'>
-            <DetailRow
-              label='Project Plan'
-              value={
-                <Link
-                  href={`${ipfsGateway}/${proposal.projectPlanCID}`}
-                  target='_blank'
-                  rel='noopener noreferrer'
-                  download
-                >
-                  View Document
-                </Link>
-              }
-            />
-            <DetailRow
-              label='Environmental Impact Assessment'
-              value={
-                <Link
-                  href={`${ipfsGateway}/${proposal.eiaCID}`}
-                  target='_blank'
-                  rel='noopener noreferrer'
-                  download
-                >
-                  View Document
-                </Link>
-              }
-            />
+          <FileRow fileCID={proposal.projectPlanCID} value='Project Plan' />
+          <FileRow
+            fileCID={proposal.eiaCID}
+            value='Environmental Impact Assessment'
+          />
 
-            <DetailRow
-              label='Other documents'
-              value={
-                <Link
-                  href={`${ipfsGateway}/${proposal.otherDocsCID}`}
-                  target='_blank'
-                  rel='noopener noreferrer'
-                  download
-                >
-                  View Document
-                </Link>
-              }
-            />
-          </div>
+          {proposal.otherDocsCID && (
+            <FileRow fileCID={proposal.otherDocsCID} value='Other Documents' />
+          )}
 
           {/* Auditor Feedback */}
           <AuditorFeedbackList reviews={proposal.reviews} />

@@ -15,12 +15,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { ProposalStatus, Role, Standard } from '@/generated/graphql';
+import { Role, Standard } from '@/generated/graphql';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
-import { useProposals } from '@/hooks/use-proposal';
-import { graphQLStandardMap, statusMap } from '@/types/proposal';
-import { Badge } from '@/components/ui/badge';
+import { graphQLStandardMap } from '@/types/proposal';
 import { useDebounce } from 'use-debounce';
 import { Spinner } from '@/components/ui/shadcn-io/spinner';
 import ProtectedRoute from '@/components/routing/protected-route';
@@ -139,6 +137,7 @@ export default function ProofAuditPage() {
                   <thead>
                     <tr className='bg-muted font-semibold text-muted-foreground text-left'>
                       <th className='px-4 py-3 font-medium'>Name</th>
+                      <th className='px-4 py-3 font-medium'>Developer</th>
                       <th className='px-4 py-3 font-medium'>Standard</th>
                       <th className='px-4 py-3 font-medium'>
                         Estimated Emission (tonnes)
@@ -151,6 +150,9 @@ export default function ProofAuditPage() {
                     {data?.pages.flat().map((p, index) => (
                       <tr className='border-t' key={index}>
                         <td className='px-4 py-2'>{p.proposal.name}</td>
+                        <td className='px-4 py-2 text-muted-foreground truncate max-w-[300px]'>
+                          {p.proposal.developer.id}
+                        </td>
                         <td className='px-4 py-2'>
                           {graphQLStandardMap[p.proposal.standard]}
                         </td>
@@ -162,7 +164,7 @@ export default function ProofAuditPage() {
                             p.proofs[0].submittedAt
                           ).toLocaleDateString()}
                         </td>
-                        <td className='px-4 py-2'>
+                        <td className='px-4 py-2 flex flex-wrap items-center flex-row gap-3'>
                           <Button variant='default'>
                             <Link
                               href={`${ipfsGateway}/${p.proofs[0].proofCID}`}
