@@ -84,6 +84,7 @@ export default function ProposalSubmissionPage() {
       formData.append('projectPlan', data.projectPlan);
       formData.append('eia', data.eia);
       if (data.otherDocs) formData.append('otherDocs', data.otherDocs);
+      if (data.cover) formData.append('cover', data.cover);
 
       await api
         .post('/proposal/submit', formData, {
@@ -287,7 +288,7 @@ export default function ProposalSubmissionPage() {
                   <FormItem>
                     <FormLabel>Methodology</FormLabel>
                     <FormControl>
-                      <Input placeholder='Methodology' {...field} />
+                      <Textarea placeholder='Methodology' {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -296,6 +297,26 @@ export default function ProposalSubmissionPage() {
 
               {/* Document Uploads (IPFS CIDs) */}
               <div className='space-y-4'>
+                <FormField
+                  control={form.control}
+                  name='cover'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Cover Image (Optional)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type='file'
+                          placeholder='Upload your cover image'
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            field.onChange(file);
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name='projectPlan'

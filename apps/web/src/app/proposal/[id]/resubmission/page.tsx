@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
@@ -113,6 +113,7 @@ export default function ProposalResubmissionPage() {
       if (data.projectPlan) formData.append('projectPlan', data.projectPlan);
       if (data.eia) formData.append('eia', data.eia);
       if (data.otherDocs) formData.append('otherDocs', data.otherDocs);
+      if (data.cover) formData.append('cover', data.cover);
 
       // Call backend only if any file was uploaded
       let uploadedCids = {
@@ -122,7 +123,7 @@ export default function ProposalResubmissionPage() {
         metadataCid: proposal?.metadataCID,
       };
 
-      if (data.projectPlan || data.eia || data.otherDocs) {
+      if (data.projectPlan || data.eia || data.otherDocs || data.cover) {
         const res = await api.post('/proposal/submit', formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
@@ -330,6 +331,26 @@ export default function ProposalResubmissionPage() {
 
               {/* Document Uploads (IPFS CIDs) */}
               <div className='space-y-4'>
+                <FormField
+                  control={form.control}
+                  name='cover'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Cover Image (Optional)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type='file'
+                          placeholder='Upload your cover image'
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            field.onChange(file);
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name='projectPlan'
