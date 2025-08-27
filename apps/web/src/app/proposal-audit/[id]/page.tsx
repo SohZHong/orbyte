@@ -140,8 +140,7 @@ export default function ProposalDetailsPage() {
           <p className='text-base font-normal leading-normal'>
             {proposal.methodology}
           </p>
-
-          <Separator className='bg-accent' />
+          <br />
           {/* Auditor Feedback */}
           <AuditorFeedbackList reviews={proposal.reviews} />
 

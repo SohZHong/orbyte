@@ -105,7 +105,7 @@ export const statusMap: Record<
 };
 
 export const actionUIMap: Record<
-  GeneratedReviewAction,
+  GeneratedReviewAction | number,
   {
     text: string;
     variant: 'default' | 'secondary' | 'destructive' | 'outline';
@@ -123,6 +123,21 @@ export const actionUIMap: Record<
     icon: BadgeAlertIcon,
   },
   [GeneratedReviewAction.Reject]: {
+    text: 'Reject',
+    variant: 'destructive',
+    icon: BanIcon,
+  },
+  1: {
+    text: 'Approve (numeric)',
+    variant: 'default',
+    icon: BadgeCheckIcon,
+  },
+  2: {
+    text: 'Requested Changes',
+    variant: 'outline',
+    icon: BadgeAlertIcon,
+  },
+  3: {
     text: 'Reject',
     variant: 'destructive',
     icon: BanIcon,

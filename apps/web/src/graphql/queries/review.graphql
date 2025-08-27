@@ -1,9 +1,4 @@
-query ProposalReviews(
-  $first: Int!
-  $skip: Int!
-  $auditor: String!
-  $name: String
-) {
+query ProposalReviews($first: Int!, $skip: Int!, $auditor: String) {
   proposalRevieweds(
     where: { auditor: $auditor }
     skip: $skip
@@ -14,15 +9,37 @@ query ProposalReviews(
     timestamp
     auditor {
       id
-      reviews(where: { proposal_: { name_contains: $name } }) {
+      reviews {
         action
-        id
         timestamp
         proposal {
           id
+          developer {
+            id
+          }
           name
           submittedAt
         }
+      }
+    }
+  }
+}
+
+query ProofAudits($first: Int!, $skip: Int!, $auditor: String) {
+  proofAudits(where: { auditor: $auditor }) {
+    action
+    id
+    timestamp
+    proof {
+      id
+      submittedAt
+      project {
+        proposal {
+          name
+        }
+      }
+      developer {
+        id
       }
     }
   }

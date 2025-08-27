@@ -6,15 +6,13 @@ import type { BreadcrumbItem } from '@/types/nav';
 import AppSidebarLayout from '@/components/app-sidebar-layout';
 import { usePrivy } from '@privy-io/react-auth';
 import { useUser } from '@/hooks/use-user';
-import React, { useState } from 'react';
-import { Input } from '@/components/ui/input';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { actionUIMap } from '@/types/proposal';
 import { Badge } from '@/components/ui/badge';
-import { useDebounce } from 'use-debounce';
 import { Spinner } from '@/components/ui/shadcn-io/spinner';
-import { useProposalReviews } from '@/hooks/use-review-history';
+import { useReviewHistory } from '@/hooks/use-review-history';
 import { getTimeFromBlockchainTimestamp } from '@/lib/utils';
 import ProtectedRoute from '@/components/routing/protected-route';
 import { Role } from '@/generated/graphql';
@@ -29,8 +27,6 @@ export default function ReviewHistoryPage() {
   const address = privyUser?.smartWallet?.address;
   const { data: user, isLoading: isUserLoading } = useUser(address);
   const router = useRouter();
-  const [search, setSearch] = useState('');
-  const [debouncedSearch] = useDebounce(search, 300);
 
   const {
     data,
@@ -38,9 +34,8 @@ export default function ReviewHistoryPage() {
     hasNextPage,
     isFetchingNextPage,
     isLoading: isReviewsLoading,
-  } = useProposalReviews({
+  } = useReviewHistory({
     auditor: user?.id,
-    name: debouncedSearch || undefined,
   });
 
   return (
@@ -60,24 +55,9 @@ export default function ReviewHistoryPage() {
                     Review History
                   </h1>
                   <p className='text-muted-foreground'>
-                    View your past projects and proposal reviews
+                    View your past reviews and decisions
                   </p>
                 </React.Fragment>
-              )}
-            </div>
-          </div>
-          <div className='flex flex-wrap gap-3 items-center'>
-            {/* Search bar */}
-            <div className='flex-1 min-w-[250px]'>
-              {isUserLoading ? (
-                <Skeleton className='h-10 w-full' />
-              ) : (
-                <Input
-                  placeholder='Search by name'
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className='w-full'
-                />
               )}
             </div>
           </div>
@@ -94,62 +74,63 @@ export default function ReviewHistoryPage() {
                 <table className='min-w-[900px] w-full text-sm'>
                   <thead>
                     <tr className='bg-muted font-semibold text-muted-foreground text-left'>
+                      <th className='px-4 py-3 font-medium'>Type</th>
                       <th className='px-4 py-3 font-medium'>Project Title</th>
                       <th className='px-4 py-3 font-medium w-[350px]'>
-                        Submission Date
+                        Submission Time
                       </th>
-                      <th className='px-4 py-3 font-medium'>Review Date</th>
+                      <th className='px-4 py-3 font-medium'>Review Time</th>
                       <th className='px-4 py-3 font-medium'>Decision</th>
                       <th className='px-4 py-3 font-medium'>Action</th>
                     </tr>
                   </thead>
                   <tbody>
                     {data?.pages.flatMap((page) =>
-                      page.flatMap((auditorNode) =>
-                        auditorNode.auditor.reviews.map((review, idx) => (
-                          <tr
-                            className='border-t'
-                            key={auditorNode.id + '-' + idx}
-                          >
-                            <td className='px-4 py-2'>
-                              {review.proposal.name}
-                            </td>
-                            <td className='px-4 py-2'>
-                              {getTimeFromBlockchainTimestamp(
-                                review.proposal.submittedAt
-                              ).toLocaleDateString()}
-                            </td>
-                            <td className='px-4 py-2'>
-                              {getTimeFromBlockchainTimestamp(
-                                review.timestamp
-                              ).toLocaleDateString()}
-                            </td>
-                            <td className='px-4 py-2'>
-                              <Badge
-                                variant={actionUIMap[review.action].variant}
-                              >
-                                {(() => {
-                                  const Icon = actionUIMap[review.action].icon;
-                                  return <Icon className='w-4 h-4 mr-1' />;
-                                })()}
-                                {actionUIMap[review.action].text}
-                              </Badge>
-                            </td>
-                            <td className='px-4 py-2'>
-                              <Button
-                                variant='outline'
-                                onClick={() =>
-                                  router.push(
-                                    `/proposal-audit/${review.proposal.id}`
-                                  )
-                                }
-                              >
-                                View Details
-                              </Button>
-                            </td>
-                          </tr>
-                        ))
-                      )
+                      page.map((item, idx) => (
+                        <tr className='border-t' key={item.id + '-' + idx}>
+                          <td className='px-4 py-2'>
+                            <Badge variant='secondary'>
+                              {item.type === 'proposal'
+                                ? 'Proposal Audit'
+                                : 'Proof Audit'}
+                            </Badge>
+                          </td>
+                          <td className='px-4 py-2'>{item.name}</td>
+                          <td className='px-4 py-2'>
+                            {getTimeFromBlockchainTimestamp(
+                              item.submittedAt
+                            ).toLocaleString()}
+                          </td>
+                          <td className='px-4 py-2'>
+                            {getTimeFromBlockchainTimestamp(
+                              item.timestamp
+                            ).toLocaleString()}
+                          </td>
+                          <td className='px-4 py-2'>
+                            <Badge variant={actionUIMap[item.action].variant}>
+                              {(() => {
+                                const Icon = actionUIMap[item.action].icon;
+                                return <Icon className='w-4 h-4 mr-1' />;
+                              })()}
+                              {actionUIMap[item.action].text}
+                            </Badge>
+                          </td>
+                          <td className='px-4 py-2'>
+                            <Button
+                              variant='outline'
+                              onClick={() =>
+                                router.push(
+                                  item.type === 'proposal'
+                                    ? `/proposal-audit/${item.id}`
+                                    : `/proof-audit/${item.id}`
+                                )
+                              }
+                            >
+                              View Details
+                            </Button>
+                          </td>
+                        </tr>
+                      ))
                     )}
                   </tbody>
                 </table>
