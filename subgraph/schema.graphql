@@ -31,6 +31,12 @@ enum ReviewAction {
   Reject
 }
 
+enum ListingStatus {
+  Active
+  Cancelled
+  Filled
+}
+
 type User @entity {
   id: ID!
   role: Role!
@@ -40,6 +46,7 @@ type User @entity {
   proposals: [Proposal!]! @derivedFrom(field: "developer")
   reviews: [ProposalReview!]! @derivedFrom(field: "auditor")
   proofs: [Proof!]! @derivedFrom(field: "developer")
+  creditBalances: [CreditBalance!]! @derivedFrom(field: "user")
 }
 
 type Proposal @entity {
@@ -77,7 +84,7 @@ type Project @entity {
   developer: User!
   status: ProjectStatus!
   proofs: [Proof!]! @derivedFrom(field: "project")
-  credits: [CreditBatch!]! @derivedFrom(field: "project")
+  credit: CreditBatch @derivedFrom(field: "project")
   createdAt: Timestamp!
 }
 
@@ -107,6 +114,8 @@ type CreditBatch @entity {
   amount: BigInt!
   issuedAt: Timestamp!
   tokenURI: String!
+  retiredAmount: BigInt! # total retired from this batch
+  creditBalances: [CreditBalance!]! @derivedFrom(field: "batch")
 }
 
 type CreditBalance @entity {
@@ -114,6 +123,21 @@ type CreditBalance @entity {
   user: User!
   batch: CreditBatch!
   balance: BigInt!
+}
+
+type MarketplaceListing @entity {
+  id: ID! # listingId
+  seller: User!
+  token: CreditBatch! # the CreditBatch being sold
+  amount: BigInt!
+  remaining: BigInt!
+  pricePerUnit: BigInt!
+  startTime: Timestamp
+  endTime: Timestamp
+  status: ListingStatus!
+  createdAt: Timestamp!
+  updatedAt: Timestamp!
+  purchases: [MarketplacePurchase!]! @derivedFrom(field: "listing")
 }
 
 # Transactions / Events for Statistics
@@ -172,12 +196,49 @@ type ProofAudited @entity(timeseries: true) {
   transactionHash: Bytes!
 }
 
+type CreditsRetired @entity(timeseries: true) {
+  id: Int8!
+  holder: User! # who retired
+  tokenId: BigInt! # which batch
+  amount: BigInt! # retired amount
+  retirementCID: String
+  blockNumber: BigInt!
+  timestamp: Timestamp!
+  transactionHash: Bytes!
+}
+
 type Transaction @entity(timeseries: true) {
   id: Int8!
   from: Bytes! # address
   to: Bytes! # address
   tokenId: BigInt! # uint256
   value: BigInt! # uint256
+  blockNumber: BigInt!
+  timestamp: Timestamp!
+  transactionHash: Bytes!
+}
+
+type MarketplacePurchase @entity(timeseries: true) {
+  id: Int8!
+  listing: MarketplaceListing!
+  buyer: User!
+  quantity: BigInt!
+  totalPaid: BigInt!
+  feePaid: BigInt!
+  blockNumber: BigInt!
+  timestamp: Timestamp!
+  transactionHash: Bytes!
+}
+
+type Listed @entity(timeseries: true) {
+  id: Int8!
+  internal_id: BigInt! # uint256
+  seller: Bytes! # address
+  tokenId: BigInt! # uint256
+  amount: BigInt! # uint256
+  pricePerUnit: BigInt! # uint256
+  startTime: BigInt! # uint64
+  endTime: BigInt! # uint64
   blockNumber: BigInt!
   timestamp: Timestamp!
   transactionHash: Bytes!
@@ -220,6 +281,14 @@ type DailyCreditStats
   total: BigInt! @aggregate(fn: "sum", arg: "amount")
 }
 
+type DailyRetirementStats
+  @aggregation(intervals: ["day"], source: "CreditsRetired") {
+  id: Int8!
+  timestamp: Timestamp!
+  total: BigInt! @aggregate(fn: "sum", arg: "amount")
+  count: BigInt! @aggregate(fn: "count")
+}
+
 type DailyTransactionStats
   @aggregation(intervals: ["day"], source: "Transaction") {
   id: Int8!
@@ -228,23 +297,19 @@ type DailyTransactionStats
   count: BigInt! @aggregate(fn: "count")
 }
 
-# type ProofSubmitted @entity(immutable: true) {
-#   id: Bytes!
-#   internal_id: BigInt! # uint256
-#   developer: Bytes! # address
-#   proofCID: String! # string
-#   blockNumber: BigInt!
-#   blockTimestamp: BigInt!
-#   transactionHash: Bytes!
-# }
+type DailyMarketplaceStats
+  @aggregation(intervals: ["day"], source: "MarketplacePurchase") {
+  id: Int8!
+  timestamp: Timestamp!
 
-# type ProposalReviewed @entity(immutable: true) {
-#   id: Bytes!
-#   internal_id: BigInt! # uint256
-#   auditor: Bytes! # address
-#   action: Int! # uint8
-#   commentCID: String! # string
-#   blockNumber: BigInt!
-#   blockTimestamp: BigInt!
-#   transactionHash: Bytes!
-# }
+  dailyVolume: BigInt! @aggregate(fn: "sum", arg: "totalPaid")
+  dailyFees: BigInt! @aggregate(fn: "sum", arg: "feePaid")
+  dailyPurchases: BigInt! @aggregate(fn: "count")
+}
+
+type DailyMarketplaceListingStats
+  @aggregation(intervals: ["day"], source: "Listed") {
+  id: Int8!
+  timestamp: Timestamp!
+  dailyListings: BigInt! @aggregate(fn: "count")
+}

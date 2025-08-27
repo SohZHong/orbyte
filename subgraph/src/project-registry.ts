@@ -7,9 +7,11 @@ import {
   ProofSubmitted as ProofSubmittedEvent,
   ProposalReviewed as ProposalReviewedEvent,
   ProposalStatusChanged as ProposalStatusChangedEvent,
+  CreditsRetired as CreditsRetiredEvent,
 } from '../generated/ProjectRegistry/ProjectRegistry';
 import {
   CreditsIssued,
+  CreditsRetired,
   ProjectProposed,
   Proof,
   ProofAudit,
@@ -157,6 +159,7 @@ export function handleProofSubmitted(event: ProofSubmittedEvent): void {
   proof.project = event.params.id.toString();
   proof.developer = user.id;
   proof.proofCID = event.params.proofCID;
+  proof.submittedAt = event.block.timestamp.toI64();
 
   proof.save();
 }
@@ -195,4 +198,28 @@ export function handleProposalStatusChanged(
 
   proposal.status = proposalStatusFromIndex(event.params.newStatus);
   proposal.save();
+}
+
+export function handleCreditsRetired(event: CreditsRetiredEvent): void {
+  let holder = loadUser(event.params.holder.toHexString());
+
+  let batchId = event.params.tokenId.toString();
+  let batch = loadCreditBatch(batchId);
+
+  batch.retiredAmount = batch.retiredAmount.plus(event.params.amount);
+  batch.save();
+
+  // Create a CreditsRetired event entity (timeseries)
+  let entity = new CreditsRetired(
+    event.transaction.hash.concatI32(event.logIndex.toI32()).toHex()
+  );
+  entity.holder = holder.id;
+  entity.tokenId = event.params.tokenId;
+  entity.amount = event.params.amount;
+  entity.retirementCID = event.params.retirementCID;
+
+  entity.blockNumber = event.block.number;
+  entity.timestamp = event.block.timestamp.toI64();
+  entity.transactionHash = event.transaction.hash;
+  entity.save();
 }

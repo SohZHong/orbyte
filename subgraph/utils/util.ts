@@ -8,6 +8,7 @@ import {
   ProofAudit,
   CreditBatch,
   CreditBalance,
+  MarketplaceListing,
 } from '../generated/schema';
 
 export function loadUser(id: string): User {
@@ -72,8 +73,9 @@ export function loadCreditBatch(id: string): CreditBatch {
   let batch = CreditBatch.load(id);
   if (!batch) {
     batch = new CreditBatch(id);
-    batch.amount = BigInt.fromI32(0);
+    batch.amount = BigInt.zero();
     batch.tokenURI = '';
+    batch.retiredAmount = BigInt.zero();
   }
   return batch;
 }
@@ -85,6 +87,17 @@ export function loadCreditBalance(id: string): CreditBalance {
     balance.balance = BigInt.zero();
   }
   return balance;
+}
+
+export function loadMarketplaceListing(id: string): MarketplaceListing {
+  let listing = MarketplaceListing.load(id);
+  if (!listing) {
+    listing = new MarketplaceListing(id);
+    listing.amount = BigInt.zero();
+    listing.pricePerUnit = BigInt.zero();
+    listing.status = 'Active';
+  }
+  return listing;
 }
 
 export function roleFromIndex(index: i32): string {

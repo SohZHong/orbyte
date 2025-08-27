@@ -1,8 +1,8 @@
 {
   "celo-alfajores": {
     "ProjectRegistry": {
-      "address": "0x556f8931C4b1E00b1B27a975fA90F87518Be6C7e",
-      "startBlock": 55090432
+      "address": "0x28fb85E903F2C646f3ab8d95A4FD7E6A8e29458F",
+      "startBlock": 55300243
     },
     "KYC": {
       "address": "0x2f698DEC0A381Dfa330F0f67287AF95726a36C9F",
@@ -13,8 +13,12 @@
       "startBlock": 55090432
     },
     "CarbonCredit": {
-      "address": "0xf9dfdac93c9571d2c75891ba4a5f748d31be2c5a",
-      "startBlock": 55090432
+      "address": "0xc7d55a642C33616088478c54F00c4Cba6728C002",
+      "startBlock": 55300243
+    },
+    "CarbonCreditMarketplace": {
+      "address": "0x02578B3aD73AbE262dB1Bd871ee94761f5E59180",
+      "startBlock": 55300243
     }
   }
 }
