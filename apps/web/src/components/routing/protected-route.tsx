@@ -20,19 +20,31 @@ export default function ProtectedRoute({
   const router = useRouter();
   const { user: privyUser } = usePrivy();
   const address = privyUser?.smartWallet?.address;
-  const { data: user, isLoading } = useUser(address);
 
+  // pull user from your subgraph
+  const { user, isLoading, isResolved, notFound } = useUser(address);
+
+  // handle redirects once results are retrieved
   useEffect(() => {
-    if (!isLoading) {
-      if (!user) {
-        router.replace('/'); // no user at all
-      } else if (!allowedRoles.includes(user.role as Role)) {
-        router.replace('/'); // redirect public users
-      }
+    if (!isResolved) return;
+
+    if (notFound) {
+      router.replace('/'); // no user at all
+    } else if (user && !allowedRoles.includes(user.role as Role)) {
+      router.replace('/'); // valid user but role mismatch
     }
-  }, [isLoading, user, router, allowedRoles]);
+  }, [isResolved, notFound, user, router, allowedRoles]);
 
-  if (isLoading || !user) return <Loading />;
+  // while loading or waiting on Graph, show spinner
+  if (isLoading || !isResolved) {
+    return <Loading />;
+  }
 
+  // block rendering while redirecting
+  if (notFound || (user && !allowedRoles.includes(user.role as Role))) {
+    return null;
+  }
+
+  // ✅ authorized user
   return <React.Fragment>{children}</React.Fragment>;
 }

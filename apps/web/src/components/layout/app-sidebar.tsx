@@ -21,7 +21,7 @@ import Image from 'next/image';
 export function AppSidebar() {
   const { user: privyUser } = usePrivy();
   const address = privyUser?.smartWallet?.address;
-  const { data: user } = useUser(address);
+  const { data: user, isLoading } = useUser(address);
 
   const role = user?.role ?? 'Public';
   const items = navItems[role];
@@ -41,7 +41,7 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent>
-        <NavMain items={items} />
+        <NavMain isLoading={isLoading} items={items} />
       </SidebarContent>
 
       <SidebarFooter>

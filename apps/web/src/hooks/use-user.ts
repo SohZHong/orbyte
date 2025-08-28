@@ -14,10 +14,8 @@ import {
 } from '@/generated/graphql';
 import { PAGE_SIZE } from '@/constants';
 
-export function useUser(
-  address: string | undefined
-): UseQueryResult<UserQuery['user'], Error> {
-  return useQuery({
+export function useUser(address: string | undefined) {
+  const query = useQuery({
     queryKey: ['user', address],
     queryFn: async () => {
       const data = await graphClient.request<UserQuery, UserQueryVariables>(
@@ -28,6 +26,14 @@ export function useUser(
     },
     enabled: !!address,
   });
+
+  return {
+    ...query,
+    user: query.data,
+    isLoading: query.isLoading,
+    isResolved: query.isSuccess || query.isError, // finished fetching
+    notFound: query.isSuccess && !query.data, // query returned no user
+  };
 }
 
 export function useUserCredits(address: string | undefined) {

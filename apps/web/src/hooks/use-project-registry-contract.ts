@@ -1,58 +1,17 @@
 'use client';
 
-import { useState } from 'react';
-import { useSmartWallets } from '@privy-io/react-auth/smart-wallets';
-import { encodeFunctionData } from 'viem';
 import {
   PROJECT_REGISTRY_ABI,
   PROJECT_REGISTRY_CONTRACT_ADDRESS,
 } from '@/constants';
-import type { TxState } from '@/types/transaction';
 import type { ReviewAction, Standard } from '@/types/proposal';
+import { useTransaction } from './use-transaction';
 
 export const useProjectRegistryContract = () => {
-  const { client } = useSmartWallets();
-  const [hash, setHash] = useState<`0x${string}` | undefined>();
-  const [error, setError] = useState<any | null>(null);
-  const [isPending, setIsPending] = useState(false);
-  const [isConfirmed, setIsConfirmed] = useState(false);
-
-  const sendTx = async (
-    functionName: string,
-    args: any[]
-  ): Promise<TxState> => {
-    try {
-      if (!client) throw new Error('No Privy Smart Wallet client available');
-
-      setIsPending(true);
-
-      const data = encodeFunctionData({
-        abi: PROJECT_REGISTRY_ABI,
-        functionName,
-        args,
-      });
-
-      const txHash = await client.sendTransaction({
-        to: PROJECT_REGISTRY_CONTRACT_ADDRESS,
-        data,
-      });
-
-      setHash(txHash);
-      setIsPending(false);
-      setIsConfirmed(true);
-
-      return {
-        hash: txHash,
-        isPending: false,
-        isConfirmed: true,
-        error: null,
-      };
-    } catch (err) {
-      setError(err);
-      setIsPending(false);
-      throw err;
-    }
-  };
+  const { hash, isPending, isConfirmed, error, sendTx } = useTransaction(
+    PROJECT_REGISTRY_CONTRACT_ADDRESS,
+    PROJECT_REGISTRY_ABI
+  );
 
   // Developers submit proposal
   const submitProposal = (meta: {
