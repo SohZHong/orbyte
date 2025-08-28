@@ -1,9 +1,7 @@
 # Public Transparency Stats
 
-query PublicStats($first: Int!, $skip: Int!) {
+query PublicStats {
   dailyCreditStats: dailyCreditStats_collection(
-    first: $first
-    skip: $skip
     orderBy: timestamp
     orderDirection: desc
     interval: day
@@ -14,8 +12,6 @@ query PublicStats($first: Int!, $skip: Int!) {
   }
 
   dailyRetirementStats: dailyRetirementStats_collection(
-    first: $first
-    skip: $skip
     orderBy: timestamp
     orderDirection: desc
     interval: day
@@ -27,8 +23,6 @@ query PublicStats($first: Int!, $skip: Int!) {
   }
 
   dailyMarketplaceStats: dailyMarketplaceStats_collection(
-    first: $first
-    skip: $skip
     orderBy: timestamp
     orderDirection: desc
     interval: day
@@ -41,8 +35,6 @@ query PublicStats($first: Int!, $skip: Int!) {
   }
 
   dailyTransactionStats: dailyTransactionStats_collection(
-    first: $first
-    skip: $skip
     orderBy: timestamp
     orderDirection: desc
     interval: day
@@ -156,6 +148,46 @@ query DeveloperStats($developer: String!) {
         name
       }
     }
+  }
+
+  marketplaceListings(
+    where: { seller: $developer, status: Active }
+    orderBy: createdAt
+    orderDirection: desc
+  ) {
+    id
+    token {
+      id
+      tokenURI
+      amount
+      retiredAmount
+    }
+    remaining
+    pricePerUnit
+    startTime
+    endTime
+  }
+
+  marketplacePurchases(
+    where: { listing_: { seller: $developer } }
+    orderBy: timestamp
+    orderDirection: desc
+  ) {
+    id
+    buyer {
+      id
+    }
+    listing {
+      id
+      token {
+        id
+        tokenURI
+      }
+    }
+    quantity
+    totalPaid
+    feePaid
+    timestamp
   }
 }
 

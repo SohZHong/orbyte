@@ -8,9 +8,12 @@ import {
   type DailyRetirementStatsQuery,
   type DailyMarketplaceStatsQuery,
   type DailyTransactionStatsQuery,
+  type PublicStatsQueryVariables,
+  type PublicStatsQuery,
+  PublicStatsDocument,
 } from '@/generated/graphql';
 import { graphClient } from '@/graphql/client';
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 
 export function useDailyCreditStats() {
   return useInfiniteQuery({
@@ -83,5 +86,17 @@ export function useDailyTransactionStats() {
         ? allPages.length * PAGE_SIZE
         : undefined,
     initialPageParam: 0,
+  });
+}
+
+export function usePublicStats() {
+  return useQuery({
+    queryKey: ['publicStats'],
+    queryFn: async () => {
+      const data = await graphClient.request<PublicStatsQuery>(
+        PublicStatsDocument
+      );
+      return data;
+    },
   });
 }
