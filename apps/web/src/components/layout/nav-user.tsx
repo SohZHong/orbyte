@@ -13,7 +13,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { ChevronsUpDown } from 'lucide-react';
+import { ChevronsUpDown, Copy, LogOut } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '../ui/button';
 import { ModeToggle } from '../mode-toggle';
@@ -63,13 +63,20 @@ export default function NavUser() {
                   <p className='text-sm text-muted-foreground'>Connected as</p>
                   <ModeToggle />
                 </div>
-                <p className='font-medium'>{displayName}</p>
-                <Button
-                  onClick={logout}
-                  className='mt-2 w-full rounded-md bg-red-500 px-3 py-2 text-sm text-white hover:bg-red-600'
-                >
-                  Disconnect
-                </Button>
+                <p className='font-medium my-1'>{displayName}</p>
+                <div className='flex flex-col gap-3'>
+                  <Button
+                    variant='secondary'
+                    onClick={() => navigator.clipboard.writeText(walletAddress)}
+                  >
+                    <Copy />
+                    Copy Address
+                  </Button>
+                  <Button onClick={logout} variant='destructive'>
+                    <LogOut />
+                    Disconnect
+                  </Button>
+                </div>
               </div>
             ) : (
               <div className='p-2'>

@@ -7,11 +7,11 @@ import AppSidebarLayout from '@/components/app-sidebar-layout';
 import { usePrivy } from '@privy-io/react-auth';
 import { useUser, useUserCredits } from '@/hooks/use-user';
 import React, { useState } from 'react';
-import { ProjectStatus, Role } from '@/generated/graphql';
+import { Role } from '@/generated/graphql';
 import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation';
 import { Spinner } from '@/components/ui/shadcn-io/spinner';
 import ProtectedRoute from '@/components/routing/protected-route';
+import { useMarketplaceContract } from '@/hooks/use-marketplace-contract';
 
 const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Dashboard', href: '/' },
@@ -29,6 +29,52 @@ export default function CreditsPage() {
     isFetchingNextPage,
     isLoading: isBatchesLoading,
   } = useUserCredits(user?.id);
+  const {} = useMarketplaceContract();
+
+  const [listDialogOpen, setListDialogOpen] = useState(false);
+  const [transferDialogOpen, setTransferDialogOpen] = useState(false);
+  const [retireDialogOpen, setRetireDialogOpen] = useState(false);
+
+  const handleListClick = () => {
+    setListDialogOpen(true);
+  };
+
+  const handleTransferClick = () => {
+    setTransferDialogOpen(true);
+  };
+
+  const handleRetireClick = () => {
+    setRetireDialogOpen(true);
+  };
+
+  // const handleListConfirm = async (qty: number, price: number) => {
+  //   // Submit Transaction
+  //   await auditProof(BigInt(id), action, comment)
+  //     .then((tx) => {
+  //       toast('Reviewed Submitted Successfully', {
+  //         description: `Transaction Hash: ${tx.hash}`,
+  //         action: {
+  //           label: 'Close',
+  //           onClick: () => toast.dismiss(),
+  //         },
+  //       });
+
+  //       setTimeout(() => {
+  //         router.replace('/proof-audit');
+  //       }, 1000);
+  //     })
+  //     .catch((error) => {
+  //       console.error(error);
+  //       toast('Review Submission Failed', {
+  //         description: (error as Error).message,
+  //         action: {
+  //           label: 'Close',
+  //           onClick: () => toast.dismiss(),
+  //         },
+  //       });
+  //     });
+  // };
+
   return (
     <ProtectedRoute allowedRoles={[Role.Developer]}>
       <AppSidebarLayout breadcrumbs={breadcrumbs}>
@@ -67,7 +113,6 @@ export default function CreditsPage() {
                       <th className='px-4 py-3 font-medium w-[300px]'>
                         Project
                       </th>
-                      <th className='px-4 py-3 font-medium'>Project</th>
                       <th className='px-4 py-3 font-medium'>Balance</th>
                       <th className='px-4 py-3 font-medium'>Vintage</th>
                       <th className='px-4 py-3 font-medium'>Action</th>

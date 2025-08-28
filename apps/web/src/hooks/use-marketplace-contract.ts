@@ -1,66 +1,49 @@
 'use client';
 
-import { useState } from 'react';
-import { useSmartWallets } from '@privy-io/react-auth/smart-wallets';
-import { encodeFunctionData } from 'viem';
 import {
   CARBON_CREDIT_MARKETPLACE_ABI,
   CARBON_CREDIT_MARKETPLACE_CONTRACT_ADDRESS,
+  CARBON_CREDIT_TOKEN_ABI,
+  CREDIT_TOKEN_CONTRACT_ADDRESS,
 } from '@/constants';
-import type { TxState } from '@/types/transaction';
+import { useTransaction } from './use-transaction';
 
 export const useMarketplaceContract = () => {
-  const { client } = useSmartWallets();
-  const [hash, setHash] = useState<`0x${string}` | undefined>();
-  const [error, setError] = useState<any | null>(null);
-  const [isPending, setIsPending] = useState(false);
-  const [isConfirmed, setIsConfirmed] = useState(false);
+  const marketplaceTx = useTransaction(
+    CARBON_CREDIT_MARKETPLACE_CONTRACT_ADDRESS,
+    CARBON_CREDIT_MARKETPLACE_ABI
+  );
 
-  const sendTx = async (
-    functionName: string,
-    args: any[]
-  ): Promise<TxState> => {
-    try {
-      if (!client) throw new Error('No Privy Smart Wallet client available');
-      setIsPending(true);
-
-      const data = encodeFunctionData({
-        abi: CARBON_CREDIT_MARKETPLACE_ABI,
-        functionName,
-        args,
-      });
-
-      const txHash = await client.sendTransaction({
-        to: CARBON_CREDIT_MARKETPLACE_CONTRACT_ADDRESS,
-        data,
-        value: args.includes('buy') ? args[1] : 0, // optional CELO value for buys
-      });
-
-      setHash(txHash);
-      setIsPending(false);
-      setIsConfirmed(true);
-
-      return { hash: txHash, isPending: false, isConfirmed: true, error: null };
-    } catch (err) {
-      setError(err);
-      setIsPending(false);
-      throw err;
-    }
-  };
-
-  const list = (params: {
+  /**
+   * List credits with behind-the-scenes approval
+   * Uses sendBatchTx to combine approval + list into one atomic tx
+   */
+  const list = async (params: {
     tokenId: bigint;
     amount: bigint;
     pricePerUnitWei: bigint;
     startTime: bigint;
     endTime: bigint;
   }) => {
-    return sendTx('list', [
-      params.tokenId,
-      params.amount,
-      params.pricePerUnitWei,
-      params.startTime,
-      params.endTime,
+    return marketplaceTx.sendBatchTx([
+      {
+        to: CREDIT_TOKEN_CONTRACT_ADDRESS,
+        abi: CARBON_CREDIT_TOKEN_ABI,
+        functionName: 'setApprovalForAll',
+        args: [CARBON_CREDIT_MARKETPLACE_CONTRACT_ADDRESS, true],
+      },
+      {
+        to: CARBON_CREDIT_MARKETPLACE_CONTRACT_ADDRESS,
+        abi: CARBON_CREDIT_MARKETPLACE_ABI,
+        functionName: 'list',
+        args: [
+          params.tokenId,
+          params.amount,
+          params.pricePerUnitWei,
+          params.startTime,
+          params.endTime,
+        ],
+      },
     ]);
   };
 
@@ -69,7 +52,7 @@ export const useMarketplaceContract = () => {
     newPricePerUnitWei: bigint;
     newRemaining: bigint;
   }) => {
-    return sendTx('updateListing', [
+    return marketplaceTx.sendTx('updateListing', [
       params.listingId,
       params.newPricePerUnitWei,
       params.newRemaining,
@@ -77,18 +60,19 @@ export const useMarketplaceContract = () => {
   };
 
   const cancelListing = (listingId: bigint) => {
-    return sendTx('cancel', [listingId]);
+    return marketplaceTx.sendTx('cancel', [listingId]);
   };
 
   const buy = (listingId: bigint, quantity: bigint, totalValueWei: bigint) => {
-    return sendTx('buy', [listingId, quantity, totalValueWei]);
+    return marketplaceTx.sendTx(
+      'buy',
+      [listingId, quantity, totalValueWei],
+      totalValueWei // pass value for CELO payment
+    );
   };
 
   return {
-    hash,
-    isPending,
-    isConfirmed,
-    error,
+    ...marketplaceTx, // hash, isPending, isConfirmed, error
     list,
     updateListing,
     cancelListing,
