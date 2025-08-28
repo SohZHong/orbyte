@@ -1,45 +1,21 @@
-import { PAGE_SIZE } from '@/constants';
-import {
-  PendingProposalsDocument,
-  PendingProofsDocument,
-  type PendingProposalsQuery,
-  type PendingProofsQuery,
-} from '@/generated/graphql';
+import { useQuery } from '@tanstack/react-query';
 import { graphClient } from '@/graphql/client';
-import { useInfiniteQuery } from '@tanstack/react-query';
+import {
+  AuditorStatsDocument,
+  type AuditorStatsQuery,
+} from '@/generated/graphql';
 
-export function usePendingProposals() {
-  return useInfiniteQuery({
-    queryKey: ['pendingProposals'],
-    queryFn: async ({ pageParam = 0 }) => {
-      const data = await graphClient.request<PendingProposalsQuery>(
-        PendingProposalsDocument,
-        { first: PAGE_SIZE, skip: pageParam }
+export function useAuditorStats(auditor: string | undefined) {
+  return useQuery({
+    queryKey: ['auditorStats', auditor],
+    queryFn: async () => {
+      if (!auditor) return null;
+      const data = await graphClient.request<AuditorStatsQuery>(
+        AuditorStatsDocument,
+        { auditor }
       );
-      return data.proposals;
+      return data;
     },
-    getNextPageParam: (lastPage, allPages) =>
-      lastPage && lastPage.length >= PAGE_SIZE
-        ? allPages.length * PAGE_SIZE
-        : undefined,
-    initialPageParam: 0,
-  });
-}
-
-export function usePendingProofs() {
-  return useInfiniteQuery({
-    queryKey: ['pendingProofs'],
-    queryFn: async ({ pageParam = 0 }) => {
-      const data = await graphClient.request<PendingProofsQuery>(
-        PendingProofsDocument,
-        { first: PAGE_SIZE, skip: pageParam }
-      );
-      return data.proofs;
-    },
-    getNextPageParam: (lastPage, allPages) =>
-      lastPage && lastPage.length >= PAGE_SIZE
-        ? allPages.length * PAGE_SIZE
-        : undefined,
-    initialPageParam: 0,
+    enabled: !!auditor,
   });
 }

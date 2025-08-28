@@ -1,5 +1,58 @@
 # Public Transparency Stats
 
+query PublicStats($first: Int!, $skip: Int!) {
+  dailyCreditStats: dailyCreditStats_collection(
+    first: $first
+    skip: $skip
+    orderBy: timestamp
+    orderDirection: desc
+    interval: day
+  ) {
+    id
+    timestamp
+    total
+  }
+
+  dailyRetirementStats: dailyRetirementStats_collection(
+    first: $first
+    skip: $skip
+    orderBy: timestamp
+    orderDirection: desc
+    interval: day
+  ) {
+    id
+    timestamp
+    total
+    count
+  }
+
+  dailyMarketplaceStats: dailyMarketplaceStats_collection(
+    first: $first
+    skip: $skip
+    orderBy: timestamp
+    orderDirection: desc
+    interval: day
+  ) {
+    id
+    timestamp
+    dailyVolume
+    dailyPurchases
+    dailyFees
+  }
+
+  dailyTransactionStats: dailyTransactionStats_collection(
+    first: $first
+    skip: $skip
+    orderBy: timestamp
+    orderDirection: desc
+    interval: day
+  ) {
+    id
+    timestamp
+    count
+  }
+}
+
 query DailyCreditStats($first: Int!, $skip: Int!) {
   dailyCreditStats_collection(
     first: $first
@@ -59,10 +112,8 @@ query DailyTransactionStats($first: Int!, $skip: Int!) {
 
 # Developer Dashboard Stats
 
-query DeveloperProposals($developer: String!, $first: Int!, $skip: Int!) {
+query DeveloperStats($developer: String!) {
   proposals(
-    first: $first
-    skip: $skip
     where: { developer: $developer }
     orderBy: submittedAt
     orderDirection: desc
@@ -75,12 +126,8 @@ query DeveloperProposals($developer: String!, $first: Int!, $skip: Int!) {
     vintage
     methodology
   }
-}
 
-query DeveloperCreditsIssued($developer: String!, $first: Int!, $skip: Int!) {
   creditsIssueds(
-    first: $first
-    skip: $skip
     where: { developer: $developer }
     orderBy: timestamp
     orderDirection: desc
@@ -92,12 +139,8 @@ query DeveloperCreditsIssued($developer: String!, $first: Int!, $skip: Int!) {
     timestamp
     transactionHash
   }
-}
 
-query DeveloperCreditBatches($developer: String!, $first: Int!, $skip: Int!) {
   creditBatches(
-    first: $first
-    skip: $skip
     where: { developer: $developer }
     orderBy: issuedAt
     orderDirection: desc
@@ -118,40 +161,40 @@ query DeveloperCreditBatches($developer: String!, $first: Int!, $skip: Int!) {
 
 # Auditor Dashboard Stats
 
-query PendingProposals($first: Int!, $skip: Int!) {
-  proposals(
-    first: $first
-    skip: $skip
-    where: { status_in: [PendingReview, ChangesRequested] }
-    orderBy: submittedAt
-    orderDirection: asc
-  ) {
+query AuditorStats($auditor: String!) {
+  # Fetch all proposals to compute total and pending counts
+  proposals {
     id
     name
-    description
+    status
     developer {
       id
     }
     submittedAt
-    status
   }
-}
 
-query PendingProofs($first: Int!, $skip: Int!) {
-  proofs(
-    first: $first
-    skip: $skip
-    where: { project_: { status_in: [ProofSubmitted] } }
-    orderBy: submittedAt
-    orderDirection: asc
-  ) {
+  # Fetch all proofs to compute total and pending counts
+  proofs {
     id
     project {
       id
+      status
       proposal {
         name
       }
     }
     submittedAt
+  }
+
+  # Auditor's past reviews
+  proposalReviews(where: { auditor: $auditor }) {
+    action
+    commentCID
+    id
+  }
+  proofAudits(where: { auditor: $auditor }) {
+    action
+    commentCID
+    id
   }
 }
