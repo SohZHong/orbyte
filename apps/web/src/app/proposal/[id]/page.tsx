@@ -10,8 +10,6 @@ import type { BreadcrumbItem } from '@/types/nav';
 import { useProposal } from '@/hooks/use-proposal';
 import DetailRow from '@/components/detail-row';
 import { graphQLStandardMap, statusMap } from '@/types/proposal';
-import { ipfsGateway } from '@/constants';
-import Link from 'next/link';
 import { AuditorFeedbackList } from '@/components/auditor-feedback-list';
 import api from '@/config/axios';
 import { toast } from 'sonner';

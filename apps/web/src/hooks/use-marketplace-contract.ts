@@ -7,6 +7,7 @@ import {
   CREDIT_TOKEN_CONTRACT_ADDRESS,
 } from '@/constants';
 import { useTransaction } from './use-transaction';
+import { parseEther } from 'viem';
 
 export const useMarketplaceContract = () => {
   const marketplaceTx = useTransaction(
@@ -21,7 +22,7 @@ export const useMarketplaceContract = () => {
   const list = async (params: {
     tokenId: bigint;
     amount: bigint;
-    pricePerUnitWei: bigint;
+    pricePerUnitWei: string;
     startTime: bigint;
     endTime: bigint;
   }) => {
@@ -39,7 +40,7 @@ export const useMarketplaceContract = () => {
         args: [
           params.tokenId,
           params.amount,
-          params.pricePerUnitWei,
+          parseEther(params.pricePerUnitWei, 'wei'),
           params.startTime,
           params.endTime,
         ],
@@ -49,12 +50,12 @@ export const useMarketplaceContract = () => {
 
   const updateListing = (params: {
     listingId: bigint;
-    newPricePerUnitWei: bigint;
+    newPricePerUnitWei: string;
     newRemaining: bigint;
   }) => {
     return marketplaceTx.sendTx('updateListing', [
       params.listingId,
-      params.newPricePerUnitWei,
+      parseEther(params.newPricePerUnitWei, 'wei'),
       params.newRemaining,
     ]);
   };
@@ -63,11 +64,11 @@ export const useMarketplaceContract = () => {
     return marketplaceTx.sendTx('cancel', [listingId]);
   };
 
-  const buy = (listingId: bigint, quantity: bigint, totalValueWei: bigint) => {
+  const buy = (listingId: bigint, quantity: bigint, totalValueWei: string) => {
     return marketplaceTx.sendTx(
       'buy',
-      [listingId, quantity, totalValueWei],
-      totalValueWei // pass value for CELO payment
+      [listingId, quantity, parseEther(totalValueWei, 'wei')],
+      parseEther(totalValueWei, 'wei') // pass value for CELO payment
     );
   };
 

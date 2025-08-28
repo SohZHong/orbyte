@@ -16,7 +16,11 @@ export const useTransaction = (contractAddress: `0x${string}`, abi: any) => {
    * Single transaction
    */
   const sendTx = useCallback(
-    async (functionName: string, args: any[] = [], value?: bigint) => {
+    async (
+      functionName: string,
+      args: any[] = [],
+      value?: bigint
+    ): Promise<TxState> => {
       if (!client) throw new Error('No Privy Smart Wallet client available');
 
       try {
@@ -41,7 +45,12 @@ export const useTransaction = (contractAddress: `0x${string}`, abi: any) => {
           error: null,
         });
 
-        return txHash;
+        return {
+          hash: txHash,
+          isPending: false,
+          isConfirmed: true,
+          error: null,
+        };
       } catch (err) {
         setState({ ...state, isPending: false, error: err as any });
         throw err;
@@ -62,7 +71,7 @@ export const useTransaction = (contractAddress: `0x${string}`, abi: any) => {
         args?: any[];
         value?: bigint;
       }[]
-    ) => {
+    ): Promise<TxState> => {
       if (!client) throw new Error('No Privy Smart Wallet client available');
 
       try {
@@ -89,7 +98,12 @@ export const useTransaction = (contractAddress: `0x${string}`, abi: any) => {
           error: null,
         });
 
-        return txHash;
+        return {
+          hash: txHash,
+          isPending: false,
+          isConfirmed: true,
+          error: null,
+        };
       } catch (err) {
         setState((prev) => ({ ...prev, isPending: false, error: err as any }));
         throw err;

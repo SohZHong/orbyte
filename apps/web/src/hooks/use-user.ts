@@ -45,7 +45,6 @@ export function useUserCredits(address: string | undefined) {
         UserCreditsQuery,
         UserCreditsQueryVariables
       >(UserCreditsDocument, variables);
-      console.log(data);
       return data.user?.creditBalances ?? [];
     },
     getNextPageParam: (lastPage, allPages) => {

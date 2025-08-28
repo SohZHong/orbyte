@@ -19,11 +19,22 @@ export function useCarbonCreditTokenContract() {
     ]);
   };
 
+  // transfer credits
+  const transfer = (
+    from: string,
+    to: string,
+    tokenId: bigint,
+    amount: bigint
+  ) => {
+    return sendTx('safeTransferFrom', [from, to, tokenId, amount, '0x']);
+  };
+
   return {
     hash,
     isPending,
     isConfirmed,
     error,
     approveMarketplace,
+    transfer,
   };
 }

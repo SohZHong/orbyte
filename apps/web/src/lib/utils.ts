@@ -13,3 +13,7 @@ export function shortenAddress(address?: string, chars = 4): string {
 export function getTimeFromBlockchainTimestamp(timestamp: string): Date {
   return new Date(Number(timestamp) * 1000);
 }
+
+export function toBlockchainTimestamp(value: string) {
+  return Math.floor(new Date(value).getTime() / 1000);
+}
