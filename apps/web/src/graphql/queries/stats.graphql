@@ -1,0 +1,157 @@
+# Public Transparency Stats
+
+query DailyCreditStats($first: Int!, $skip: Int!) {
+  dailyCreditStats_collection(
+    first: $first
+    skip: $skip
+    orderBy: timestamp
+    orderDirection: desc
+    interval: day
+  ) {
+    id
+    timestamp
+    total # total credits issued that day
+  }
+}
+
+query DailyRetirementStats($first: Int!, $skip: Int!) {
+  dailyRetirementStats_collection(
+    first: $first
+    skip: $skip
+    orderBy: timestamp
+    orderDirection: desc
+    interval: day
+  ) {
+    id
+    timestamp
+    total # total credits retired that day
+    count # number of retirements
+  }
+}
+
+query DailyMarketplaceStats($first: Int!, $skip: Int!) {
+  dailyMarketplaceStats_collection(
+    first: $first
+    skip: $skip
+    orderBy: timestamp
+    orderDirection: desc
+    interval: day
+  ) {
+    id
+    timestamp
+    dailyVolume # credits traded
+    dailyPurchases # number of purchases
+    dailyFees # fees collected
+  }
+}
+
+query DailyTransactionStats($first: Int!, $skip: Int!) {
+  dailyTransactionStats_collection(
+    orderBy: timestamp
+    orderDirection: desc
+    interval: day
+  ) {
+    id
+    timestamp
+    count # total number of on-chain transfers/transactions
+  }
+}
+
+# Developer Dashboard Stats
+
+query DeveloperProposals($developer: String!, $first: Int!, $skip: Int!) {
+  proposals(
+    first: $first
+    skip: $skip
+    where: { developer: $developer }
+    orderBy: submittedAt
+    orderDirection: desc
+  ) {
+    id
+    name
+    description
+    status
+    submittedAt
+    vintage
+    methodology
+  }
+}
+
+query DeveloperCreditsIssued($developer: String!, $first: Int!, $skip: Int!) {
+  creditsIssueds(
+    first: $first
+    skip: $skip
+    where: { developer: $developer }
+    orderBy: timestamp
+    orderDirection: desc
+  ) {
+    id
+    tokenId
+    amount
+    tokenURI
+    timestamp
+    transactionHash
+  }
+}
+
+query DeveloperCreditBatches($developer: String!, $first: Int!, $skip: Int!) {
+  creditBatches(
+    first: $first
+    skip: $skip
+    where: { developer: $developer }
+    orderBy: issuedAt
+    orderDirection: desc
+  ) {
+    id
+    tokenURI
+    amount
+    issuedAt
+    retiredAmount
+    project {
+      id
+      proposal {
+        name
+      }
+    }
+  }
+}
+
+# Auditor Dashboard Stats
+
+query PendingProposals($first: Int!, $skip: Int!) {
+  proposals(
+    first: $first
+    skip: $skip
+    where: { status_in: [PendingReview, ChangesRequested] }
+    orderBy: submittedAt
+    orderDirection: asc
+  ) {
+    id
+    name
+    description
+    developer {
+      id
+    }
+    submittedAt
+    status
+  }
+}
+
+query PendingProofs($first: Int!, $skip: Int!) {
+  proofs(
+    first: $first
+    skip: $skip
+    where: { project_: { status_in: [ProofSubmitted] } }
+    orderBy: submittedAt
+    orderDirection: asc
+  ) {
+    id
+    project {
+      id
+      proposal {
+        name
+      }
+    }
+    submittedAt
+  }
+}

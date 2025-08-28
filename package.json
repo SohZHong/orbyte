@@ -25,6 +25,7 @@
 		"permissionless": "^0.2.54",
 		"pinata-web3": "^0.5.4",
 		"react-hook-form": "^7.62.0",
+		"recharts": "^3.1.2",
 		"use-debounce": "^10.0.5",
 		"zod": "^4.0.17"
 	},
