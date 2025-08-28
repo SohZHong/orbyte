@@ -1,12 +1,17 @@
+import { useTheme } from 'next-themes';
 import Image from 'next/image';
 
 export default function AppLogo({ className }: { className?: string }) {
+  const { theme, systemTheme } = useTheme();
+  const currentTheme = theme === 'system' ? systemTheme : theme;
+
+  const src = currentTheme === 'dark' ? '/logo-dark.png' : '/logo.png';
   return (
     <Image
-      src='/logo.png'
+      src={src}
       alt='App Logo'
-      width={40}
-      height={42}
+      width={100}
+      height={100}
       className={className}
     />
   );

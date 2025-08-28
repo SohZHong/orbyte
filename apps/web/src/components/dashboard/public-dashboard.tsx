@@ -15,7 +15,13 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-import { Factory, Leaf, ShoppingCart, Coins } from 'lucide-react';
+import {
+  Factory,
+  Leaf,
+  ShoppingCart,
+  Coins,
+  ArrowLeftRightIcon,
+} from 'lucide-react';
 import React, { useMemo } from 'react';
 import { usePublicStats } from '@/hooks/use-daily-stats.';
 import DashboardCard from '../dashboard-card';
@@ -92,7 +98,9 @@ export default function PublicDashboard() {
           title='Total Transactions'
           value={stats?.totalTransactions ?? 0}
           description='On-chain transfers'
-          icon={<Coins className='h-4 w-4 text-muted-foreground' />}
+          icon={
+            <ArrowLeftRightIcon className='h-4 w-4 text-muted-foreground' />
+          }
         />
       </div>
 

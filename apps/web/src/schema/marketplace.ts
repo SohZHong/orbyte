@@ -41,6 +41,19 @@ export const CreditRetireSchema = z.object({
   file: z.instanceof(File).optional(),
 });
 
+export const getListingUpdateSchema = (currentRemaining: number) =>
+  z.object({
+    price: z.coerce.number().positive('Price must be greater than 0'),
+    withdrawAmount: z.coerce
+      .number()
+      .min(0, 'Cannot withdraw negative')
+      .max(currentRemaining, 'Cannot withdraw more than remaining'),
+  });
+
 export type CreditListingForm = z.infer<typeof CreditListingSchema>;
 export type CreditTransferForm = z.infer<typeof CreditTransferSchema>;
 export type CreditRetireForm = z.infer<typeof CreditRetireSchema>;
+
+export type ListingUpdateForm = z.infer<
+  ReturnType<typeof getListingUpdateSchema>
+>;

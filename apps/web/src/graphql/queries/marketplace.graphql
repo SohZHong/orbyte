@@ -1,0 +1,48 @@
+query MarketplaceListings(
+  $first: Int!
+  $skip: Int!
+  $status_in: [ListingStatus!]
+  $seller: String!
+) {
+  marketplaceListings(
+    orderBy: createdAt
+    orderDirection: desc
+    skip: $skip
+    first: $first
+    where: { status_in: $status_in, seller: $seller }
+  ) {
+    id
+    seller {
+      id
+    }
+    token {
+      id
+      amount
+      retiredAmount
+      tokenURI
+      project {
+        proposal {
+          name
+        }
+      }
+    }
+    amount
+    remaining
+    pricePerUnit
+    startTime
+    endTime
+    status
+    createdAt
+    updatedAt
+    purchases {
+      id
+      buyer {
+        id
+      }
+      quantity
+      totalPaid
+      feePaid
+      timestamp
+    }
+  }
+}

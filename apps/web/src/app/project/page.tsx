@@ -122,7 +122,7 @@ export default function ProjectsPage() {
                 ))}
               </div>
             ) : (
-              <>
+              <React.Fragment>
                 <table className='min-w-[900px] w-full text-sm'>
                   <thead>
                     <tr className='bg-muted font-semibold text-muted-foreground text-left'>
@@ -189,7 +189,7 @@ export default function ProjectsPage() {
                     </Button>
                   </div>
                 )}
-              </>
+              </React.Fragment>
             )}
           </div>
         </div>

@@ -16,6 +16,11 @@ import {
   TrendingUp,
   Timer,
   Calendar,
+  BadgeDollarSign,
+  BadgeDollarSignIcon,
+  Factory,
+  FactoryIcon,
+  ArrowUpFromLineIcon,
 } from 'lucide-react';
 import { useDeveloperStats } from '@/hooks/use-developer-stats';
 import { ProposalStatus, type UserQuery } from '@/generated/graphql';
@@ -104,7 +109,7 @@ export default function DeveloperDashboard({
           title='Credits Issued'
           value={stats?.totalCreditsIssued ?? null}
           description={'Carbon credits minted'}
-          icon={<Coins className='h-4 w-4 text-muted-foreground' />}
+          icon={<FactoryIcon className='h-4 w-4 text-muted-foreground' />}
         />
         <DashboardCard
           isLoading={isLoading}
@@ -116,16 +121,18 @@ export default function DeveloperDashboard({
         <DashboardCard
           isLoading={isLoading}
           title='Active Listings'
-          value={stats?.retiredCredits ?? null}
+          value={stats?.activeListings ?? null}
           description={'Current tokens listed on marketplace'}
-          icon={<TrendingUp className='h-4 w-4 text-muted-foreground' />}
+          icon={
+            <ArrowUpFromLineIcon className='h-4 w-4 text-muted-foreground' />
+          }
         />
         <DashboardCard
           isLoading={isLoading}
           title='Total Sales'
           value={stats?.totalSales ?? null}
           description={'Revenue from sold credits'}
-          icon={<Coins className='h-4 w-4 text-green-500' />}
+          icon={<BadgeDollarSignIcon className='h-4 w-4 text-green-500' />}
         />
         <DashboardCard
           isLoading={isLoading}

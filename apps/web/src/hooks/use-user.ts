@@ -46,7 +46,6 @@ export function useUserCredits(address: string | undefined) {
         skip: pageParam,
         id: address,
       };
-      console.log(address);
       const data = await graphClient.request<
         UserCreditsQuery,
         UserCreditsQueryVariables

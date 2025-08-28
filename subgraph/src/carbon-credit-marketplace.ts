@@ -55,7 +55,7 @@ export function handleListingCancelled(event: ListingCancelledEvent): void {
   let listing = loadMarketplaceListing(event.params.id.toString());
 
   listing.status = 'Cancelled';
-  listing.endTime = event.block.timestamp.toI64();
+  listing.updatedAt = event.block.timestamp.toI64();
 
   listing.save();
 }
@@ -78,7 +78,6 @@ export function handlePurchased(event: PurchasedEvent): void {
   listing.updatedAt = event.block.timestamp.toI64();
   if (listing.remaining.equals(BigInt.zero())) {
     listing.status = 'Filled';
-    listing.endTime = event.block.timestamp.toI64();
   }
   listing.save();
 

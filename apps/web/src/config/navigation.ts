@@ -34,6 +34,7 @@ export const navItems: Record<Role, NavItem[]> = {
     { title: 'Proof Audit', href: '/proof-audit', icon: FilePenIcon },
     { title: 'Review History', href: '/review-history', icon: History },
     { title: 'Credits', href: '/credit', icon: Coins },
+    { title: 'Listing', href: '/listing', icon: ListOrdered },
   ],
 };
 

@@ -15,7 +15,6 @@ import { CreditListingDialog } from '@/components/dialog/credit-listing-dialog';
 import { useProjectRegistryContract } from '@/hooks/use-project-registry-contract';
 import { useCarbonCreditTokenContract } from '@/hooks/use-carbon-credit-token-contract';
 import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
 import { toBlockchainTimestamp } from '@/lib/utils';
 import { CreditRetireDialog } from '@/components/dialog/credit-retire-confirmation-dialog';
 import api from '@/config/axios';
@@ -42,7 +41,6 @@ export default function CreditsPage() {
   const { transfer, isPending: isTransferPending } =
     useCarbonCreditTokenContract();
 
-  const router = useRouter();
   const [tokenId, setTokenId] = useState('');
   const [listDialogOpen, setListDialogOpen] = useState(false);
   const [transferDialogOpen, setTransferDialogOpen] = useState(false);
@@ -254,24 +252,28 @@ export default function CreditsPage() {
                           {c?.batch.project?.proposal.vintage}
                         </td>
                         <td className='px-4 py-2 flex flex-wrap items-center flex-row gap-3'>
-                          <Button
-                            variant='default'
-                            onClick={() => handleListClick(c?.batch.id)}
-                          >
-                            List
-                          </Button>
-                          <Button
-                            variant='secondary'
-                            onClick={() => handleTransferClick(c?.batch.id)}
-                          >
-                            Transfer
-                          </Button>
-                          <Button
-                            variant='destructive'
-                            onClick={() => handleRetireClick(c?.batch.id)}
-                          >
-                            Retire
-                          </Button>
+                          {Number(c?.balance) !== 0 && (
+                            <React.Fragment>
+                              <Button
+                                variant='default'
+                                onClick={() => handleListClick(c?.batch.id)}
+                              >
+                                List
+                              </Button>
+                              <Button
+                                variant='secondary'
+                                onClick={() => handleTransferClick(c?.batch.id)}
+                              >
+                                Transfer
+                              </Button>
+                              <Button
+                                variant='destructive'
+                                onClick={() => handleRetireClick(c?.batch.id)}
+                              >
+                                Retire
+                              </Button>
+                            </React.Fragment>
+                          )}
                         </td>
                       </tr>
                     ))}

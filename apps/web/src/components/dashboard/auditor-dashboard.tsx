@@ -11,6 +11,8 @@ import {
   XCircle,
   TrendingUp,
   Calendar,
+  MessageCircleMoreIcon,
+  ShieldCheckIcon,
 } from 'lucide-react';
 import React, { useMemo } from 'react';
 import {
@@ -118,7 +120,9 @@ export default function AuditorDashboard({
           title='Total Reviews'
           value={stats?.totalReviews ?? 0}
           description='All-time proposal reviews'
-          icon={<FileText className='h-4 w-4 text-muted-foreground' />}
+          icon={
+            <MessageCircleMoreIcon className='h-4 w-4 text-muted-foreground' />
+          }
           handleClick={handleReviewCardClick}
           buttonText='View'
         />
@@ -144,7 +148,7 @@ export default function AuditorDashboard({
           title='Proof Audits'
           value={stats?.proofApprovals ?? 0}
           description='Proofs audited & approved'
-          icon={<TrendingUp className='h-4 w-4 text-muted-foreground' />}
+          icon={<ShieldCheckIcon className='h-4 w-4 text-muted-foreground' />}
         />
       </div>
 
