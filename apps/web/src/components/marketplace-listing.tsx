@@ -12,6 +12,7 @@ import {
 import { graphQLStandardMap } from '@/types/proposal';
 import { ipfsGateway } from '@/constants';
 import Image from 'next/image';
+import Link from 'next/link';
 
 interface MarketplaceCardProps {
   listing: PublicMarketplaceListingsQuery['marketplaceListings'][number];
@@ -78,6 +79,10 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({
       </CardContent>
 
       <CardFooter>
+        <Link href={`/project/${token.project?.id}`}>
+          <Button size='sm'>View Project</Button>
+        </Link>
+
         <Button
           size='sm'
           onClick={() =>

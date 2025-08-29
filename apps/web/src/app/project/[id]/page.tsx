@@ -18,21 +18,37 @@ import { getTimeFromBlockchainTimestamp } from '@/lib/utils';
 import { statusMap } from '@/types/project';
 import { useProjectRegistryContract } from '@/hooks/use-project-registry-contract';
 import { ProjectProofSubmissionDialog } from '@/components/dialog/project-proof-submission-dialog';
-import ProtectedRoute from '@/components/routing/protected-route';
 import FileRow from '@/components/file-row';
 import AppLayout from '@/components/app-layout';
+import { useUser } from '@/hooks/use-user';
+import { usePrivy } from '@privy-io/react-auth';
 
 export default function ProjectDetailsPage() {
   const { id } = useParams<{ id: string }>();
+  const { user: privyUser } = usePrivy();
   const { data: project, isLoading } = useProject(id);
+
+  const address = privyUser?.smartWallet?.address;
+
   const [isDownload, setIsDownloading] = useState<boolean>(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const { submitProof } = useProjectRegistryContract();
 
+  const canPerform: boolean =
+    project?.proposal.developer.id.toLowerCase() === address?.toLowerCase();
+
+  const canSubmitProof: boolean =
+    canPerform ||
+    project?.status === ProjectStatus.AuditRejected ||
+    project?.status === ProjectStatus.InProgress;
+
   const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/' },
-    { title: 'Projects', href: '/project' },
+    {
+      title: `${canPerform ? 'Project' : 'Marketplace'}`,
+      href: `${canPerform ? '/project' : '/marketplace'}`,
+    },
     { title: 'Project Details', href: '#' },
   ];
 
@@ -78,10 +94,6 @@ export default function ProjectDetailsPage() {
         setIsDownloading(false);
       });
   };
-
-  const canSubmitProof: boolean =
-    project?.status === ProjectStatus.AuditRejected ||
-    project?.status === ProjectStatus.InProgress;
 
   if (isLoading || !project) {
     return (
@@ -133,7 +145,7 @@ export default function ProjectDetailsPage() {
   };
 
   return (
-    <ProtectedRoute allowedRoles={[Role.Auditor, Role.Developer]}>
+    <React.Fragment>
       <ProjectProofSubmissionDialog
         open={isDialogOpen}
         onOpenChange={setIsDialogOpen}
@@ -155,11 +167,13 @@ export default function ProjectDetailsPage() {
                 ).toLocaleString()}
               </p>
             </div>
-            <Button variant='default'>
-              <Link href={`/proposal/${project.proposal.id}`}>
-                View Corresponding Proposal
-              </Link>
-            </Button>
+            {canPerform && (
+              <Button variant='default'>
+                <Link href={`/proposal/${project.proposal.id}`}>
+                  View Corresponding Proposal
+                </Link>
+              </Button>
+            )}
           </div>
 
           {/* Project Details */}
@@ -229,6 +243,6 @@ export default function ProjectDetailsPage() {
           </div>
         </div>
       </AppLayout>
-    </ProtectedRoute>
+    </React.Fragment>
   );
 }
