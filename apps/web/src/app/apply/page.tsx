@@ -16,9 +16,12 @@ import { UserRole } from '@/types/user';
 import { Spinner } from '@/components/ui/shadcn-io/spinner';
 import PublicOnlyRoute from '@/components/routing/public-only-route';
 import AppLayout from '@/components/app-layout';
+import { usePrivy } from '@privy-io/react-auth';
 
 export default function ApplyAsProfessionalPage() {
   const { submitKYC } = useKycContract();
+  const { user: privyUser } = usePrivy();
+  const address = privyUser?.smartWallet?.address;
   const [loading, setLoading] = useState<boolean>(false);
 
   const form = useForm<KycForm>({
@@ -64,6 +67,7 @@ export default function ApplyAsProfessionalPage() {
           const { role, documentCid, proofOfAddressCid, certificationCid } =
             res.data.data;
 
+          // Submit KYC on-chain
           const tx = await submitKYC(
             role,
             documentCid,
@@ -71,8 +75,14 @@ export default function ApplyAsProfessionalPage() {
             certificationCid
           );
 
+          // Mint role token
+          await api.post('/role/mint', {
+            role,
+            address,
+          });
+
           // Send Toast UI
-          toast('KYC Submitted', {
+          toast('KYC Submitted & Role Minted', {
             description: `Transaction Hash: ${tx.hash}`,
             action: {
               label: 'Close',

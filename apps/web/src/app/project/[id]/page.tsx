@@ -12,7 +12,7 @@ import Link from 'next/link';
 import api from '@/config/axios';
 import { toast } from 'sonner';
 import { Spinner } from '@/components/ui/shadcn-io/spinner';
-import { ProjectStatus, Role } from '@/generated/graphql';
+import { ProjectStatus } from '@/generated/graphql';
 import { useProject } from '@/hooks/use-project';
 import { getTimeFromBlockchainTimestamp } from '@/lib/utils';
 import { statusMap } from '@/types/project';
@@ -20,7 +20,6 @@ import { useProjectRegistryContract } from '@/hooks/use-project-registry-contrac
 import { ProjectProofSubmissionDialog } from '@/components/dialog/project-proof-submission-dialog';
 import FileRow from '@/components/file-row';
 import AppLayout from '@/components/app-layout';
-import { useUser } from '@/hooks/use-user';
 import { usePrivy } from '@privy-io/react-auth';
 
 export default function ProjectDetailsPage() {

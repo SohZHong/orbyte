@@ -18,6 +18,9 @@ const notoSans = Noto_Sans({
 export const metadata: Metadata = {
   title: 'Orbyte',
   description: 'orbyte',
+  icons: {
+    icon: '/favicon.ico',
+  },
 };
 
 export default function RootLayout({

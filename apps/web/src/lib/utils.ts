@@ -1,4 +1,3 @@
-import api from '@/config/axios';
 import { ipfsGateway } from '@/constants';
 import type { TokenMetadata } from '@/types/metadata';
 import axios from 'axios';

@@ -16,11 +16,7 @@ import Link from 'next/link';
 
 interface MarketplaceCardProps {
   listing: PublicMarketplaceListingsQuery['marketplaceListings'][number];
-  onBuy: (
-    listingId?: string,
-    remaining?: number,
-    pricePerUnit?: number
-  ) => void;
+  onBuy: (listingId: string, remaining: number, pricePerUnit: number) => void;
 }
 
 export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({
@@ -66,7 +62,10 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({
           {token.project?.proposal?.name}
         </h2>
         <p className='text-sm text-muted-foreground mt-1 line-clamp-2'>
-          Standard: {graphQLStandardMap[token.project?.proposal?.standard!]}
+          Standard:{' '}
+          {token.project?.proposal?.standard
+            ? graphQLStandardMap[token.project.proposal.standard]
+            : 'Unknown'}
         </p>
         <p className='mt-2 text-sm'>
           Price per unit: {formatEther(listing.pricePerUnit)} | Remaining:{' '}
