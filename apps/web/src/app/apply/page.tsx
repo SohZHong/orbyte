@@ -17,13 +17,14 @@ import { Spinner } from '@/components/ui/shadcn-io/spinner';
 import PublicOnlyRoute from '@/components/routing/public-only-route';
 import AppLayout from '@/components/app-layout';
 import { usePrivy } from '@privy-io/react-auth';
+import { useRouter } from 'next/navigation';
 
 export default function ApplyAsProfessionalPage() {
   const { submitKYC } = useKycContract();
   const { user: privyUser } = usePrivy();
   const address = privyUser?.smartWallet?.address;
   const [loading, setLoading] = useState<boolean>(false);
-
+  const router = useRouter();
   const form = useForm<KycForm>({
     resolver: zodResolver(KycSchema),
     defaultValues: {
@@ -89,6 +90,9 @@ export default function ApplyAsProfessionalPage() {
               onClick: () => toast.dismiss(),
             },
           });
+
+          // Return to dashboard
+          router.replace('/');
         });
     } catch (error) {
       console.error(error);
