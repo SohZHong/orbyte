@@ -30,10 +30,11 @@ import { ListingCancelDialog } from '@/components/dialog/listing-cancel-dialog';
 
 const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Dashboard', href: '/' },
-  { title: 'Listings', href: '#' },
+  { title: 'Credits', href: '/credit' },
+  { title: 'Credit Listings', href: '#' },
 ];
 
-export default function ListingPage() {
+export default function CreditListingPage() {
   const { user: privyUser } = usePrivy();
   const address = privyUser?.smartWallet?.address;
   const { data: user, isLoading: isUserLoading } = useUser(address);

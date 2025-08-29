@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button';
 import type { BreadcrumbItem } from '@/types/nav';
 import DetailRow from '@/components/detail-row';
 import { graphQLStandardMap } from '@/types/proposal';
-import { ipfsGateway } from '@/constants';
 import Link from 'next/link';
 import api from '@/config/axios';
 import { toast } from 'sonner';

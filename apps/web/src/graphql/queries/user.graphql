@@ -24,3 +24,21 @@ query UserCredits($id: ID!, $first: Int!, $skip: Int!) {
     }
   }
 }
+
+query UserRetiredCredits($id: String!, $first: Int!, $skip: Int!) {
+  creditsRetireds(
+    where: { holder: $id }
+    first: $first
+    skip: $skip
+    orderBy: timestamp
+    orderDirection: desc
+  ) {
+    amount
+    blockNumber
+    id
+    retirementCID
+    timestamp
+    tokenId
+    transactionHash
+  }
+}
