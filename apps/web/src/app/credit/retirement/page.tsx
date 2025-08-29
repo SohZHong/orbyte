@@ -2,25 +2,16 @@
 
 import { Skeleton } from '@/components/ui/skeleton';
 import type { BreadcrumbItem } from '@/types/nav';
-import AppSidebarLayout from '@/components/app-sidebar-layout';
 import { usePrivy } from '@privy-io/react-auth';
 import { useUser, useUserRetiredCredits } from '@/hooks/use-user';
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/shadcn-io/spinner';
-import { useRouter } from 'next/navigation';
 import { getTimeFromBlockchainTimestamp } from '@/lib/utils';
-import { ListingStatus } from '@/generated/graphql';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { ipfsGateway, txHashExplorerLink } from '@/constants';
 import Link from 'next/link';
 import { DownloadIcon } from 'lucide-react';
+import AppLayout from '@/components/app-layout';
 
 const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Dashboard', href: '/' },
@@ -41,10 +32,8 @@ export default function CreditRetirementPage() {
     isLoading: isCreditsLoading,
   } = useUserRetiredCredits(address?.toLowerCase());
 
-  const router = useRouter();
-
   return (
-    <AppSidebarLayout breadcrumbs={breadcrumbs}>
+    <AppLayout breadcrumbs={breadcrumbs}>
       <div className='flex flex-col gap-6 p-6'>
         <div className='flex flex-col gap-4 md:flex-row md:items-center md:justify-between'>
           <div>
@@ -160,6 +149,6 @@ export default function CreditRetirementPage() {
           )}
         </div>
       </div>
-    </AppSidebarLayout>
+    </AppLayout>
   );
 }

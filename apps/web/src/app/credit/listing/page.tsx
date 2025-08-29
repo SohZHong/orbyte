@@ -1,9 +1,7 @@
 'use client';
 
-import AppHeaderLayout from '@/components/app-header-layout';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { BreadcrumbItem } from '@/types/nav';
-import AppSidebarLayout from '@/components/app-sidebar-layout';
 import { usePrivy } from '@privy-io/react-auth';
 import { useUser } from '@/hooks/use-user';
 import React, { useState } from 'react';
@@ -27,6 +25,7 @@ import { ListingUpdateDialog } from '@/components/dialog/listing-update-dialog';
 import { statusMap } from '@/types/marketplace';
 import { Badge } from '@/components/ui/badge';
 import { ListingCancelDialog } from '@/components/dialog/listing-cancel-dialog';
+import AppLayout from '@/components/app-layout';
 
 const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Dashboard', href: '/' },
@@ -152,7 +151,7 @@ export default function CreditListingPage() {
         onConfirm={handleListingCancelConfirm}
         isCancelling={isPending}
       />
-      <AppSidebarLayout breadcrumbs={breadcrumbs}>
+      <AppLayout breadcrumbs={breadcrumbs}>
         <div className='flex flex-col gap-6 p-6'>
           <div className='flex flex-col gap-4 md:flex-row md:items-center md:justify-between'>
             <div>
@@ -298,7 +297,7 @@ export default function CreditListingPage() {
             )}
           </div>
         </div>
-      </AppSidebarLayout>
+      </AppLayout>
     </React.Fragment>
   );
 }

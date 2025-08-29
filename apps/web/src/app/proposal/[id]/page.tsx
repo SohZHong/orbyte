@@ -18,6 +18,7 @@ import { ProposalStatus, Role } from '@/generated/graphql';
 import { getTimeFromBlockchainTimestamp } from '@/lib/utils';
 import ProtectedRoute from '@/components/routing/protected-route';
 import FileRow from '@/components/file-row';
+import AppLayout from '@/components/app-layout';
 
 export default function ProposalDetailsPage() {
   const { id } = useParams<{ id: string }>();
@@ -75,19 +76,19 @@ export default function ProposalDetailsPage() {
 
   if (isLoading || !proposal) {
     return (
-      <AppSidebarLayout breadcrumbs={breadcrumbs}>
+      <AppLayout breadcrumbs={breadcrumbs}>
         <div className='p-6 space-y-4'>
           <Skeleton className='h-10 w-1/3' />
           <Skeleton className='h-6 w-1/4' />
           <Skeleton className='h-[200px] w-full' />
         </div>
-      </AppSidebarLayout>
+      </AppLayout>
     );
   }
 
   return (
     <ProtectedRoute allowedRoles={[Role.Developer]}>
-      <AppSidebarLayout breadcrumbs={breadcrumbs}>
+      <AppLayout breadcrumbs={breadcrumbs}>
         <div className='flex flex-col gap-6 p-6'>
           {/* Title */}
           <div className='flex flex-col gap-4 md:flex-row md:items-center md:justify-between'>
@@ -173,7 +174,7 @@ export default function ProposalDetailsPage() {
             </Button>
           </div>
         </div>
-      </AppSidebarLayout>
+      </AppLayout>
     </ProtectedRoute>
   );
 }

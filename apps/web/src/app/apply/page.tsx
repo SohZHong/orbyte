@@ -6,7 +6,6 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import AppHeaderLayout from '@/components/app-header-layout';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -16,6 +15,7 @@ import { KycSchema, type KycForm } from '@/schema/kyc';
 import { UserRole } from '@/types/user';
 import { Spinner } from '@/components/ui/shadcn-io/spinner';
 import PublicOnlyRoute from '@/components/routing/public-only-route';
+import AppLayout from '@/components/app-layout';
 
 export default function ApplyAsProfessionalPage() {
   const { submitKYC } = useKycContract();
@@ -96,7 +96,7 @@ export default function ApplyAsProfessionalPage() {
 
   return (
     <PublicOnlyRoute>
-      <AppHeaderLayout>
+      <AppLayout>
         <div className='flex flex-col gap-6 p-6'>
           <div>
             <h1 className='text-3xl font-bold tracking-tight'>
@@ -232,7 +232,7 @@ export default function ApplyAsProfessionalPage() {
             </Button>
           </div>
         </div>
-      </AppHeaderLayout>
+      </AppLayout>
     </PublicOnlyRoute>
   );
 }

@@ -12,6 +12,7 @@ import {
   ListOrdered,
   SquareActivity,
   Leaf,
+  FileText,
 } from 'lucide-react';
 import type { NavItem } from '@/types/nav';
 import type { Role } from '@/generated/graphql';
@@ -76,8 +77,24 @@ export const navItems: Record<Role, NavItem[]> = {
   ],
   Auditor: [
     { title: 'Dashboard', href: '/', icon: Home },
-    { title: 'Proposal Audit', href: '/proposal-audit', icon: CheckCircle },
-    { title: 'Proof Audit', href: '/proof-audit', icon: FilePenIcon },
+    {
+      title: 'Audit',
+      icon: FileText,
+      children: [
+        {
+          icon: CheckCircle,
+          title: 'Proposals',
+          href: '/audit/proposal',
+          description: 'Manage your pending proposal audits',
+        },
+        {
+          icon: FilePenIcon,
+          title: 'Proofs',
+          href: '/audit/proof',
+          description: 'Manage your pending proof audits',
+        },
+      ],
+    },
     { title: 'Review History', href: '/review-history', icon: History },
     {
       title: 'Credits',

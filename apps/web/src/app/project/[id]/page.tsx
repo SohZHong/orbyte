@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import AppSidebarLayout from '@/components/app-sidebar-layout';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -21,10 +20,10 @@ import { useProjectRegistryContract } from '@/hooks/use-project-registry-contrac
 import { ProjectProofSubmissionDialog } from '@/components/dialog/project-proof-submission-dialog';
 import ProtectedRoute from '@/components/routing/protected-route';
 import FileRow from '@/components/file-row';
+import AppLayout from '@/components/app-layout';
 
 export default function ProjectDetailsPage() {
   const { id } = useParams<{ id: string }>();
-  const router = useRouter();
   const { data: project, isLoading } = useProject(id);
   const [isDownload, setIsDownloading] = useState<boolean>(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -85,13 +84,13 @@ export default function ProjectDetailsPage() {
 
   if (isLoading || !project) {
     return (
-      <AppSidebarLayout breadcrumbs={breadcrumbs}>
+      <AppLayout breadcrumbs={breadcrumbs}>
         <div className='p-6 space-y-4'>
           <Skeleton className='h-10 w-1/3' />
           <Skeleton className='h-6 w-1/4' />
           <Skeleton className='h-[200px] w-full' />
         </div>
-      </AppSidebarLayout>
+      </AppLayout>
     );
   }
 
@@ -140,7 +139,7 @@ export default function ProjectDetailsPage() {
         onConfirm={handleProofConfirm}
         isUploading={isUploading}
       />
-      <AppSidebarLayout breadcrumbs={breadcrumbs}>
+      <AppLayout breadcrumbs={breadcrumbs}>
         <div className='flex flex-col gap-6 p-6'>
           {/* Title */}
           <div className='flex flex-col gap-4 md:flex-row md:items-center md:justify-between'>
@@ -228,7 +227,7 @@ export default function ProjectDetailsPage() {
             </Button>
           </div>
         </div>
-      </AppSidebarLayout>
+      </AppLayout>
     </ProtectedRoute>
   );
 }

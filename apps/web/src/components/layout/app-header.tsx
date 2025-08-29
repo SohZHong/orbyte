@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   BookOpen,
+  ChevronRight,
   FileText,
   Folder,
   IdCard,
@@ -35,7 +36,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import AppLogo from '@/components/logo/app-logo';
-import type { BreadcrumbItem, NavItem } from '@/types/nav';
+import type { BreadcrumbItem } from '@/types/nav';
 import Breadcrumbs from './breadcrumbs';
 import { UserDropdown } from '../user-dropdown';
 import { ModeToggle } from '../mode-toggle';
@@ -46,6 +47,12 @@ import { NavigationMenuTrigger } from '@radix-ui/react-navigation-menu';
 import ListItem from './list-item';
 import { cn } from '@/lib/utils';
 import React from 'react';
+import { LayoutToggle } from '../layout-toggle';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '../ui/collapsible';
 
 interface Props {
   breadcrumbs?: BreadcrumbItem[];
@@ -84,23 +91,55 @@ export default function AppHeader({ breadcrumbs = [] }: Props) {
               <SheetContent side='left' className='w-[300px] p-6'>
                 <SheetTitle className='sr-only'>Navigation Menu</SheetTitle>
                 <SheetHeader className='flex justify-start text-left'>
-                  <AppLogo className='size-6 fill-current text-black dark:text-white' />
+                  <AppLogo />
                 </SheetHeader>
+
                 <div className='flex h-full flex-1 flex-col justify-between space-y-4 py-6'>
-                  <nav className='-mx-3 space-y-1'>
-                    {/* {mainNavItems.map((item) => (
-                      <Link
-                        key={item.title}
-                        href={item.href}
-                        className={`flex items-center gap-x-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent ${activeItemStyles(
-                          item.href
-                        )}`}
-                      >
-                        {item.icon && <item.icon className='h-5 w-5' />}
-                        {item.title}
-                      </Link>
-                    ))} */}
+                  <nav className='-mx-3 space-y-2'>
+                    {mainNavItems.map((item) =>
+                      item.children ? (
+                        <Collapsible key={item.title} className='w-full'>
+                          <CollapsibleTrigger
+                            className={`flex items-center gap-x-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent w-full ${activeItemStyles(
+                              item.href ?? '#'
+                            )}`}
+                          >
+                            {item.icon && <item.icon className='h-5 w-5' />}
+                            <span>{item.title}</span>
+                            <ChevronRight className='ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-90' />
+                          </CollapsibleTrigger>
+                          <CollapsibleContent className='CollapsibleContent'>
+                            {item.children.map((child) => (
+                              <Link
+                                key={child.title}
+                                href={child.href ?? '#'}
+                                className={`flex items-center gap-x-2 rounded-md px-10 py-2 text-sm hover:bg-accent ${activeItemStyles(
+                                  child.href ?? '#'
+                                )}`}
+                              >
+                                {child.icon && (
+                                  <child.icon className='h-4 w-4' />
+                                )}
+                                {child.title}
+                              </Link>
+                            ))}
+                          </CollapsibleContent>
+                        </Collapsible>
+                      ) : (
+                        <Link
+                          key={item.title}
+                          href={item.href ?? '#'}
+                          className={`flex items-center gap-x-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent ${activeItemStyles(
+                            item.href ?? '#'
+                          )}`}
+                        >
+                          {item.icon && <item.icon className='h-5 w-5' />}
+                          {item.title}
+                        </Link>
+                      )
+                    )}
                   </nav>
+
                   <div className='flex flex-col space-y-4'>
                     {footerNavItems.map((item) => (
                       <a
@@ -185,7 +224,7 @@ export default function AppHeader({ breadcrumbs = [] }: Props) {
           <div className='ml-auto flex items-center space-x-2'>
             <div className='relative flex items-center space-x-1'>
               <ModeToggle />
-
+              <LayoutToggle />
               {/* External links with tooltips */}
               <div className='hidden space-x-1 lg:flex'>
                 {footerNavItems.map((item) => (

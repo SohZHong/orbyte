@@ -1,9 +1,7 @@
 'use client';
 
-import AppHeaderLayout from '@/components/app-header-layout';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { BreadcrumbItem } from '@/types/nav';
-import AppSidebarLayout from '@/components/app-sidebar-layout';
 import { usePrivy } from '@privy-io/react-auth';
 import { useUser } from '@/hooks/use-user';
 import React, { useState } from 'react';
@@ -40,6 +38,7 @@ import { useProjectRegistryContract } from '@/hooks/use-project-registry-contrac
 import { useRouter } from 'next/navigation';
 import ProtectedRoute from '@/components/routing/protected-route';
 import { Role } from '@/generated/graphql';
+import AppLayout from '@/components/app-layout';
 
 const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Dashboard', href: '/' },
@@ -139,7 +138,7 @@ export default function ProposalSubmissionPage() {
 
   return (
     <ProtectedRoute allowedRoles={[Role.Developer]}>
-      <AppSidebarLayout breadcrumbs={breadcrumbs}>
+      <AppLayout breadcrumbs={breadcrumbs}>
         <div className='flex flex-col gap-6 p-6'>
           <div className='flex flex-col gap-4 md:flex-row md:items-center md:justify-between'>
             <div>
@@ -399,7 +398,7 @@ export default function ProposalSubmissionPage() {
             </Form>
           )}
         </div>
-      </AppSidebarLayout>
+      </AppLayout>
     </ProtectedRoute>
   );
 }

@@ -18,6 +18,7 @@ import { toast } from 'sonner';
 import { toBlockchainTimestamp } from '@/lib/utils';
 import { CreditRetireDialog } from '@/components/dialog/credit-retire-confirmation-dialog';
 import api from '@/config/axios';
+import AppLayout from '@/components/app-layout';
 
 const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Dashboard', href: '/' },
@@ -197,7 +198,7 @@ export default function CreditsPage() {
         onConfirm={handleRetireConfirm}
         isRetiring={isRetirePending}
       />
-      <AppSidebarLayout breadcrumbs={breadcrumbs}>
+      <AppLayout breadcrumbs={breadcrumbs}>
         <div className='flex flex-col gap-6 p-6'>
           <div className='flex flex-col gap-4 md:flex-row md:items-center md:justify-between'>
             <div>
@@ -302,7 +303,7 @@ export default function CreditsPage() {
             )}
           </div>
         </div>
-      </AppSidebarLayout>
+      </AppLayout>
     </React.Fragment>
   );
 }

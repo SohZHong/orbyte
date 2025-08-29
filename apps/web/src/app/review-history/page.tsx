@@ -1,9 +1,7 @@
 'use client';
 
-import AppHeaderLayout from '@/components/app-header-layout';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { BreadcrumbItem } from '@/types/nav';
-import AppSidebarLayout from '@/components/app-sidebar-layout';
 import { usePrivy } from '@privy-io/react-auth';
 import { useUser } from '@/hooks/use-user';
 import React from 'react';
@@ -16,6 +14,7 @@ import { useReviewHistory } from '@/hooks/use-review-history';
 import { getTimeFromBlockchainTimestamp } from '@/lib/utils';
 import ProtectedRoute from '@/components/routing/protected-route';
 import { Role } from '@/generated/graphql';
+import AppLayout from '@/components/app-layout';
 
 const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Dashboard', href: '/' },
@@ -40,7 +39,7 @@ export default function ReviewHistoryPage() {
 
   return (
     <ProtectedRoute allowedRoles={[Role.Auditor]}>
-      <AppSidebarLayout breadcrumbs={breadcrumbs}>
+      <AppLayout breadcrumbs={breadcrumbs}>
         <div className='flex flex-col gap-6 p-6'>
           <div className='flex flex-col gap-4 md:flex-row md:items-center md:justify-between'>
             <div>
@@ -121,8 +120,8 @@ export default function ReviewHistoryPage() {
                               onClick={() =>
                                 router.push(
                                   item.type === 'proposal'
-                                    ? `/proposal-audit/${item.id}`
-                                    : `/proof-audit/${item.id}`
+                                    ? `/audit/proposal/${item.id}`
+                                    : `/audit/proof/${item.id}`
                                 )
                               }
                             >
@@ -157,7 +156,7 @@ export default function ReviewHistoryPage() {
             )}
           </div>
         </div>
-      </AppSidebarLayout>
+      </AppLayout>
     </ProtectedRoute>
   );
 }

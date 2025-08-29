@@ -46,6 +46,7 @@ import { useProposal } from '@/hooks/use-proposal';
 import { Spinner } from '@/components/ui/shadcn-io/spinner';
 import ProtectedRoute from '@/components/routing/protected-route';
 import { Role } from '@/generated/graphql';
+import AppLayout from '@/components/app-layout';
 
 export default function ProposalResubmissionPage() {
   const router = useRouter();
@@ -173,7 +174,7 @@ export default function ProposalResubmissionPage() {
 
   return (
     <ProtectedRoute allowedRoles={[Role.Developer]}>
-      <AppSidebarLayout breadcrumbs={breadcrumbs}>
+      <AppLayout breadcrumbs={breadcrumbs}>
         <div className='flex flex-col gap-6 p-6'>
           <div className='flex flex-col gap-4 md:flex-row md:items-center md:justify-between'>
             <div>
@@ -439,7 +440,7 @@ export default function ProposalResubmissionPage() {
             </Form>
           )}
         </div>
-      </AppSidebarLayout>
+      </AppLayout>
     </ProtectedRoute>
   );
 }

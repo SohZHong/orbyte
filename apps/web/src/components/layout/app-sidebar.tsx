@@ -16,7 +16,6 @@ import { NavFooter } from './nav-footer';
 import { navItems, footerNavItems } from '@/config/navigation';
 import { useUser } from '@/hooks/use-user';
 import { usePrivy } from '@privy-io/react-auth';
-import Image from 'next/image';
 import AppLogo from '../logo/app-logo';
 
 export function AppSidebar() {

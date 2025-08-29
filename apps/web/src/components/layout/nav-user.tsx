@@ -1,7 +1,6 @@
 'use client';
 
 import { usePrivy } from '@privy-io/react-auth';
-import { useEnsName } from 'wagmi';
 import { shortenAddress } from '@/lib/utils';
 import {
   DropdownMenu,
@@ -17,19 +16,13 @@ import { ChevronsUpDown, Copy, LogOut } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '../ui/button';
 import { ModeToggle } from '../mode-toggle';
+import { LayoutToggle } from '../layout-toggle';
 
 export default function NavUser() {
   const { user, login, logout } = usePrivy();
 
   const walletAddress = user?.smartWallet?.address ?? null;
-
-  const { data: ensName } = useEnsName({
-    address: walletAddress as `0x${string}` | undefined,
-    chainId: 1,
-  });
-
-  const displayName =
-    ensName || (walletAddress ? shortenAddress(walletAddress) : 'Sign in');
+  const displayName = walletAddress ? shortenAddress(walletAddress) : 'Sign in';
 
   return (
     <SidebarMenu>
@@ -61,7 +54,10 @@ export default function NavUser() {
               <div className='p-2'>
                 <div className='flex justify-between items-center'>
                   <p className='text-sm text-muted-foreground'>Connected as</p>
-                  <ModeToggle />
+                  <div className='flex items-center gap-2'>
+                    <ModeToggle />
+                    <LayoutToggle />
+                  </div>
                 </div>
                 <p className='font-medium my-1'>{displayName}</p>
                 <div className='flex flex-col gap-3'>
@@ -69,11 +65,11 @@ export default function NavUser() {
                     variant='secondary'
                     onClick={() => navigator.clipboard.writeText(walletAddress)}
                   >
-                    <Copy />
+                    <Copy className='mr-2 h-4 w-4' />
                     Copy Address
                   </Button>
                   <Button onClick={logout} variant='destructive'>
-                    <LogOut />
+                    <LogOut className='mr-2 h-4 w-4' />
                     Disconnect
                   </Button>
                 </div>

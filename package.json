@@ -1,39 +1,51 @@
 {
-	"name": "orbyte",
-	"private": true,
-	"workspaces": [
-		"apps/*",
-		"packages/*"
-	],
-	"scripts": {
-		"dev": "turbo dev",
-		"build": "turbo build",
-		"check-types": "turbo check-types",
-		"dev:native": "turbo -F native dev",
-		"dev:web": "turbo -F web dev",
-		"dev:server": "turbo -F server dev",
-		"codegen": "graphql-codegen --config codegen.ts"
-	},
-	"dependencies": {
-		"@alchemy/aa-core": "^3.19.0",
-		"@hookform/resolvers": "^5.2.1",
-		"@privy-io/wagmi": "^1.0.6",
-		"axios": "^1.11.0",
-		"graphql": "^16.11.0",
-		"graphql-request": "^7.2.0",
-		"pdf-lib": "^1.17.1",
-		"permissionless": "^0.2.54",
-		"pinata-web3": "^0.5.4",
-		"react-hook-form": "^7.62.0",
-		"recharts": "^3.1.2",
-		"use-debounce": "^10.0.5",
-		"zod": "^4.0.17"
-	},
-	"devDependencies": {
-		"@graphql-codegen/cli": "5.0.7",
-		"turbo": "^2.5.4",
-		"typescript": "^5.9.2",
-		"@graphql-codegen/client-preset": "4.8.3"
-	},
-	"packageManager": "bun@1.2.4"
+  "name": "orbyte",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "check-types": "turbo check-types",
+    "dev:native": "turbo -F native dev",
+    "dev:web": "turbo -F web dev",
+    "dev:server": "turbo -F server dev",
+    "codegen": "graphql-codegen --config codegen.ts",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix"
+  },
+  "dependencies": {
+    "@alchemy/aa-core": "^3.19.0",
+    "@hookform/resolvers": "^5.2.1",
+    "@privy-io/wagmi": "^1.0.6",
+    "axios": "^1.11.0",
+    "graphql": "^16.11.0",
+    "graphql-request": "^7.2.0",
+    "pdf-lib": "^1.17.1",
+    "permissionless": "^0.2.54",
+    "pinata-web3": "^0.5.4",
+    "react-hook-form": "^7.62.0",
+    "recharts": "^3.1.2",
+    "use-debounce": "^10.0.5",
+    "zod": "^4.0.17"
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "5.0.7",
+    "@graphql-codegen/client-preset": "4.8.3",
+    "@typescript-eslint/eslint-plugin": "^8.41.0",
+    "@typescript-eslint/parser": "^8.41.0",
+    "eslint": "^9.34.0",
+    "eslint-config-next": "^15.5.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "prettier": "^3.6.2",
+    "turbo": "^2.5.4",
+    "typescript": "^5.9.2"
+  },
+  "packageManager": "bun@1.2.4"
 }

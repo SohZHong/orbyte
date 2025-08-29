@@ -1,6 +1,5 @@
 'use client';
 
-import AppHeaderLayout from '@/components/app-header-layout';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { BreadcrumbItem } from '@/types/nav';
 import AppSidebarLayout from '@/components/app-sidebar-layout';
@@ -25,6 +24,7 @@ import { useProjects } from '@/hooks/use-project';
 import { getTimeFromBlockchainTimestamp } from '@/lib/utils';
 import { statusMap } from '@/types/project';
 import ProtectedRoute from '@/components/routing/protected-route';
+import AppLayout from '@/components/app-layout';
 
 const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Dashboard', href: '/' },
@@ -52,7 +52,7 @@ export default function ProjectsPage() {
   });
   return (
     <ProtectedRoute allowedRoles={[Role.Developer]}>
-      <AppSidebarLayout breadcrumbs={breadcrumbs}>
+      <AppLayout breadcrumbs={breadcrumbs}>
         <div className='flex flex-col gap-6 p-6'>
           <div className='flex flex-col gap-4 md:flex-row md:items-center md:justify-between'>
             <div>
@@ -193,7 +193,7 @@ export default function ProjectsPage() {
             )}
           </div>
         </div>
-      </AppSidebarLayout>
+      </AppLayout>
     </ProtectedRoute>
   );
 }

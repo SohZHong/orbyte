@@ -80,11 +80,11 @@ export default function AuditorDashboard({
   }, [data]);
 
   const handleProposalCardClick = () => {
-    router.push('/proposal-audit');
+    router.push('/audit/proposal');
   };
 
   const handleProofCardClick = () => {
-    router.push('/proof-audit');
+    router.push('/audit/proof');
   };
 
   const handleReviewCardClick = () => {

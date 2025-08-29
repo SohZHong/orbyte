@@ -5,7 +5,7 @@ export default function AppLogo({ className }: { className?: string }) {
   const { theme, systemTheme } = useTheme();
   const currentTheme = theme === 'system' ? systemTheme : theme;
 
-  const src = currentTheme === 'dark' ? '/logo-dark.png' : '/logo.png';
+  const src = currentTheme === 'dark' ? '/logo-dark.png' : '/logo-light.png';
   return (
     <Image
       src={src}

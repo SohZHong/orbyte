@@ -12,11 +12,11 @@ import { graphQLStandardMap, ReviewAction, statusMap } from '@/types/proposal';
 import { AuditorFeedbackList } from '@/components/auditor-feedback-list';
 import { toast } from 'sonner';
 import { Spinner } from '@/components/ui/shadcn-io/spinner';
-import { Separator } from '@/components/ui/separator';
 import { useProjectRegistryContract } from '@/hooks/use-project-registry-contract';
 import { ReviewConfirmationDialog } from '@/components/dialog/review-confirmation-dialog';
 import { ProposalStatus, Role } from '@/generated/graphql';
 import ProtectedRoute from '@/components/routing/protected-route';
+import AppLayout from '@/components/app-layout';
 
 export default function ProposalDetailsPage() {
   const { id } = useParams<{ id: string }>();
@@ -26,7 +26,8 @@ export default function ProposalDetailsPage() {
 
   const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/' },
-    { title: 'Proposal Audit', href: '/proposal-audit' },
+    { title: 'Audit', href: '#' },
+    { title: 'Proposal', href: '/audit/proposal' },
     { title: proposal?.name ?? 'Loading...', href: '#' },
   ];
 
@@ -53,7 +54,7 @@ export default function ProposalDetailsPage() {
         });
 
         setTimeout(() => {
-          router.replace('/proposal-audit');
+          router.replace('/audit/proposal');
         }, 1000);
       })
       .catch((error) => {
@@ -70,13 +71,13 @@ export default function ProposalDetailsPage() {
 
   if (isProposalLoading || !proposal) {
     return (
-      <AppSidebarLayout breadcrumbs={breadcrumbs}>
+      <AppLayout breadcrumbs={breadcrumbs}>
         <div className='p-6 space-y-4'>
           <Skeleton className='h-10 w-1/3' />
           <Skeleton className='h-6 w-1/4' />
           <Skeleton className='h-[200px] w-full' />
         </div>
-      </AppSidebarLayout>
+      </AppLayout>
     );
   }
 
@@ -90,7 +91,7 @@ export default function ProposalDetailsPage() {
           onConfirm={handleConfirm}
         />
       )}
-      <AppSidebarLayout breadcrumbs={breadcrumbs}>
+      <AppLayout breadcrumbs={breadcrumbs}>
         <div className='flex flex-col gap-6 p-6'>
           {/* Title */}
           <div className='flex flex-col gap-4 md:flex-row md:items-center md:justify-between'>
@@ -188,7 +189,7 @@ export default function ProposalDetailsPage() {
             </div>
           )}
         </div>
-      </AppSidebarLayout>
+      </AppLayout>
     </ProtectedRoute>
   );
 }

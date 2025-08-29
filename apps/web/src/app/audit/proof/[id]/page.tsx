@@ -18,6 +18,7 @@ import { ReviewAction } from '@/types/proposal';
 import { toast } from 'sonner';
 import { Spinner } from '@/components/ui/shadcn-io/spinner';
 import { ReviewConfirmationDialog } from '@/components/dialog/review-confirmation-dialog';
+import AppLayout from '@/components/app-layout';
 
 export default function ProofDetailsPage() {
   const { id } = useParams<{ id: string }>();
@@ -27,8 +28,9 @@ export default function ProofDetailsPage() {
 
   const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/' },
-    { title: 'Proof Audit', href: '/proof-audit' },
-    { title: 'Project Proof Review', href: '#' },
+    { title: 'Audit', href: '#' },
+    { title: 'Proof', href: '/audit/proof' },
+    { title: 'Proof Review', href: '#' },
   ];
 
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -52,7 +54,7 @@ export default function ProofDetailsPage() {
         });
 
         setTimeout(() => {
-          router.replace('/proof-audit');
+          router.replace('/audit/proof');
         }, 1000);
       })
       .catch((error) => {
@@ -69,13 +71,13 @@ export default function ProofDetailsPage() {
 
   if (isLoading || !proof) {
     return (
-      <AppSidebarLayout breadcrumbs={breadcrumbs}>
+      <AppLayout breadcrumbs={breadcrumbs}>
         <div className='p-6 space-y-4'>
           <Skeleton className='h-10 w-1/3' />
           <Skeleton className='h-6 w-1/4' />
           <Skeleton className='h-[200px] w-full' />
         </div>
-      </AppSidebarLayout>
+      </AppLayout>
     );
   }
 
@@ -89,7 +91,7 @@ export default function ProofDetailsPage() {
           onConfirm={handleConfirm}
         />
       )}
-      <AppSidebarLayout breadcrumbs={breadcrumbs}>
+      <AppLayout breadcrumbs={breadcrumbs}>
         <div className='flex flex-col gap-6 p-6'>
           {/* Title */}
           <div className='flex flex-col gap-4 md:flex-row md:items-center md:justify-between'>
@@ -181,7 +183,7 @@ export default function ProofDetailsPage() {
             </Button>
           </div>
         </div>
-      </AppSidebarLayout>
+      </AppLayout>
     </ProtectedRoute>
   );
 }
