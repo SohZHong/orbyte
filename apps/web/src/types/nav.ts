@@ -7,9 +7,11 @@ export interface BreadcrumbItem {
 
 export interface NavItem {
   title: string;
-  href: string;
-  icon: LucideIcon;
+  href?: string;
+  icon?: LucideIcon;
   isActive?: boolean;
+  description?: string;
+  children?: NavItem[];
 }
 
 export type BreadcrumbItemType = BreadcrumbItem;

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   BookOpen,
+  FileText,
   Folder,
   IdCard,
   LayoutGrid,
@@ -14,7 +15,9 @@ import {
 import { Button } from '@/components/ui/button';
 import {
   NavigationMenu,
+  NavigationMenuContent,
   NavigationMenuItem,
+  NavigationMenuLink,
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
@@ -39,6 +42,10 @@ import { ModeToggle } from '../mode-toggle';
 import { usePrivy } from '@privy-io/react-auth';
 import { useUser } from '@/hooks/use-user';
 import { footerNavItems, navItems } from '@/config/navigation';
+import { NavigationMenuTrigger } from '@radix-ui/react-navigation-menu';
+import ListItem from './list-item';
+import { cn } from '@/lib/utils';
+import React from 'react';
 
 interface Props {
   breadcrumbs?: BreadcrumbItem[];
@@ -81,7 +88,7 @@ export default function AppHeader({ breadcrumbs = [] }: Props) {
                 </SheetHeader>
                 <div className='flex h-full flex-1 flex-col justify-between space-y-4 py-6'>
                   <nav className='-mx-3 space-y-1'>
-                    {mainNavItems.map((item) => (
+                    {/* {mainNavItems.map((item) => (
                       <Link
                         key={item.title}
                         href={item.href}
@@ -92,7 +99,7 @@ export default function AppHeader({ breadcrumbs = [] }: Props) {
                         {item.icon && <item.icon className='h-5 w-5' />}
                         {item.title}
                       </Link>
-                    ))}
+                    ))} */}
                   </nav>
                   <div className='flex flex-col space-y-4'>
                     {footerNavItems.map((item) => (
@@ -127,16 +134,45 @@ export default function AppHeader({ breadcrumbs = [] }: Props) {
                     key={item.title}
                     className='relative flex h-full items-center'
                   >
-                    <Link
-                      href={item.href}
-                      className={`${navigationMenuTriggerStyle()} ${activeItemStyles(
-                        item.href
-                      )} h-9 cursor-pointer px-3`}
-                    >
-                      {item.icon && <item.icon className='mr-2 h-4 w-4' />}
-                      {item.title}
-                    </Link>
-                    {isCurrentRoute(item.href) && (
+                    {item.children ? (
+                      <React.Fragment>
+                        <NavigationMenuTrigger className='flex items-center gap-2'>
+                          {item.icon && <item.icon className='h-4 w-4' />}
+                          {item.title}
+                        </NavigationMenuTrigger>
+                        <NavigationMenuContent>
+                          <ul className='grid w-[400px] gap-2 md:w-[500px] md:grid-cols-2 lg:w-[600px]'>
+                            {item.children.map((child) => (
+                              <ListItem
+                                key={child.title}
+                                title={child.title}
+                                href={child.href ?? '#'}
+                                icon={child.icon}
+                              >
+                                {child.description}
+                              </ListItem>
+                            ))}
+                          </ul>
+                        </NavigationMenuContent>
+                      </React.Fragment>
+                    ) : (
+                      <NavigationMenuLink asChild>
+                        <Link
+                          href={item.href ?? '#'}
+                          className={`${navigationMenuTriggerStyle()} ${activeItemStyles(
+                            item.href ?? '#'
+                          )}`}
+                        >
+                          <span className='inline-flex items-center gap-2'>
+                            {item.icon && <item.icon className='h-4 w-4' />}
+                            {item.title}
+                          </span>
+                        </Link>
+                      </NavigationMenuLink>
+                    )}
+
+                    {/* underline for active route */}
+                    {item.href && isCurrentRoute(item.href) && (
                       <div className='absolute bottom-0 left-0 h-0.5 w-full translate-y-px bg-black dark:bg-white' />
                     )}
                   </NavigationMenuItem>
