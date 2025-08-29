@@ -49,6 +49,14 @@ export const getListingUpdateSchema = (currentRemaining: number) =>
       .max(currentRemaining, 'Cannot withdraw more than remaining'),
   });
 
+export const getListingBuyForm = (currentRemaining: number) =>
+  z.object({
+    quantity: z.coerce
+      .number()
+      .min(0, 'Cannot buy negative quantity')
+      .max(currentRemaining, 'Cannot buy more than remaining amount'),
+  });
+
 export type CreditListingForm = z.infer<typeof CreditListingSchema>;
 export type CreditTransferForm = z.infer<typeof CreditTransferSchema>;
 export type CreditRetireForm = z.infer<typeof CreditRetireSchema>;
@@ -56,3 +64,5 @@ export type CreditRetireForm = z.infer<typeof CreditRetireSchema>;
 export type ListingUpdateForm = z.infer<
   ReturnType<typeof getListingUpdateSchema>
 >;
+
+export type ListingBuyForm = z.infer<ReturnType<typeof getListingBuyForm>>;

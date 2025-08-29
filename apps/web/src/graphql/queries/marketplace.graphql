@@ -46,3 +46,39 @@ query MarketplaceListings(
     }
   }
 }
+
+query PublicMarketplaceListings(
+  $skip: Int!
+  $first: Int!
+  $orderBy: MarketplaceListing_orderBy = createdAt
+  $orderDirection: OrderDirection = desc
+  $now: Timestamp!
+) {
+  marketplaceListings(
+    skip: $skip
+    first: $first
+    orderBy: $orderBy
+    orderDirection: $orderDirection
+    where: { status_in: [Active], endTime_gt: $now, seller_not: $seller }
+  ) {
+    id
+    token {
+      id
+      project {
+        proposal {
+          name
+          standard
+        }
+      }
+      tokenURI
+    }
+    amount
+    remaining
+    pricePerUnit
+    endTime
+    status
+    seller {
+      id
+    }
+  }
+}

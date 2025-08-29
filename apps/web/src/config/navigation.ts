@@ -12,6 +12,7 @@ import {
   SquareActivity,
   Leaf,
   FileText,
+  StoreIcon,
 } from 'lucide-react';
 import type { NavItem } from '@/types/nav';
 import type { Role } from '@/generated/graphql';
@@ -44,6 +45,7 @@ export const navItems: Record<Role, NavItem[]> = {
         },
       ],
     },
+    { title: 'Marketplace', href: '/marketplace', icon: StoreIcon },
   ],
   Developer: [
     { title: 'Dashboard', href: '/', icon: Home },
@@ -73,6 +75,7 @@ export const navItems: Record<Role, NavItem[]> = {
         },
       ],
     },
+    { title: 'Marketplace', href: '/marketplace', icon: StoreIcon },
   ],
   Auditor: [
     { title: 'Dashboard', href: '/', icon: Home },
@@ -119,6 +122,7 @@ export const navItems: Record<Role, NavItem[]> = {
         },
       ],
     },
+    { title: 'Marketplace', href: '/marketplace', icon: StoreIcon },
   ],
 };
 

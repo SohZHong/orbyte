@@ -67,7 +67,7 @@ export const useMarketplaceContract = () => {
   const buy = (listingId: bigint, quantity: bigint, totalValueWei: string) => {
     return marketplaceTx.sendTx(
       'buy',
-      [listingId, quantity, parseEther(totalValueWei, 'wei')],
+      [listingId, quantity],
       parseEther(totalValueWei, 'wei') // pass value for CELO payment
     );
   };
