@@ -1,8 +1,4 @@
-import {
-  useInfiniteQuery,
-  useQuery,
-  type UseQueryResult,
-} from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { graphClient } from '../graphql/client';
 import {
   UserCreditsDocument,

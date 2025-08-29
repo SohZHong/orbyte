@@ -8,7 +8,6 @@ import {
   type DailyRetirementStatsQuery,
   type DailyMarketplaceStatsQuery,
   type DailyTransactionStatsQuery,
-  type PublicStatsQueryVariables,
   type PublicStatsQuery,
   PublicStatsDocument,
 } from '@/generated/graphql';
@@ -93,9 +92,8 @@ export function usePublicStats() {
   return useQuery({
     queryKey: ['publicStats'],
     queryFn: async () => {
-      const data = await graphClient.request<PublicStatsQuery>(
-        PublicStatsDocument
-      );
+      const data =
+        await graphClient.request<PublicStatsQuery>(PublicStatsDocument);
       return data;
     },
   });

@@ -15,13 +15,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-import {
-  Factory,
-  Leaf,
-  ShoppingCart,
-  Coins,
-  ArrowLeftRightIcon,
-} from 'lucide-react';
+import { Factory, Leaf, ShoppingCart, ArrowLeftRightIcon } from 'lucide-react';
 import React, { useMemo } from 'react';
 import { usePublicStats } from '@/hooks/use-daily-stats.';
 import DashboardCard from '../dashboard-card';

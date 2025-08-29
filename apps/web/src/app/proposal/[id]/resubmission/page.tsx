@@ -6,7 +6,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 
-import AppSidebarLayout from '@/components/app-sidebar-layout';
 import ProposalFormSkeleton from '@/components/proposal-form-skeleton';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
@@ -29,9 +28,7 @@ import {
 } from '@/components/ui/select';
 
 import {
-  ProposalMetaSchema,
   ProposalResubmitMetaSchema,
-  type ProposalMetaFormOutput,
   type ProposalResubmitMetaFormInput,
   type ProposalResubmitMetaFormOutput,
 } from '@/schema/proposal';

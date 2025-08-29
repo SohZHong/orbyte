@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import AppSidebarLayout from '@/components/app-sidebar-layout';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -33,6 +32,7 @@ export default function ProposalDetailsPage() {
   ];
 
   const downloadProposal = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
     setIsDownloading(true);
     await api
       .get(`/proposal/pdf/download?id=${proposal?.id}`, {

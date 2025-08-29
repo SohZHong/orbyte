@@ -1,11 +1,5 @@
 import type { Metadata } from 'next';
-import {
-  Geist,
-  Geist_Mono,
-  Inter,
-  Inter_Tight,
-  Noto_Sans,
-} from 'next/font/google';
+import { Noto_Sans } from 'next/font/google';
 import '../index.css';
 import Providers from '@/components/providers';
 import { ThemeProvider } from '@/components/theme-provider';

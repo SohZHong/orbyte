@@ -8,23 +8,18 @@ import {
   CardContent,
   CardDescription,
 } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import {
   FileText,
   Coins,
   Heart,
   TrendingUp,
   Timer,
-  Calendar,
-  BadgeDollarSign,
   BadgeDollarSignIcon,
-  Factory,
   FactoryIcon,
   ArrowUpFromLineIcon,
 } from 'lucide-react';
 import { useDeveloperStats } from '@/hooks/use-developer-stats';
 import { ProposalStatus, type UserQuery } from '@/generated/graphql';
-import { Skeleton } from '@/components/ui/skeleton';
 import type { DeveloperStats } from '@/types/stats';
 import DashboardCard from '../dashboard-card';
 import { useRouter } from 'next/navigation';

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -37,6 +37,7 @@ export default function ProjectDetailsPage() {
   ];
 
   const downloadProject = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
     setIsDownloading(true);
     await api
       .get(`/project/pdf/download?id=${project?.id}`, {

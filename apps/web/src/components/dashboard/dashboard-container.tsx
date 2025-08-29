@@ -3,7 +3,7 @@
 import AppHeaderLayout from '@/components/app-header-layout';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { BreadcrumbItem } from '@/types/nav';
-import type { User, UserQuery } from '@/generated/graphql'; // if using codegen
+import type { UserQuery } from '@/generated/graphql'; // if using codegen
 
 import DeveloperDashboard from './developer-dashboard';
 import AuditorDashboard from './auditor-dashboard';

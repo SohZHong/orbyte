@@ -2,16 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import {
-  BookOpen,
-  ChevronRight,
-  FileText,
-  Folder,
-  IdCard,
-  LayoutGrid,
-  Menu,
-  Search,
-} from 'lucide-react';
+import { ChevronRight, Menu } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -45,7 +36,6 @@ import { useUser } from '@/hooks/use-user';
 import { footerNavItems, navItems } from '@/config/navigation';
 import { NavigationMenuTrigger } from '@radix-ui/react-navigation-menu';
 import ListItem from './list-item';
-import { cn } from '@/lib/utils';
 import React from 'react';
 import { LayoutToggle } from '../layout-toggle';
 import {

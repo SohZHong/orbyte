@@ -1,9 +1,7 @@
 'use client';
 
-import AppHeaderLayout from '@/components/app-header-layout';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { BreadcrumbItem } from '@/types/nav';
-import AppSidebarLayout from '@/components/app-sidebar-layout';
 import { usePrivy } from '@privy-io/react-auth';
 import { useUser } from '@/hooks/use-user';
 import React from 'react';
@@ -35,7 +33,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function ProposalAuditPage() {
   const { user: privyUser } = usePrivy();
   const address = privyUser?.smartWallet?.address;
-  const { data: user, isLoading: isUserLoading } = useUser(address);
+  const { isLoading: isUserLoading } = useUser(address);
   const router = useRouter();
   const [search, setSearch] = React.useState('');
   const [status, setStatus] = React.useState<ProposalStatus | undefined>(

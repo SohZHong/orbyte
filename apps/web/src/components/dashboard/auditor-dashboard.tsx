@@ -2,7 +2,6 @@ import {
   ProjectStatus,
   ProposalStatus,
   ReviewAction,
-  type User,
   type UserQuery,
 } from '@/generated/graphql';
 import {

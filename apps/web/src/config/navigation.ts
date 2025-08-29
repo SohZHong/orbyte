@@ -1,7 +1,6 @@
 import {
   Home,
   History,
-  Settings,
   CheckCircle,
   Folder,
   BookOpen,

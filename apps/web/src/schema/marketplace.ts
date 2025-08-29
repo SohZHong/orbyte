@@ -1,4 +1,3 @@
-import { Standard } from '@/types/proposal';
 import z from 'zod/v3';
 
 export const CreditListingSchema = z

@@ -56,7 +56,7 @@ export const useTransaction = (contractAddress: `0x${string}`, abi: any) => {
         throw err;
       }
     },
-    [abi, contractAddress, client]
+    [state, abi, contractAddress, client]
   );
 
   /**
