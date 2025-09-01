@@ -4,7 +4,7 @@ pragma solidity ^0.8.13;
 import {Test, console} from "forge-std/Test.sol";
 import {KYC} from "../src/KYC.sol";
 
-contract CounterTest is Test {
+contract KYCTest is Test {
     KYC kyc;
     address user = address(0x123);
 
@@ -26,5 +26,27 @@ contract CounterTest is Test {
         assertEq(data.documentCid, "QmDocumentCid");
         assertEq(data.proofOfAddressCid, "QmProofCid");
         assertEq(data.certificationCid, "QmCertificationCid");
+    }
+
+    function test_InvalidDocumentCid() public {
+        vm.prank(user);
+        vm.expectRevert("Document CID required");
+        kyc.submitKYC(
+            KYC.Role.Developer,
+            "",
+            "QmProofCid",
+            "QmCertificationCid"
+        );
+    }
+
+    function test_InvalidProofOfAddressCid() public {
+        vm.prank(user);
+        vm.expectRevert("Proof of Address CID required");
+        kyc.submitKYC(
+            KYC.Role.Developer,
+            "QmDocumentCid",
+            "",
+            "QmCertificationCid"
+        );
     }
 }

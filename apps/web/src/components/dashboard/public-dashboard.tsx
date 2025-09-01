@@ -21,6 +21,11 @@ import { usePublicStats } from '@/hooks/use-daily-stats.';
 import DashboardCard from '../dashboard-card';
 import type { PublicStats } from '@/types/stats';
 import { Skeleton } from '../ui/skeleton';
+import { formatEther } from 'viem';
+import {
+  getTimeFromBlockchainTimestamp,
+  getTimeFromMicrosecondBlockchainTimestamp,
+} from '@/lib/utils';
 
 export default function PublicDashboard() {
   const { data, isLoading } = usePublicStats();
@@ -30,7 +35,11 @@ export default function PublicDashboard() {
 
     const creditStats = data.dailyCreditStats ?? [];
     const retirementStats = data.dailyRetirementStats ?? [];
-    const marketStats = data.dailyMarketplaceStats ?? [];
+    const marketStats = (data.dailyMarketplaceStats ?? []).map((d) => ({
+      ...d,
+      // normalize volume into number
+      dailyVolume: Number(formatEther(BigInt(d.dailyVolume))),
+    }));
     const txStats = data.dailyTransactionStats ?? [];
 
     return {
@@ -114,9 +123,22 @@ export default function PublicDashboard() {
             ) : (
               <ResponsiveContainer width='100%' height={300}>
                 <LineChart data={stats?.creditStats}>
-                  <XAxis dataKey='timestamp' />
+                  <XAxis
+                    dataKey='timestamp'
+                    tickFormatter={(unixTime) => {
+                      return getTimeFromMicrosecondBlockchainTimestamp(
+                        unixTime
+                      ).toLocaleDateString();
+                    }}
+                  />
                   <YAxis />
-                  <Tooltip />
+                  <Tooltip
+                    labelFormatter={(unixTime) =>
+                      getTimeFromMicrosecondBlockchainTimestamp(
+                        unixTime
+                      ).toLocaleString()
+                    }
+                  />
                   <Line
                     type='monotone'
                     dataKey='total'
@@ -151,9 +173,22 @@ export default function PublicDashboard() {
             ) : (
               <ResponsiveContainer width='100%' height={300}>
                 <LineChart data={stats?.marketStats}>
-                  <XAxis dataKey='timestamp' />
+                  <XAxis
+                    dataKey='timestamp'
+                    tickFormatter={(unixTime) =>
+                      getTimeFromMicrosecondBlockchainTimestamp(
+                        unixTime
+                      ).toLocaleDateString()
+                    }
+                  />
                   <YAxis />
-                  <Tooltip />
+                  <Tooltip
+                    labelFormatter={(unixTime) =>
+                      getTimeFromMicrosecondBlockchainTimestamp(
+                        unixTime
+                      ).toLocaleString()
+                    }
+                  />
                   <Line
                     type='monotone'
                     dataKey='dailyVolume'

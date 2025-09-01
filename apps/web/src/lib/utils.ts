@@ -17,6 +17,13 @@ export function getTimeFromBlockchainTimestamp(timestamp: string): Date {
   return new Date(Number(timestamp) * 1000);
 }
 
+export function getTimeFromMicrosecondBlockchainTimestamp(
+  raw: string | number
+): Date {
+  const num = typeof raw === 'string' ? Number(raw) : raw;
+  return new Date(num / 1000); // convert microseconds → milliseconds
+}
+
 export function toBlockchainTimestamp(value: string): number {
   return Math.floor(new Date(value).getTime() / 1000);
 }

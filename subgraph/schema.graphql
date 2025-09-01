@@ -1,143 +1,142 @@
 enum Role {
-  Public
-  Developer
-  Auditor
+  Public # Regular user (can buy credits, browse marketplace, etc.)
+  Developer # Project developer who submits proposals and proofs
+  Auditor # Independent verifier who reviews proposals and proofs
 }
 
 enum Standard {
-  GoldStandard
-  VCS
-  Shariah
+  GoldStandard # Gold Standard certification
+  VCS # Verified Carbon Standard (VCS)
+  Shariah # Shariah-compliant standard
 }
 
 enum ProposalStatus {
-  PendingReview
-  ChangesRequested
-  Rejected
-  Approved
+  PendingReview # Submitted and awaiting auditor review
+  ChangesRequested # Auditor requested modifications
+  Rejected # Proposal rejected by auditor
+  Approved # Proposal approved, can progress to project creation
 }
 
 enum ProjectStatus {
-  None
-  InProgress
-  ProofSubmitted
-  AuditRejected
-  Finalized
+  None # No project created yet
+  InProgress # Active project under execution
+  ProofSubmitted # Proof of impact submitted by developer
+  AuditRejected # Auditor rejected the submitted proof
+  Finalized # Project finalized, credits can be issued
 }
 
 enum ReviewAction {
-  Approve
-  RequestChanges
-  Reject
+  Approve # Auditor approves the submission
+  RequestChanges # Auditor requests revisions
+  Reject # Auditor rejects the submission
 }
 
 enum ListingStatus {
-  Active
-  Cancelled
-  Filled
+  Active # Listing is active and available for purchase
+  Cancelled # Seller cancelled the listing
+  Filled # Listing is fully purchased / sold out
 }
 
 type User @entity {
   id: ID!
-  role: Role!
-  documentCid: String
-  proofOfAddressCid: String
-  certificationCid: String
-  proposals: [Proposal!]! @derivedFrom(field: "developer")
-  reviews: [ProposalReview!]! @derivedFrom(field: "auditor")
-  proofs: [Proof!]! @derivedFrom(field: "developer")
-  creditBalances: [CreditBalance!]! @derivedFrom(field: "user")
+  role: Role! # Role (Public, Developer, Auditor)
+  documentCid: String # KYC document IPFS CID
+  proofOfAddressCid: String # Proof of address IPFS CID
+  certificationCid: String # Certification (e.g. auditor credentials) IPFS CID
+  proposals: [Proposal!]! @derivedFrom(field: "developer") # Proposals submitted by developer
+  reviews: [ProposalReview!]! @derivedFrom(field: "auditor") # Reviews submitted by auditor
+  proofs: [Proof!]! @derivedFrom(field: "developer") # Proofs submitted by developer
+  creditBalances: [CreditBalance!]! @derivedFrom(field: "user") # User’s credit balances
 }
 
 type Proposal @entity {
   id: ID!
-  developer: User!
-  name: String!
-  description: String!
-  location: String!
-  estimatedCredits: BigInt!
-  vintage: Int!
-  methodology: String!
-  projectPlanCID: String!
-  eiaCID: String!
-  otherDocsCID: String!
-  metadataCID: String!
-  submittedAt: Timestamp!
-  standard: Standard!
-  status: ProposalStatus!
-  reviews: [ProposalReview!]! @derivedFrom(field: "proposal")
-  project: Project @derivedFrom(field: "proposal")
+  developer: User! # Developer who submitted the proposal
+  name: String! # Name of the project
+  description: String! # Description of the project
+  location: String! # Geographical location
+  estimatedCredits: BigInt! # Estimated credits from project
+  vintage: Int! # Vintage year of the credits
+  methodology: String! # Methodology applied (e.g. CDM, VCS methodology)
+  projectPlanCID: String! # Project plan stored on IPFS
+  eiaCID: String! # Environmental Impact Assessment (EIA) on IPFS
+  otherDocsCID: String! # Other supporting documents
+  metadataCID: String! # Metadata (e.g. maps, satellite images)
+  submittedAt: Timestamp! # Submission timestamp
+  standard: Standard! # Standard applied (Gold Standard, VCS, etc.)
+  status: ProposalStatus! # Current status of the proposal
+  reviews: [ProposalReview!]! @derivedFrom(field: "proposal") # Auditor reviews
+  project: Project @derivedFrom(field: "proposal") # Linked project (if approved)
 }
 
 type ProposalReview @entity {
   id: ID!
-  proposal: Proposal!
-  auditor: User!
-  action: ReviewAction!
-  commentCID: String
-  timestamp: Timestamp!
+  proposal: Proposal! # Proposal being reviewed
+  auditor: User! # Auditor performing the review
+  action: ReviewAction! # Auditor’s decision
+  commentCID: String # Comments stored on IPFS
+  timestamp: Timestamp! # Review timestamp
 }
 
 type Project @entity {
-  id: ID! # projectId
-  proposal: Proposal!
-  developer: User!
-  status: ProjectStatus!
-  proofs: [Proof!]! @derivedFrom(field: "project")
-  credit: CreditBatch @derivedFrom(field: "project")
-  createdAt: Timestamp!
+  id: ID! # Project ID
+  proposal: Proposal! # Linked proposal
+  developer: User! # Developer of the project
+  status: ProjectStatus! # Current project status
+  proofs: [Proof!]! @derivedFrom(field: "project") # Proof submissions
+  credit: CreditBatch @derivedFrom(field: "project") # Credits issued from the project
+  createdAt: Timestamp! # Creation timestamp
 }
 
 type Proof @entity {
   id: ID!
-  project: Project!
-  developer: User!
-  proofCID: String!
-  audits: [ProofAudit!]! @derivedFrom(field: "proof")
-  submittedAt: Timestamp!
+  project: Project! # Linked project
+  developer: User! # Developer who submitted
+  proofCID: String! # Proof (data, report, evidence) stored on IPFS
+  audits: [ProofAudit!]! @derivedFrom(field: "proof") # Auditor reviews of the proof
+  submittedAt: Timestamp! # Submission timestamp
 }
 
 type ProofAudit @entity {
   id: ID!
-  proof: Proof!
-  auditor: User!
-  action: ReviewAction!
-  commentCID: String
-  timestamp: Timestamp!
+  proof: Proof! # Proof being audited
+  auditor: User! # Auditor performing the review
+  action: ReviewAction! # Auditor’s decision
+  commentCID: String # Comments stored on IPFS
+  timestamp: Timestamp! # Audit timestamp
 }
 
-# CreditBatch (ERC1155 issuances)
 type CreditBatch @entity {
-  id: ID! # tokenId
-  project: Project
-  developer: User
-  amount: BigInt!
-  issuedAt: Timestamp!
-  tokenURI: String!
-  retiredAmount: BigInt! # total retired from this batch
-  creditBalances: [CreditBalance!]! @derivedFrom(field: "batch")
+  id: ID! # ERC1155 token ID
+  project: Project # Project that generated the credits
+  developer: User # Developer who owns the credits
+  amount: BigInt! # Total amount of credits issued
+  issuedAt: Timestamp! # Issuance timestamp
+  tokenURI: String! # Metadata URI for the token
+  retiredAmount: BigInt! # Total credits retired from this batch
+  creditBalances: [CreditBalance!]! @derivedFrom(field: "batch") # Holders of this batch
 }
 
 type CreditBalance @entity {
   id: ID!
-  user: User!
-  batch: CreditBatch!
-  balance: BigInt!
+  user: User! # User holding the credits
+  batch: CreditBatch! # Credit batch
+  balance: BigInt! # Balance of credits owned
 }
 
 type MarketplaceListing @entity {
-  id: ID! # listingId
-  seller: User!
-  token: CreditBatch! # the CreditBatch being sold
-  amount: BigInt!
-  remaining: BigInt!
-  pricePerUnit: BigInt!
-  startTime: Timestamp
-  endTime: Timestamp
-  status: ListingStatus!
-  createdAt: Timestamp!
-  updatedAt: Timestamp!
-  purchases: [MarketplacePurchase!]! @derivedFrom(field: "listing")
+  id: ID! # Listing ID
+  seller: User! # User selling the credits
+  token: CreditBatch! # Credit batch being sold
+  amount: BigInt! # Total amount listed for sale
+  remaining: BigInt! # Remaining unsold amount
+  pricePerUnit: BigInt! # Price per unit credit
+  startTime: Timestamp # Start time of the listing
+  endTime: Timestamp # End time of the listing
+  status: ListingStatus! # Current status of the listing
+  createdAt: Timestamp! # Listing creation time
+  updatedAt: Timestamp! # Last update time
+  purchases: [MarketplacePurchase!]! @derivedFrom(field: "listing") # Purchases made
 }
 
 # Transactions / Events for Statistics
