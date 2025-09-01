@@ -1,55 +1,66 @@
-import { newMockEvent } from "matchstick-as"
-import { ethereum, Address, BigInt } from "@graphprotocol/graph-ts"
+import { newMockEvent } from 'matchstick-as';
+import { ethereum, Address, BigInt } from '@graphprotocol/graph-ts';
 import {
   ApprovalForAll,
   OwnershipTransferred,
   TransferBatch,
   TransferSingle,
-  URI
-} from "../generated/CarbonCredit/CarbonCredit"
+  URI,
+} from '../generated/CarbonCredit/CarbonCredit';
 
 export function createApprovalForAllEvent(
   account: Address,
   operator: Address,
   approved: boolean
 ): ApprovalForAll {
-  let approvalForAllEvent = changetype<ApprovalForAll>(newMockEvent())
+  let newEvent = newMockEvent();
 
-  approvalForAllEvent.parameters = new Array()
+  let event = new ApprovalForAll(
+    newEvent.address,
+    newEvent.logIndex,
+    newEvent.transactionLogIndex,
+    newEvent.logType,
+    newEvent.block,
+    newEvent.transaction,
+    newEvent.parameters,
+    newEvent.receipt
+  );
 
-  approvalForAllEvent.parameters.push(
-    new ethereum.EventParam("account", ethereum.Value.fromAddress(account))
-  )
-  approvalForAllEvent.parameters.push(
-    new ethereum.EventParam("operator", ethereum.Value.fromAddress(operator))
-  )
-  approvalForAllEvent.parameters.push(
-    new ethereum.EventParam("approved", ethereum.Value.fromBoolean(approved))
-  )
+  event.parameters = [
+    new ethereum.EventParam('account', ethereum.Value.fromAddress(account)),
+    new ethereum.EventParam('operator', ethereum.Value.fromAddress(operator)),
+    new ethereum.EventParam('approved', ethereum.Value.fromBoolean(approved)),
+  ];
 
-  return approvalForAllEvent
+  return event;
 }
 
 export function createOwnershipTransferredEvent(
   previousOwner: Address,
   newOwner: Address
 ): OwnershipTransferred {
-  let ownershipTransferredEvent =
-    changetype<OwnershipTransferred>(newMockEvent())
+  let newEvent = newMockEvent();
 
-  ownershipTransferredEvent.parameters = new Array()
+  let event = new OwnershipTransferred(
+    newEvent.address,
+    newEvent.logIndex,
+    newEvent.transactionLogIndex,
+    newEvent.logType,
+    newEvent.block,
+    newEvent.transaction,
+    newEvent.parameters,
+    newEvent.receipt
+  );
 
-  ownershipTransferredEvent.parameters.push(
+  event.parameters = [
     new ethereum.EventParam(
-      "previousOwner",
+      'previousOwner',
       ethereum.Value.fromAddress(previousOwner)
-    )
-  )
-  ownershipTransferredEvent.parameters.push(
-    new ethereum.EventParam("newOwner", ethereum.Value.fromAddress(newOwner))
-  )
+    ),
+    new ethereum.EventParam('newOwner', ethereum.Value.fromAddress(newOwner)),
+  ];
 
-  return ownershipTransferredEvent
+  return event;
 }
 
 export function createTransferBatchEvent(
@@ -59,30 +70,31 @@ export function createTransferBatchEvent(
   ids: Array<BigInt>,
   values: Array<BigInt>
 ): TransferBatch {
-  let transferBatchEvent = changetype<TransferBatch>(newMockEvent())
+  let newEvent = newMockEvent();
 
-  transferBatchEvent.parameters = new Array()
+  let event = new TransferBatch(
+    newEvent.address,
+    newEvent.logIndex,
+    newEvent.transactionLogIndex,
+    newEvent.logType,
+    newEvent.block,
+    newEvent.transaction,
+    newEvent.parameters,
+    newEvent.receipt
+  );
 
-  transferBatchEvent.parameters.push(
-    new ethereum.EventParam("operator", ethereum.Value.fromAddress(operator))
-  )
-  transferBatchEvent.parameters.push(
-    new ethereum.EventParam("from", ethereum.Value.fromAddress(from))
-  )
-  transferBatchEvent.parameters.push(
-    new ethereum.EventParam("to", ethereum.Value.fromAddress(to))
-  )
-  transferBatchEvent.parameters.push(
-    new ethereum.EventParam("ids", ethereum.Value.fromUnsignedBigIntArray(ids))
-  )
-  transferBatchEvent.parameters.push(
+  event.parameters = [
+    new ethereum.EventParam('operator', ethereum.Value.fromAddress(operator)),
+    new ethereum.EventParam('from', ethereum.Value.fromAddress(from)),
+    new ethereum.EventParam('to', ethereum.Value.fromAddress(to)),
+    new ethereum.EventParam('ids', ethereum.Value.fromUnsignedBigIntArray(ids)),
     new ethereum.EventParam(
-      "values",
+      'values',
       ethereum.Value.fromUnsignedBigIntArray(values)
-    )
-  )
+    ),
+  ];
 
-  return transferBatchEvent
+  return event;
 }
 
 export function createTransferSingleEvent(
@@ -92,40 +104,48 @@ export function createTransferSingleEvent(
   id: BigInt,
   value: BigInt
 ): TransferSingle {
-  let transferSingleEvent = changetype<TransferSingle>(newMockEvent())
+  let newEvent = newMockEvent();
 
-  transferSingleEvent.parameters = new Array()
+  let event = new TransferSingle(
+    newEvent.address,
+    newEvent.logIndex,
+    newEvent.transactionLogIndex,
+    newEvent.logType,
+    newEvent.block,
+    newEvent.transaction,
+    newEvent.parameters,
+    newEvent.receipt
+  );
 
-  transferSingleEvent.parameters.push(
-    new ethereum.EventParam("operator", ethereum.Value.fromAddress(operator))
-  )
-  transferSingleEvent.parameters.push(
-    new ethereum.EventParam("from", ethereum.Value.fromAddress(from))
-  )
-  transferSingleEvent.parameters.push(
-    new ethereum.EventParam("to", ethereum.Value.fromAddress(to))
-  )
-  transferSingleEvent.parameters.push(
-    new ethereum.EventParam("id", ethereum.Value.fromUnsignedBigInt(id))
-  )
-  transferSingleEvent.parameters.push(
-    new ethereum.EventParam("value", ethereum.Value.fromUnsignedBigInt(value))
-  )
+  event.parameters = [
+    new ethereum.EventParam('operator', ethereum.Value.fromAddress(operator)),
+    new ethereum.EventParam('from', ethereum.Value.fromAddress(from)),
+    new ethereum.EventParam('to', ethereum.Value.fromAddress(to)),
+    new ethereum.EventParam('id', ethereum.Value.fromUnsignedBigInt(id)),
+    new ethereum.EventParam('value', ethereum.Value.fromUnsignedBigInt(value)),
+  ];
 
-  return transferSingleEvent
+  return event;
 }
 
 export function createURIEvent(value: string, id: BigInt): URI {
-  let uriEvent = changetype<URI>(newMockEvent())
+  let newEvent = newMockEvent();
 
-  uriEvent.parameters = new Array()
+  let event = new URI(
+    newEvent.address,
+    newEvent.logIndex,
+    newEvent.transactionLogIndex,
+    newEvent.logType,
+    newEvent.block,
+    newEvent.transaction,
+    newEvent.parameters,
+    newEvent.receipt
+  );
 
-  uriEvent.parameters.push(
-    new ethereum.EventParam("value", ethereum.Value.fromString(value))
-  )
-  uriEvent.parameters.push(
-    new ethereum.EventParam("id", ethereum.Value.fromUnsignedBigInt(id))
-  )
+  event.parameters = [
+    new ethereum.EventParam('value', ethereum.Value.fromString(value)),
+    new ethereum.EventParam('id', ethereum.Value.fromUnsignedBigInt(id)),
+  ];
 
-  return uriEvent
+  return event;
 }

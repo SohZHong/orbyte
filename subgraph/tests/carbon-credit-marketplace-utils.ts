@@ -1,15 +1,15 @@
-import { newMockEvent } from "matchstick-as"
-import { ethereum, BigInt, Address } from "@graphprotocol/graph-ts"
+import { newMockEvent } from 'matchstick-as';
+import { ethereum, BigInt, Address } from '@graphprotocol/graph-ts';
 import {
   Listed,
   ListingCancelled,
   ListingUpdated,
   OwnershipTransferred,
-  Purchased
-} from "../generated/CarbonCreditMarketplace/CarbonCreditMarketplace"
+  Purchased,
+} from '../generated/CarbonCreditMarketplace/CarbonCreditMarketplace';
 
 export function createListedEvent(
-  id: BigInt,
+  listingId: BigInt,
   seller: Address,
   tokenId: BigInt,
   amount: BigInt,
@@ -17,57 +17,60 @@ export function createListedEvent(
   startTime: BigInt,
   endTime: BigInt
 ): Listed {
-  let listedEvent = changetype<Listed>(newMockEvent())
+  let newEvent = newMockEvent();
 
-  listedEvent.parameters = new Array()
+  let event = new Listed(
+    newEvent.address,
+    newEvent.logIndex,
+    newEvent.transactionLogIndex,
+    newEvent.logType,
+    newEvent.block,
+    newEvent.transaction,
+    newEvent.parameters,
+    newEvent.receipt // ✅ include receipt
+  );
 
-  listedEvent.parameters.push(
-    new ethereum.EventParam("id", ethereum.Value.fromUnsignedBigInt(id))
-  )
-  listedEvent.parameters.push(
-    new ethereum.EventParam("seller", ethereum.Value.fromAddress(seller))
-  )
-  listedEvent.parameters.push(
+  event.parameters = [
     new ethereum.EventParam(
-      "tokenId",
+      'listingId',
+      ethereum.Value.fromUnsignedBigInt(listingId)
+    ),
+    new ethereum.EventParam('seller', ethereum.Value.fromAddress(seller)),
+    new ethereum.EventParam(
+      'tokenId',
       ethereum.Value.fromUnsignedBigInt(tokenId)
-    )
-  )
-  listedEvent.parameters.push(
-    new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount))
-  )
-  listedEvent.parameters.push(
+    ),
     new ethereum.EventParam(
-      "pricePerUnit",
+      'amount',
+      ethereum.Value.fromUnsignedBigInt(amount)
+    ),
+    new ethereum.EventParam(
+      'pricePerUnit',
       ethereum.Value.fromUnsignedBigInt(pricePerUnit)
-    )
-  )
-  listedEvent.parameters.push(
+    ),
     new ethereum.EventParam(
-      "startTime",
+      'startTime',
       ethereum.Value.fromUnsignedBigInt(startTime)
-    )
-  )
-  listedEvent.parameters.push(
+    ),
     new ethereum.EventParam(
-      "endTime",
+      'endTime',
       ethereum.Value.fromUnsignedBigInt(endTime)
-    )
-  )
+    ),
+  ];
 
-  return listedEvent
+  return event;
 }
 
 export function createListingCancelledEvent(id: BigInt): ListingCancelled {
-  let listingCancelledEvent = changetype<ListingCancelled>(newMockEvent())
+  let listingCancelledEvent = changetype<ListingCancelled>(newMockEvent());
 
-  listingCancelledEvent.parameters = new Array()
+  listingCancelledEvent.parameters = new Array();
 
   listingCancelledEvent.parameters.push(
-    new ethereum.EventParam("id", ethereum.Value.fromUnsignedBigInt(id))
-  )
+    new ethereum.EventParam('id', ethereum.Value.fromUnsignedBigInt(id))
+  );
 
-  return listingCancelledEvent
+  return listingCancelledEvent;
 }
 
 export function createListingUpdatedEvent(
@@ -75,27 +78,27 @@ export function createListingUpdatedEvent(
   pricePerUnit: BigInt,
   newRemaining: BigInt
 ): ListingUpdated {
-  let listingUpdatedEvent = changetype<ListingUpdated>(newMockEvent())
+  let listingUpdatedEvent = changetype<ListingUpdated>(newMockEvent());
 
-  listingUpdatedEvent.parameters = new Array()
+  listingUpdatedEvent.parameters = new Array();
 
   listingUpdatedEvent.parameters.push(
-    new ethereum.EventParam("id", ethereum.Value.fromUnsignedBigInt(id))
-  )
+    new ethereum.EventParam('id', ethereum.Value.fromUnsignedBigInt(id))
+  );
   listingUpdatedEvent.parameters.push(
     new ethereum.EventParam(
-      "pricePerUnit",
+      'pricePerUnit',
       ethereum.Value.fromUnsignedBigInt(pricePerUnit)
     )
-  )
+  );
   listingUpdatedEvent.parameters.push(
     new ethereum.EventParam(
-      "newRemaining",
+      'newRemaining',
       ethereum.Value.fromUnsignedBigInt(newRemaining)
     )
-  )
+  );
 
-  return listingUpdatedEvent
+  return listingUpdatedEvent;
 }
 
 export function createOwnershipTransferredEvent(
@@ -103,21 +106,21 @@ export function createOwnershipTransferredEvent(
   newOwner: Address
 ): OwnershipTransferred {
   let ownershipTransferredEvent =
-    changetype<OwnershipTransferred>(newMockEvent())
+    changetype<OwnershipTransferred>(newMockEvent());
 
-  ownershipTransferredEvent.parameters = new Array()
+  ownershipTransferredEvent.parameters = new Array();
 
   ownershipTransferredEvent.parameters.push(
     new ethereum.EventParam(
-      "previousOwner",
+      'previousOwner',
       ethereum.Value.fromAddress(previousOwner)
     )
-  )
+  );
   ownershipTransferredEvent.parameters.push(
-    new ethereum.EventParam("newOwner", ethereum.Value.fromAddress(newOwner))
-  )
+    new ethereum.EventParam('newOwner', ethereum.Value.fromAddress(newOwner))
+  );
 
-  return ownershipTransferredEvent
+  return ownershipTransferredEvent;
 }
 
 export function createPurchasedEvent(
@@ -127,34 +130,34 @@ export function createPurchasedEvent(
   totalPaid: BigInt,
   feePaid: BigInt
 ): Purchased {
-  let purchasedEvent = changetype<Purchased>(newMockEvent())
+  let purchasedEvent = changetype<Purchased>(newMockEvent());
 
-  purchasedEvent.parameters = new Array()
+  purchasedEvent.parameters = new Array();
 
   purchasedEvent.parameters.push(
-    new ethereum.EventParam("id", ethereum.Value.fromUnsignedBigInt(id))
-  )
+    new ethereum.EventParam('id', ethereum.Value.fromUnsignedBigInt(id))
+  );
   purchasedEvent.parameters.push(
-    new ethereum.EventParam("buyer", ethereum.Value.fromAddress(buyer))
-  )
+    new ethereum.EventParam('buyer', ethereum.Value.fromAddress(buyer))
+  );
   purchasedEvent.parameters.push(
     new ethereum.EventParam(
-      "quantity",
+      'quantity',
       ethereum.Value.fromUnsignedBigInt(quantity)
     )
-  )
+  );
   purchasedEvent.parameters.push(
     new ethereum.EventParam(
-      "totalPaid",
+      'totalPaid',
       ethereum.Value.fromUnsignedBigInt(totalPaid)
     )
-  )
+  );
   purchasedEvent.parameters.push(
     new ethereum.EventParam(
-      "feePaid",
+      'feePaid',
       ethereum.Value.fromUnsignedBigInt(feePaid)
     )
-  )
+  );
 
-  return purchasedEvent
+  return purchasedEvent;
 }

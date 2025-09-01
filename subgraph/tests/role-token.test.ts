@@ -1,62 +1,57 @@
+import { assert, clearStore, test } from 'matchstick-as/assembly/index';
+import { Address, BigInt } from '@graphprotocol/graph-ts';
 import {
-  assert,
-  describe,
-  test,
-  clearStore,
-  beforeAll,
-  afterAll
-} from "matchstick-as/assembly/index"
-import { Address, BigInt } from "@graphprotocol/graph-ts"
-import { Approval } from "../generated/schema"
-import { Approval as ApprovalEvent } from "../generated/RoleToken/RoleToken"
-import { handleApproval } from "../src/role-token"
-import { createApprovalEvent } from "./role-token-utils"
+  createRoleBurnedEvent,
+  createRoleMintedEvent,
+} from './role-token-utils';
+import { handleRoleBurned, handleRoleMinted } from '../src/role-token';
 
-// Tests structure (matchstick-as >=0.5.0)
-// https://thegraph.com/docs/en/developer/matchstick/#tests-structure-0-5-0
+const ADDRESS = Address.fromString(
+  '0x000000000000000000000000000000000000dE02'
+);
 
-describe("Describe entity assertions", () => {
-  beforeAll(() => {
-    let owner = Address.fromString("0x0000000000000000000000000000000000000001")
-    let approved = Address.fromString(
-      "0x0000000000000000000000000000000000000001"
-    )
-    let tokenId = BigInt.fromI32(234)
-    let newApprovalEvent = createApprovalEvent(owner, approved, tokenId)
-    handleApproval(newApprovalEvent)
-  })
+// Test burning sets role back to Public
+test('handleRoleBurned resets user role to Public', () => {
+  let tokenId = BigInt.fromI32(1);
 
-  afterAll(() => {
-    clearStore()
-  })
+  // First mint to give user a role
+  let mintEvent = createRoleMintedEvent(ADDRESS, tokenId, 1);
+  handleRoleMinted(mintEvent);
 
-  // For more test scenarios, see:
-  // https://thegraph.com/docs/en/developer/matchstick/#write-a-unit-test
+  // Burn event
+  let burnEvent = createRoleBurnedEvent(ADDRESS, tokenId, 1);
+  handleRoleBurned(burnEvent);
 
-  test("Approval created and stored", () => {
-    assert.entityCount("Approval", 1)
+  let id = ADDRESS.toHexString();
+  assert.fieldEquals('User', id, 'role', 'Public');
 
-    // 0xa16081f360e3847006db660bae1c6d1b2e17ec2a is the default address used in newMockEvent() function
-    assert.fieldEquals(
-      "Approval",
-      "0xa16081f360e3847006db660bae1c6d1b2e17ec2a-1",
-      "owner",
-      "0x0000000000000000000000000000000000000001"
-    )
-    assert.fieldEquals(
-      "Approval",
-      "0xa16081f360e3847006db660bae1c6d1b2e17ec2a-1",
-      "approved",
-      "0x0000000000000000000000000000000000000001"
-    )
-    assert.fieldEquals(
-      "Approval",
-      "0xa16081f360e3847006db660bae1c6d1b2e17ec2a-1",
-      "tokenId",
-      "234"
-    )
+  clearStore();
+});
 
-    // More assert options:
-    // https://thegraph.com/docs/en/developer/matchstick/#asserts
-  })
-})
+// Test minting Auditor
+test('handleRoleMinted assigns Auditor when role=1', () => {
+  let tokenId = BigInt.fromI32(2);
+
+  let event = createRoleMintedEvent(ADDRESS, tokenId, 1);
+  handleRoleMinted(event);
+
+  let id = ADDRESS.toHexString();
+  assert.fieldEquals('User', id, 'role', 'Auditor');
+
+  clearStore();
+});
+
+// Test minting Developer
+test('handleRoleMinted assigns Developer when role!=1', () => {
+  let tokenId = BigInt.fromI32(3);
+
+  // role as BigInt
+  let event = createRoleMintedEvent(ADDRESS, tokenId, i32(0));
+
+  handleRoleMinted(event);
+
+  let id = ADDRESS.toHexString();
+  assert.fieldEquals('User', id, 'role', 'Developer');
+
+  clearStore();
+});

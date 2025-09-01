@@ -1,68 +1,114 @@
 import {
   assert,
-  describe,
-  test,
   clearStore,
-  beforeAll,
-  afterAll
-} from "matchstick-as/assembly/index"
-import { Address, BigInt } from "@graphprotocol/graph-ts"
-import { ApprovalForAll } from "../generated/schema"
-import { ApprovalForAll as ApprovalForAllEvent } from "../generated/CarbonCredit/CarbonCredit"
-import { handleApprovalForAll } from "../src/carbon-credit"
-import { createApprovalForAllEvent } from "./carbon-credit-utils"
+  test,
+  describe,
+  afterAll,
+} from 'matchstick-as/assembly/index';
+import { Address, BigInt } from '@graphprotocol/graph-ts';
+import {
+  handleTransferBatch,
+  handleTransferSingle,
+  handleURI,
+} from '../src/carbon-credit';
+import {
+  createTransferBatchEvent,
+  createTransferSingleEvent,
+  createURIEvent,
+} from './carbon-credit-utils';
 
-// Tests structure (matchstick-as >=0.5.0)
-// https://thegraph.com/docs/en/developer/matchstick/#tests-structure-0-5-0
+const USER1 = Address.fromString('0x000000000000000000000000000000000000dEaD');
+const USER2 = Address.fromString('0x000000000000000000000000000000000000bEEF');
+const ZERO = Address.zero();
 
-describe("Describe entity assertions", () => {
-  beforeAll(() => {
-    let account = Address.fromString(
-      "0x0000000000000000000000000000000000000001"
-    )
-    let operator = Address.fromString(
-      "0x0000000000000000000000000000000000000001"
-    )
-    let approved = "boolean Not implemented"
-    let newApprovalForAllEvent = createApprovalForAllEvent(
-      account,
-      operator,
-      approved
-    )
-    handleApprovalForAll(newApprovalForAllEvent)
-  })
-
+describe('CarbonCredit mappings', () => {
   afterAll(() => {
-    clearStore()
-  })
+    clearStore();
+  });
 
-  // For more test scenarios, see:
-  // https://thegraph.com/docs/en/developer/matchstick/#write-a-unit-test
+  test('handleTransferBatch', () => {
+    let ids = [BigInt.fromI32(1), BigInt.fromI32(2)];
+    let values = [BigInt.fromI32(10), BigInt.fromI32(20)];
 
-  test("ApprovalForAll created and stored", () => {
-    assert.entityCount("ApprovalForAll", 1)
+    let event = createTransferBatchEvent(USER1, USER1, USER2, ids, values);
+    handleTransferBatch(event);
 
-    // 0xa16081f360e3847006db660bae1c6d1b2e17ec2a is the default address used in newMockEvent() function
+    // Transactions created
     assert.fieldEquals(
-      "ApprovalForAll",
-      "0xa16081f360e3847006db660bae1c6d1b2e17ec2a-1",
-      "account",
-      "0x0000000000000000000000000000000000000001"
-    )
+      'Transaction',
+      event.transaction.hash.concatI32(0).toHex(),
+      'value',
+      '10'
+    );
     assert.fieldEquals(
-      "ApprovalForAll",
-      "0xa16081f360e3847006db660bae1c6d1b2e17ec2a-1",
-      "operator",
-      "0x0000000000000000000000000000000000000001"
-    )
-    assert.fieldEquals(
-      "ApprovalForAll",
-      "0xa16081f360e3847006db660bae1c6d1b2e17ec2a-1",
-      "approved",
-      "boolean Not implemented"
-    )
+      'Transaction',
+      event.transaction.hash.concatI32(1).toHex(),
+      'value',
+      '20'
+    );
 
-    // More assert options:
-    // https://thegraph.com/docs/en/developer/matchstick/#asserts
-  })
-})
+    // Balance checks
+    assert.fieldEquals('CreditBalance', USER2.toHex() + '-1', 'balance', '10');
+    assert.fieldEquals('CreditBalance', USER2.toHex() + '-2', 'balance', '20');
+  });
+
+  test('handleTransferSingle', () => {
+    let event = createTransferSingleEvent(
+      USER1,
+      USER1,
+      USER2,
+      BigInt.fromI32(3),
+      BigInt.fromI32(5)
+    );
+    handleTransferSingle(event);
+
+    // Transaction created
+    assert.fieldEquals(
+      'Transaction',
+      event.transaction.hash.concatI32(event.logIndex.toI32()).toHex(),
+      'value',
+      '5'
+    );
+
+    // Balance updated
+    assert.fieldEquals('CreditBalance', USER2.toHex() + '-3', 'balance', '5');
+  });
+
+  test('handleTransferBatch_mint', () => {
+    let ids = [BigInt.fromI32(4)];
+    let values = [BigInt.fromI32(100)];
+
+    let event = createTransferBatchEvent(USER1, ZERO, USER2, ids, values);
+    handleTransferBatch(event);
+
+    // Only receiver balance updated
+    assert.fieldEquals('CreditBalance', USER2.toHex() + '-4', 'balance', '100');
+  });
+
+  test('handleTransferSingle_burn', () => {
+    let event = createTransferSingleEvent(
+      USER1,
+      USER2,
+      ZERO,
+      BigInt.fromI32(3),
+      BigInt.fromI32(5)
+    );
+    handleTransferSingle(event);
+
+    // Receiver should not be updated, only sender decreased
+    assert.fieldEquals('CreditBalance', USER2.toHex() + '-3', 'balance', '0');
+  });
+
+  test('handleURI', () => {
+    let event = createURIEvent('ipfs://token-uri', BigInt.fromI32(5));
+    handleURI(event);
+
+    assert.fieldEquals('CreditBatch', '5', 'tokenURI', 'ipfs://token-uri');
+    assert.fieldEquals(
+      'CreditBatch',
+      '5',
+      'issuedAt',
+      event.block.timestamp.toString()
+    );
+  });
+});

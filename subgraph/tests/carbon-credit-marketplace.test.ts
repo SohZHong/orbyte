@@ -1,92 +1,125 @@
 import {
   assert,
-  describe,
-  test,
   clearStore,
-  beforeAll,
-  afterAll
-} from "matchstick-as/assembly/index"
-import { BigInt, Address } from "@graphprotocol/graph-ts"
-import { Listed } from "../generated/schema"
-import { Listed as ListedEvent } from "../generated/CarbonCreditMarketplace/CarbonCreditMarketplace"
-import { handleListed } from "../src/carbon-credit-marketplace"
-import { createListedEvent } from "./carbon-credit-marketplace-utils"
+  test,
+  describe,
+  afterAll,
+} from 'matchstick-as/assembly/index';
+import { Address, BigInt } from '@graphprotocol/graph-ts';
+import {
+  handleListed,
+  handleListingCancelled,
+  handleListingUpdated,
+  handlePurchased,
+} from '../src/carbon-credit-marketplace';
+import {
+  createListedEvent,
+  createListingCancelledEvent,
+  createListingUpdatedEvent,
+  createPurchasedEvent,
+} from './carbon-credit-marketplace-utils';
 
-// Tests structure (matchstick-as >=0.5.0)
-// https://thegraph.com/docs/en/developer/matchstick/#tests-structure-0-5-0
+const SELLER = Address.fromString('0x000000000000000000000000000000000000dEaD');
+const BUYER = Address.fromString('0x000000000000000000000000000000000000bEEF');
 
-describe("Describe entity assertions", () => {
-  beforeAll(() => {
-    let id = BigInt.fromI32(234)
-    let seller = Address.fromString(
-      "0x0000000000000000000000000000000000000001"
-    )
-    let tokenId = BigInt.fromI32(234)
-    let amount = BigInt.fromI32(234)
-    let pricePerUnit = BigInt.fromI32(234)
-    let startTime = BigInt.fromI32(234)
-    let endTime = BigInt.fromI32(234)
-    let newListedEvent = createListedEvent(
-      id,
-      seller,
-      tokenId,
-      amount,
-      pricePerUnit,
-      startTime,
-      endTime
-    )
-    handleListed(newListedEvent)
-  })
-
+describe('CarbonCreditMarketplace mappings', () => {
   afterAll(() => {
-    clearStore()
-  })
+    clearStore();
+  });
 
-  // For more test scenarios, see:
-  // https://thegraph.com/docs/en/developer/matchstick/#write-a-unit-test
+  test('handleListed', () => {
+    let event = createListedEvent(
+      BigInt.fromI32(1), // listing id
+      SELLER,
+      BigInt.fromI32(101), // token id
+      BigInt.fromI32(50), // amount
+      BigInt.fromI32(10), // price per unit
+      BigInt.fromI32(1000), // start time
+      BigInt.fromI32(2000) // end time
+    );
+    handleListed(event);
 
-  test("Listed created and stored", () => {
-    assert.entityCount("Listed", 1)
+    // MarketplaceListing should be created
+    assert.fieldEquals(
+      'MarketplaceListing',
+      '1',
+      'seller',
+      SELLER.toHexString()
+    );
+    assert.fieldEquals('MarketplaceListing', '1', 'amount', '50');
+    assert.fieldEquals('MarketplaceListing', '1', 'remaining', '50');
+    assert.fieldEquals('MarketplaceListing', '1', 'pricePerUnit', '10');
+    assert.fieldEquals('MarketplaceListing', '1', 'status', 'Active');
 
-    // 0xa16081f360e3847006db660bae1c6d1b2e17ec2a is the default address used in newMockEvent() function
+    // Listed event entity should exist
     assert.fieldEquals(
-      "Listed",
-      "0xa16081f360e3847006db660bae1c6d1b2e17ec2a-1",
-      "seller",
-      "0x0000000000000000000000000000000000000001"
-    )
-    assert.fieldEquals(
-      "Listed",
-      "0xa16081f360e3847006db660bae1c6d1b2e17ec2a-1",
-      "tokenId",
-      "234"
-    )
-    assert.fieldEquals(
-      "Listed",
-      "0xa16081f360e3847006db660bae1c6d1b2e17ec2a-1",
-      "amount",
-      "234"
-    )
-    assert.fieldEquals(
-      "Listed",
-      "0xa16081f360e3847006db660bae1c6d1b2e17ec2a-1",
-      "pricePerUnit",
-      "234"
-    )
-    assert.fieldEquals(
-      "Listed",
-      "0xa16081f360e3847006db660bae1c6d1b2e17ec2a-1",
-      "startTime",
-      "234"
-    )
-    assert.fieldEquals(
-      "Listed",
-      "0xa16081f360e3847006db660bae1c6d1b2e17ec2a-1",
-      "endTime",
-      "234"
-    )
+      'Listed',
+      event.transaction.hash.concatI32(event.logIndex.toI32()).toHexString(),
+      'internal_id',
+      '1'
+    );
+  });
 
-    // More assert options:
-    // https://thegraph.com/docs/en/developer/matchstick/#asserts
-  })
-})
+  test('handleListingCancelled', () => {
+    let event = createListingCancelledEvent(BigInt.fromI32(1));
+    handleListingCancelled(event);
+
+    assert.fieldEquals('MarketplaceListing', '1', 'status', 'Cancelled');
+  });
+
+  test('handleListingUpdated', () => {
+    let event = createListingUpdatedEvent(
+      BigInt.fromI32(1),
+      BigInt.fromI32(15),
+      BigInt.fromI32(30)
+    );
+    handleListingUpdated(event);
+
+    assert.fieldEquals('MarketplaceListing', '1', 'pricePerUnit', '15');
+    assert.fieldEquals('MarketplaceListing', '1', 'remaining', '30');
+  });
+
+  test('handlePurchased_partial', () => {
+    let event = createPurchasedEvent(
+      BigInt.fromI32(1),
+      BUYER,
+      BigInt.fromI32(10),
+      BigInt.fromI32(100),
+      BigInt.fromI32(5)
+    );
+    handlePurchased(event);
+
+    // Remaining should decrease
+    assert.fieldEquals('MarketplaceListing', '1', 'remaining', '20');
+    assert.fieldEquals('MarketplaceListing', '1', 'status', 'Active');
+
+    // Purchase entity created
+    assert.fieldEquals(
+      'MarketplacePurchase',
+      event.transaction.hash.concatI32(event.logIndex.toI32()).toHexString(),
+      'quantity',
+      '10'
+    );
+    assert.fieldEquals(
+      'MarketplacePurchase',
+      event.transaction.hash.concatI32(event.logIndex.toI32()).toHexString(),
+      'buyer',
+      BUYER.toHexString()
+    );
+  });
+
+  test('handlePurchased_full', () => {
+    let event = createPurchasedEvent(
+      BigInt.fromI32(1),
+      BUYER,
+      BigInt.fromI32(20),
+      BigInt.fromI32(200),
+      BigInt.fromI32(10)
+    );
+    handlePurchased(event);
+
+    // Remaining should be zero, status Filled
+    assert.fieldEquals('MarketplaceListing', '1', 'remaining', '0');
+    assert.fieldEquals('MarketplaceListing', '1', 'status', 'Filled');
+  });
+});

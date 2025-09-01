@@ -6,8 +6,8 @@ export function handleKYCSubmitted(event: KYCSubmittedEvent): void {
 
   user.role = 'Public';
   user.documentCid = event.params.documentCid;
-  user.proofOfAddressCid = event.params.documentCid;
-  user.certificationCid = event.params.certificationCid && '';
+  user.proofOfAddressCid = event.params.proofOfAddressCid;
+  user.certificationCid = event.params.certificationCid;
 
   user.save();
 }
