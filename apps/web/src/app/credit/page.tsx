@@ -3,7 +3,7 @@
 import { Skeleton } from '@/components/ui/skeleton';
 import type { BreadcrumbItem } from '@/types/nav';
 import { usePrivy } from '@privy-io/react-auth';
-import { useUser, useUserCredits } from '@/hooks/use-user';
+import { useUser } from '@/hooks/use-user';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/shadcn-io/spinner';
@@ -17,6 +17,7 @@ import { toBlockchainTimestamp } from '@/lib/utils';
 import { CreditRetireDialog } from '@/components/dialog/credit-retire-confirmation-dialog';
 import api from '@/config/axios';
 import AppLayout from '@/components/app-layout';
+import { useUserCredits } from '@/hooks/use-credit';
 
 const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Dashboard', href: '/' },

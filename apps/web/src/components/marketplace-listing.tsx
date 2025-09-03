@@ -77,11 +77,7 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({
         </p>
       </CardContent>
 
-      <CardFooter>
-        <Link href={`/project/${token.project?.id}`}>
-          <Button size='sm'>View Project</Button>
-        </Link>
-
+      <CardFooter className='flex flex-row gap-2'>
         <Button
           size='sm'
           onClick={() =>
@@ -90,6 +86,11 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({
         >
           Buy
         </Button>
+        <Link href={`/project/${token.project?.id}`}>
+          <Button variant='secondary' size='sm'>
+            View Project
+          </Button>
+        </Link>
       </CardFooter>
     </Card>
   );

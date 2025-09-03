@@ -87,6 +87,10 @@ export default function DeveloperDashboard({
   const handleSubmitProposalClick = () => {
     router.push('/proposal/submission');
   };
+
+  const handleListingCardClick = () => {
+    router.push('/proposal/submission');
+  };
   return (
     <React.Fragment>
       <div className='grid gap-6 md:grid-cols-2 lg:grid-cols-3'>
@@ -173,9 +177,9 @@ export default function DeveloperDashboard({
             <QuickActionCard
               isLoading={isLoading}
               icon={TrendingUp}
-              // handleClick={handleSubmitProposalClick}
-              title='Reports'
-              description='View analytics'
+              handleClick={handleListingCardClick}
+              title='Sales'
+              description='Manage listed credits'
             />
           </div>
         </CardContent>

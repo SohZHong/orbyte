@@ -3,7 +3,7 @@
 import { Skeleton } from '@/components/ui/skeleton';
 import type { BreadcrumbItem } from '@/types/nav';
 import { usePrivy } from '@privy-io/react-auth';
-import { useUser, useUserRetiredCredits } from '@/hooks/use-user';
+import { useUser } from '@/hooks/use-user';
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/shadcn-io/spinner';
@@ -12,6 +12,7 @@ import { ipfsGateway, txHashExplorerLink } from '@/constants';
 import Link from 'next/link';
 import { DownloadIcon } from 'lucide-react';
 import AppLayout from '@/components/app-layout';
+import { useUserRetiredCredits } from '@/hooks/use-credit';
 
 const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Dashboard', href: '/' },

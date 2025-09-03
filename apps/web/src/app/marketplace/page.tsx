@@ -35,7 +35,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function MarketplacePage() {
   const { user: privyUser } = usePrivy();
   const address = privyUser?.smartWallet?.address;
-  const { data: user, isLoading: isUserLoading } = useUser(address);
+  const { isLoading: isUserLoading } = useUser(address);
 
   // Filters
   const [orderBy, setOrderBy] = useState<MarketplaceListing_OrderBy>(
@@ -47,7 +47,6 @@ export default function MarketplacePage() {
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     usePublicMarketplaceListings({
-      seller: user?.id,
       orderBy,
       orderDirection,
     });

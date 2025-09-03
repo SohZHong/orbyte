@@ -3,6 +3,7 @@ import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import { graphClient } from '@/graphql/client';
 import { ProjectDocument, type ProjectQuery } from '@/generated/graphql';
 import { fail } from '@/utils/apiResponse';
+import { drawWrappedText } from '@/utils/formatter';
 
 export async function GET(req: NextRequest) {
   try {
@@ -26,7 +27,9 @@ export async function GET(req: NextRequest) {
 
     function addLine(label: string, value: string | null | undefined) {
       if (!value) return;
-      // Bold label
+      const labelWidth = boldFont.widthOfTextAtSize(`${label}: `, 12);
+
+      // Draw label
       page.drawText(`${label}: `, {
         x: 50,
         y,
@@ -34,15 +37,19 @@ export async function GET(req: NextRequest) {
         font: boldFont,
         color: rgb(0, 0, 0.2),
       });
-      // Normal value
-      page.drawText(value, {
-        x: 150,
-        y,
-        size: 12,
-        font,
-        color: rgb(0, 0, 0),
-      });
-      y -= 20;
+
+      // Draw wrapped value right after label
+      y =
+        drawWrappedText({
+          page,
+          text: value,
+          x: 50 + labelWidth + 5,
+          y,
+          font,
+          size: 12,
+          maxWidth: 545 - (50 + labelWidth + 5), // right margin
+          color: rgb(0, 0, 0),
+        }) - 10; // add spacing after
     }
 
     // Header

@@ -51,7 +51,6 @@ export function useMarketplaceListings(
 }
 
 interface UsePublicMarketplaceListingsParams {
-  seller?: string;
   orderBy?: PublicMarketplaceListingsQueryVariables['orderBy'];
   orderDirection?: PublicMarketplaceListingsQueryVariables['orderDirection'];
 }
@@ -62,8 +61,6 @@ export function usePublicMarketplaceListings(
   return useInfiniteQuery({
     queryKey: ['publicMarketplaceListings', filters],
     queryFn: async ({ pageParam = 0 }) => {
-      if (!filters.seller) return [];
-
       const now = Math.floor(Date.now() / 1000).toString(); // Unix seconds
 
       const variables: PublicMarketplaceListingsQueryVariables = {
@@ -86,6 +83,5 @@ export function usePublicMarketplaceListings(
       return allPages.length * PAGE_SIZE; // next skip value
     },
     initialPageParam: 0,
-    enabled: !!filters.seller,
   });
 }

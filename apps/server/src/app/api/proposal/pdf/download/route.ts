@@ -3,6 +3,7 @@ import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import { graphClient } from '@/graphql/client';
 import { ProposalDocument, type ProposalQuery } from '@/generated/graphql';
 import { fail } from '@/utils/apiResponse';
+import { drawWrappedText } from '@/utils/formatter';
 
 export async function GET(req: NextRequest) {
   try {
@@ -24,17 +25,32 @@ export async function GET(req: NextRequest) {
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
 
     let y = height - 50;
+    const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
     function addLine(label: string, value: string | null | undefined) {
       if (!value) return;
-      page.drawText(`${label}: ${value}`, {
+
+      // Draw label
+      page.drawText(`${label}:`, {
         x: 50,
         y,
         size: 12,
-        font,
-        color: rgb(0, 0, 0),
+        font: boldFont,
+        color: rgb(0, 0, 0.3),
       });
-      y -= 20;
+
+      // Wrap value after label
+      y =
+        drawWrappedText({
+          page,
+          text: value,
+          x: 150, // indent values
+          y,
+          font,
+          size: 12,
+          maxWidth: 545 - 150,
+          color: rgb(0, 0, 0),
+        }) - 10; // extra spacing
     }
 
     // Add proposal details
