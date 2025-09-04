@@ -38,9 +38,9 @@ export default function ProjectDetailsPage() {
     project?.proposal.developer.id.toLowerCase() === address?.toLowerCase();
 
   const canSubmitProof: boolean =
-    canPerform ||
-    project?.status === ProjectStatus.AuditRejected ||
-    project?.status === ProjectStatus.InProgress;
+    canPerform &&
+    (project?.status === ProjectStatus.AuditRejected ||
+      project?.status === ProjectStatus.InProgress);
 
   const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/' },
@@ -48,7 +48,7 @@ export default function ProjectDetailsPage() {
       title: `${canPerform ? 'Project' : 'Marketplace'}`,
       href: `${canPerform ? '/project' : '/marketplace'}`,
     },
-    { title: 'Project Details', href: '#' },
+    { title: project?.proposal?.name ?? 'Loading...', href: '#' },
   ];
 
   const downloadProject = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -157,7 +157,7 @@ export default function ProjectDetailsPage() {
           <div className='flex flex-col gap-4 md:flex-row md:items-center md:justify-between'>
             <div>
               <h1 className='text-3xl font-bold tracking-tight'>
-                Project Details
+                {project?.proposal?.name}
               </h1>
               <p className='text-muted-foreground'>
                 Initiated on{' '}
@@ -191,7 +191,7 @@ export default function ProjectDetailsPage() {
             <DetailRow
               label='Status'
               value={
-                <Badge>
+                <Badge variant={statusMap[project.status].variant}>
                   {(() => {
                     const Icon = statusMap[project.status].icon;
                     return <Icon className='w-4 h-4 mr-1' />;
@@ -205,6 +205,12 @@ export default function ProjectDetailsPage() {
               value={graphQLStandardMap[project.proposal.standard]}
             />
           </div>
+
+          {/* Methodology */}
+          <h2 className='text-xl font-bold'>Methodology</h2>
+          <p className='text-base font-normal leading-normal'>
+            {project.proposal.methodology}
+          </p>
 
           {/* Submitted Information */}
           <h2 className='text-xl font-bold'>Submitted Information</h2>

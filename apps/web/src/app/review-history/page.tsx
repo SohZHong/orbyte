@@ -6,7 +6,6 @@ import { usePrivy } from '@privy-io/react-auth';
 import { useUser } from '@/hooks/use-user';
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation';
 import { actionUIMap } from '@/types/proposal';
 import { Badge } from '@/components/ui/badge';
 import { Spinner } from '@/components/ui/shadcn-io/spinner';
@@ -25,7 +24,6 @@ export default function ReviewHistoryPage() {
   const { user: privyUser } = usePrivy();
   const address = privyUser?.smartWallet?.address;
   const { data: user, isLoading: isUserLoading } = useUser(address);
-  const router = useRouter();
 
   const {
     data,
@@ -80,7 +78,6 @@ export default function ReviewHistoryPage() {
                       </th>
                       <th className='px-4 py-3 font-medium'>Review Time</th>
                       <th className='px-4 py-3 font-medium'>Decision</th>
-                      <th className='px-4 py-3 font-medium'>Action</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -113,20 +110,6 @@ export default function ReviewHistoryPage() {
                               })()}
                               {actionUIMap[item.action].text}
                             </Badge>
-                          </td>
-                          <td className='px-4 py-2'>
-                            <Button
-                              variant='outline'
-                              onClick={() =>
-                                router.push(
-                                  item.type === 'proposal'
-                                    ? `/audit/proposal/${item.id}`
-                                    : `/audit/proof/${item.id}`
-                                )
-                              }
-                            >
-                              View Details
-                            </Button>
                           </td>
                         </tr>
                       ))

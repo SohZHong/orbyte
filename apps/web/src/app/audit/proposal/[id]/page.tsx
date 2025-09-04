@@ -84,6 +84,7 @@ export default function ProposalDetailsPage() {
     <ProtectedRoute allowedRoles={[Role.Auditor]}>
       {action !== null && (
         <ReviewConfirmationDialog
+          type='Proposal'
           open={dialogOpen}
           action={action}
           onOpenChange={setDialogOpen}

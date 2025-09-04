@@ -22,10 +22,7 @@ import DashboardCard from '../dashboard-card';
 import type { PublicStats } from '@/types/stats';
 import { Skeleton } from '../ui/skeleton';
 import { formatEther } from 'viem';
-import {
-  getTimeFromBlockchainTimestamp,
-  getTimeFromMicrosecondBlockchainTimestamp,
-} from '@/lib/utils';
+import { getTimeFromMicrosecondBlockchainTimestamp } from '@/lib/utils';
 
 export default function PublicDashboard() {
   const { data, isLoading } = usePublicStats();

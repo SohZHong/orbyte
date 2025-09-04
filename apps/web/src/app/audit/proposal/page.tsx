@@ -146,38 +146,45 @@ export default function ProposalAuditPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {data?.pages.flat().map((p, index) => (
-                      <tr className='border-t' key={index}>
-                        <td className='px-4 py-2'>{p.name}</td>
-                        <td className='px-4 py-2 text-muted-foreground truncate max-w-[200px]'>
-                          <div className='overflow-x-auto'>
-                            {p.developer.id}
-                          </div>
-                        </td>
-                        <td className='px-4 py-2'>
-                          {graphQLStandardMap[p.standard]}
-                        </td>
-                        <td className='px-4 py-2'>
-                          <Badge variant={statusMap[p.status].variant}>
-                            {(() => {
-                              const Icon = statusMap[p.status].icon;
-                              return <Icon className='w-4 h-4 mr-1' />;
-                            })()}
-                            {statusMap[p.status].text}
-                          </Badge>
-                        </td>
-                        <td className='px-4 py-2'>
-                          <Button
-                            variant='outline'
-                            onClick={() =>
-                              router.push(`/audit/proposal/${p.id}`)
-                            }
-                          >
-                            Review
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
+                    {data?.pages
+                      .flat()
+                      .filter(
+                        (p) =>
+                          p.status !== ProposalStatus.Approved &&
+                          p.status !== ProposalStatus.Rejected
+                      )
+                      .map((p, index) => (
+                        <tr className='border-t' key={index}>
+                          <td className='px-4 py-2'>{p.name}</td>
+                          <td className='px-4 py-2 text-muted-foreground truncate max-w-[200px]'>
+                            <div className='overflow-x-auto'>
+                              {p.developer.id}
+                            </div>
+                          </td>
+                          <td className='px-4 py-2'>
+                            {graphQLStandardMap[p.standard]}
+                          </td>
+                          <td className='px-4 py-2'>
+                            <Badge variant={statusMap[p.status].variant}>
+                              {(() => {
+                                const Icon = statusMap[p.status].icon;
+                                return <Icon className='w-4 h-4 mr-1' />;
+                              })()}
+                              {statusMap[p.status].text}
+                            </Badge>
+                          </td>
+                          <td className='px-4 py-2'>
+                            <Button
+                              variant='outline'
+                              onClick={() =>
+                                router.push(`/audit/proposal/${p.id}`)
+                              }
+                            >
+                              Review
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
                   </tbody>
                 </table>
 

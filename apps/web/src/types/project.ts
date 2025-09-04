@@ -27,8 +27,8 @@ export const statusMap: Record<
     icon: ConstructionIcon,
   },
   [ProjectStatus.ProofSubmitted]: {
-    text: 'Approved',
-    variant: 'default',
+    text: 'Proof Submitted',
+    variant: 'secondary',
     icon: SendIcon,
   },
   [ProjectStatus.AuditRejected]: {

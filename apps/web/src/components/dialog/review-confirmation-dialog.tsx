@@ -22,6 +22,7 @@ import {
 } from '../ui/form';
 
 interface ReviewConfirmationDialogProps {
+  type: string;
   open: boolean;
   action: ReviewAction;
   onOpenChange: (open: boolean) => void;
@@ -29,6 +30,7 @@ interface ReviewConfirmationDialogProps {
 }
 
 export function ReviewConfirmationDialog({
+  type,
   open,
   action,
   onOpenChange,
@@ -52,10 +54,10 @@ export function ReviewConfirmationDialog({
 
   const actionLabel =
     action === ReviewAction.APPROVE
-      ? 'Approve Proposal'
-      : ReviewAction.REQUEST_CHANGES
-      ? 'Request Proposal Changes'
-      : 'Reject Proposal';
+      ? `Approve ${type}`
+      : action === ReviewAction.REJECT
+        ? `Reject  ${type}`
+        : `Request ${type} Changes`;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

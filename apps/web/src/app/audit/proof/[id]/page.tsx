@@ -84,6 +84,7 @@ export default function ProofDetailsPage() {
     <ProtectedRoute allowedRoles={[Role.Auditor]}>
       {action !== null && (
         <ReviewConfirmationDialog
+          type='Proof'
           open={dialogOpen}
           action={action}
           onOpenChange={setDialogOpen}
@@ -164,20 +165,7 @@ export default function ProofDetailsPage() {
                   <Spinner variant='circle' /> Submitting
                 </span>
               ) : (
-                <span>Decline</span>
-              )}
-            </Button>
-            <Button
-              disabled={isPending}
-              variant='outline'
-              onClick={() => handleActionClick(ReviewAction.REQUEST_CHANGES)}
-            >
-              {isPending ? (
-                <span className='inline-flex gap-1 items-center'>
-                  <Spinner variant='circle' /> Submitting
-                </span>
-              ) : (
-                <span>Request Changes</span>
+                <span>Reject</span>
               )}
             </Button>
           </div>

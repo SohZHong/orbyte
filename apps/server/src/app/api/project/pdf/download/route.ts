@@ -19,42 +19,48 @@ export async function GET(req: NextRequest) {
 
     const pdfDoc = await PDFDocument.create();
     const page = pdfDoc.addPage([595, 842]); // A4
-    const { height } = page.getSize();
+    const { height, width } = page.getSize();
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
     const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
     let y = height - 50;
+    const marginLeft = 50;
+    const marginRight = 50;
 
     function addLine(label: string, value: string | null | undefined) {
       if (!value) return;
-      const labelWidth = boldFont.widthOfTextAtSize(`${label}: `, 12);
 
       // Draw label
       page.drawText(`${label}: `, {
-        x: 50,
+        x: marginLeft,
         y,
         size: 12,
         font: boldFont,
         color: rgb(0, 0, 0.2),
       });
 
-      // Draw wrapped value right after label
+      // Compute dynamic X for value
+      const labelWidth = boldFont.widthOfTextAtSize(`${label}: `, 12);
+      const valueX = marginLeft + labelWidth + 5;
+      const maxWidth = width - marginRight - valueX;
+
+      // Draw wrapped value
       y =
         drawWrappedText({
           page,
           text: value,
-          x: 50 + labelWidth + 5,
+          x: valueX,
           y,
           font,
           size: 12,
-          maxWidth: 545 - (50 + labelWidth + 5), // right margin
+          maxWidth,
           color: rgb(0, 0, 0),
-        }) - 10; // add spacing after
+        }) - 10; // spacing
     }
 
     // Header
     page.drawText('Project Details', {
-      x: 50,
+      x: marginLeft,
       y,
       size: 20,
       font: boldFont,
@@ -74,11 +80,11 @@ export async function GET(req: NextRequest) {
     addLine('Methodology', p.methodology);
     addLine('Vintage', p.vintage?.toString());
 
-    // Add section separator
+    // Separator
     y -= 10;
     page.drawLine({
-      start: { x: 50, y },
-      end: { x: 545, y },
+      start: { x: marginLeft, y },
+      end: { x: width - marginRight, y },
       thickness: 1,
       color: rgb(0.8, 0.8, 0.8),
     });
@@ -86,7 +92,7 @@ export async function GET(req: NextRequest) {
 
     // Documents Section
     page.drawText('Submitted Documents', {
-      x: 50,
+      x: marginLeft,
       y,
       size: 16,
       font: boldFont,

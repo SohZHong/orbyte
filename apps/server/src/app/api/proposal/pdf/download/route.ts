@@ -3,7 +3,7 @@ import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import { graphClient } from '@/graphql/client';
 import { ProposalDocument, type ProposalQuery } from '@/generated/graphql';
 import { fail } from '@/utils/apiResponse';
-import { drawWrappedText } from '@/utils/formatter';
+import { addLine, drawWrappedText } from '@/utils/formatter';
 
 export async function GET(req: NextRequest) {
   try {
@@ -27,33 +27,7 @@ export async function GET(req: NextRequest) {
     let y = height - 50;
     const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
-    function addLine(label: string, value: string | null | undefined) {
-      if (!value) return;
-
-      // Draw label
-      page.drawText(`${label}:`, {
-        x: 50,
-        y,
-        size: 12,
-        font: boldFont,
-        color: rgb(0, 0, 0.3),
-      });
-
-      // Wrap value after label
-      y =
-        drawWrappedText({
-          page,
-          text: value,
-          x: 150, // indent values
-          y,
-          font,
-          size: 12,
-          maxWidth: 545 - 150,
-          color: rgb(0, 0, 0),
-        }) - 10; // extra spacing
-    }
-
-    // Add proposal details
+    // Title
     page.drawText('Proposal Details', {
       x: 50,
       y,
@@ -63,33 +37,93 @@ export async function GET(req: NextRequest) {
     });
     y -= 30;
 
-    addLine('Project Name', proposal.name);
-    addLine('Description', proposal.description);
-    addLine('Location', proposal.location);
-    addLine('Standard', proposal.standard);
-    addLine('Status', proposal.status);
-    addLine('Estimated Credits', proposal.estimatedCredits?.toString());
-    addLine('Developer', proposal.developer.id);
+    // Details
+    y = addLine({
+      page,
+      label: 'Project Name',
+      value: proposal.name,
+      y,
+      font,
+      boldFont,
+    });
+    y = addLine({
+      page,
+      label: 'Description',
+      value: proposal.description,
+      y,
+      font,
+      boldFont,
+    });
+    y = addLine({
+      page,
+      label: 'Location',
+      value: proposal.location,
+      y,
+      font,
+      boldFont,
+    });
+    y = addLine({
+      page,
+      label: 'Standard',
+      value: proposal.standard,
+      y,
+      font,
+      boldFont,
+    });
+    y = addLine({
+      page,
+      label: 'Status',
+      value: proposal.status,
+      y,
+      font,
+      boldFont,
+    });
+    y = addLine({
+      page,
+      label: 'Estimated Credits',
+      value: proposal.estimatedCredits?.toString(),
+      y,
+      font,
+      boldFont,
+    });
+    y = addLine({
+      page,
+      label: 'Developer',
+      value: proposal.developer.id,
+      y,
+      font,
+      boldFont,
+    });
 
-    // Add links
-    if (proposal.projectPlanCID) {
-      addLine(
-        'Project Plan',
-        `https://ipfs.io/ipfs/${proposal.projectPlanCID}`
-      );
-    }
-    if (proposal.eiaCID) {
-      addLine(
-        'Environmental Impact Assessment',
-        `https://ipfs.io/ipfs/${proposal.eiaCID}`
-      );
-    }
-    if (proposal.otherDocsCID) {
-      addLine(
-        'Financial Projections',
-        `https://ipfs.io/ipfs/${proposal.otherDocsCID}`
-      );
-    }
+    // Links
+    y = addLine({
+      page,
+      label: 'Project Plan',
+      value: proposal.projectPlanCID
+        ? `https://ipfs.io/ipfs/${proposal.projectPlanCID}`
+        : null,
+      y,
+      font,
+      boldFont,
+    });
+    y = addLine({
+      page,
+      label: 'Environmental Impact Assessment',
+      value: proposal.eiaCID ? `https://ipfs.io/ipfs/${proposal.eiaCID}` : null,
+      y,
+      font,
+      boldFont,
+    });
+    y = addLine({
+      page,
+      label: 'Financial Projections',
+      value: proposal.otherDocsCID
+        ? `https://ipfs.io/ipfs/${proposal.otherDocsCID}`
+        : null,
+      y,
+      font,
+      boldFont,
+    });
 
     const pdfBytes = await pdfDoc.save();
 
