@@ -14,7 +14,7 @@ contract RoleToken is ERC721, Ownable {
     }
     mapping(uint256 => Role) public tokenRoles; // tokenId -> Role
     mapping(address => bool) public hasToken;
-    mapping(address => Role) public roleOfAccount; // NEW
+    mapping(address => Role) public roleOfAccount;
 
     event RoleMinted(address indexed account, uint256 tokenId, Role role);
     event RoleBurned(address indexed account, uint256 tokenId, Role role);
@@ -34,7 +34,7 @@ contract RoleToken is ERC721, Ownable {
 
         tokenRoles[tokenId] = role;
         hasToken[to] = true;
-        roleOfAccount[to] = role; // NEW
+        roleOfAccount[to] = role;
 
         emit RoleMinted(to, tokenId, role);
     }
