@@ -7,10 +7,18 @@ interface AuditorFeedbackListProps {
   reviews?: readonly FragmentType<typeof AuditorFeedbackFieldsFragmentDoc>[];
 }
 
-export function AuditorFeedbackList({ reviews }: AuditorFeedbackListProps) {
-  const parsed = useFragment(AuditorFeedbackFieldsFragmentDoc, reviews ?? []);
+type AuditorFeedbackFields = {
+  auditor: { id: string };
+  timestamp: string;
+  commentCID: string | null;
+};
 
-  // Filter out reviews without comments
+export function AuditorFeedbackList({ reviews }: AuditorFeedbackListProps) {
+  const parsed = useFragment(
+    AuditorFeedbackFieldsFragmentDoc,
+    reviews ?? []
+  ) as unknown as AuditorFeedbackFields[];
+
   const withComments = parsed.filter(
     (review) => review.commentCID && review.commentCID.trim() !== ''
   );
