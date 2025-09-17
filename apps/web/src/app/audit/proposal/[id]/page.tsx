@@ -13,9 +13,14 @@ import { toast } from 'sonner';
 import { Spinner } from '@/components/ui/shadcn-io/spinner';
 import { useProjectRegistryContract } from '@/hooks/use-project-registry-contract';
 import { ReviewConfirmationDialog } from '@/components/dialog/review-confirmation-dialog';
-import { ProposalStatus, Role } from '@/generated/graphql';
+import {
+  AuditorFeedbackFieldsFragmentDoc,
+  ProposalStatus,
+  Role,
+} from '@/generated/graphql';
 import ProtectedRoute from '@/components/routing/protected-route';
 import AppLayout from '@/components/app-layout';
+import type { FragmentType } from '@/generated';
 
 export default function ProposalDetailsPage() {
   const { id } = useParams<{ id: string }>();
@@ -143,8 +148,13 @@ export default function ProposalDetailsPage() {
           </p>
           <br />
           {/* Auditor Feedback */}
-          <AuditorFeedbackList reviews={proposal.reviews ?? []} />
-
+          <AuditorFeedbackList
+            reviews={
+              (proposal.reviews as FragmentType<
+                typeof AuditorFeedbackFieldsFragmentDoc
+              >[]) ?? []
+            }
+          />
           {/* Actions */}
           {proposal.status === ProposalStatus.PendingReview && (
             <div className='flex justify-end gap-3 px-4 py-6'>

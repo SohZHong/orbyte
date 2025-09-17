@@ -13,11 +13,16 @@ import { AuditorFeedbackList } from '@/components/auditor-feedback-list';
 import api from '@/config/axios';
 import { toast } from 'sonner';
 import { Spinner } from '@/components/ui/shadcn-io/spinner';
-import { ProposalStatus, Role } from '@/generated/graphql';
+import {
+  AuditorFeedbackFieldsFragmentDoc,
+  ProposalStatus,
+  Role,
+} from '@/generated/graphql';
 import { getTimeFromBlockchainTimestamp } from '@/lib/utils';
 import ProtectedRoute from '@/components/routing/protected-route';
 import FileRow from '@/components/file-row';
 import AppLayout from '@/components/app-layout';
+import type { FragmentType } from '@/generated';
 
 export default function ProposalDetailsPage() {
   const { id } = useParams<{ id: string }>();
@@ -149,8 +154,13 @@ export default function ProposalDetailsPage() {
           )}
 
           {/* Auditor Feedback */}
-          <AuditorFeedbackList reviews={proposal.reviews} />
-
+          <AuditorFeedbackList
+            reviews={
+              (proposal.reviews as FragmentType<
+                typeof AuditorFeedbackFieldsFragmentDoc
+              >[]) ?? []
+            }
+          />
           {/* Actions */}
           <div className='flex justify-end gap-3 px-4 py-6'>
             {proposal.status === ProposalStatus.ChangesRequested && (
