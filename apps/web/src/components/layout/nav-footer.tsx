@@ -29,9 +29,9 @@ export function NavFooter({ items, extendedClass }: SidebarNavProps) {
                 <Link
                   target='_blank'
                   rel='noopener noreferrer'
-                  href={item.href}
+                  href={item.href!}
                 >
-                  <item.icon />
+                  {item.icon && <item.icon />}
                   <span>{item.title}</span>
                 </Link>
               </SidebarMenuButton>

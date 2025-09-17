@@ -8,11 +8,15 @@ const config: CodegenConfig = {
   generates: {
     'apps/web/src/generated/': {
       preset: 'client',
-      plugins: [],
+      config: {
+        useTypeImports: true,
+      },
     },
     'apps/server/src/generated/': {
       preset: 'client',
-      plugins: [],
+      config: {
+        useTypeImports: true,
+      },
     },
   },
 };

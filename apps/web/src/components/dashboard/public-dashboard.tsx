@@ -144,7 +144,7 @@ export default function PublicDashboard() {
                   />
                   <Line
                     type='monotone'
-                    dataKey={(d: any) =>
+                    dataKey={(d) =>
                       stats?.retirementStats?.find(
                         (r) => r.timestamp === d.timestamp
                       )?.total ?? 0

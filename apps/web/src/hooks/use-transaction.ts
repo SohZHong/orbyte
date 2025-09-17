@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { TxState } from '@/types/transaction';
 import { useSmartWallets } from '@privy-io/react-auth/smart-wallets';
 import { useState, useCallback } from 'react';
