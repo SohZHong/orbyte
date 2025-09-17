@@ -21,10 +21,7 @@ import {
 import { Input } from '../ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Spinner } from '../ui/shadcn-io/spinner';
-import {
-  getListingUpdateSchema,
-  type ListingUpdateForm,
-} from '@/schema/marketplace';
+import { getListingUpdateSchema } from '@/schema/marketplace';
 
 interface ListingUpdateDialogProps {
   open: boolean;
@@ -41,7 +38,7 @@ export function ListingUpdateDialog({
   isUpdating = false,
   currentRemaining,
 }: ListingUpdateDialogProps) {
-  const form = useForm<ListingUpdateForm>({
+  const form = useForm({
     resolver: zodResolver(getListingUpdateSchema(currentRemaining)),
     defaultValues: {
       price: 0,
@@ -89,7 +86,11 @@ export function ListingUpdateDialog({
                 <FormItem>
                   <FormLabel>Price Per Unit (CELO)</FormLabel>
                   <FormControl>
-                    <Input type='number' {...field} />
+                    <Input
+                      type='number'
+                      value={field.value as number | undefined}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -104,7 +105,11 @@ export function ListingUpdateDialog({
                 <FormItem>
                   <FormLabel>Withdraw Credits</FormLabel>
                   <FormControl>
-                    <Input type='number' {...field} />
+                    <Input
+                      type='number'
+                      value={field.value as number | undefined}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

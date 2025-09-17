@@ -29,7 +29,6 @@ import {
 
 import {
   ProposalResubmitMetaSchema,
-  type ProposalResubmitMetaFormInput,
   type ProposalResubmitMetaFormOutput,
 } from '@/schema/proposal';
 import { generatedToProjectStandardMap, Standard } from '@/types/proposal';
@@ -68,7 +67,7 @@ export default function ProposalResubmissionPage() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const form = useForm<ProposalResubmitMetaFormInput>({
+  const form = useForm({
     resolver: zodResolver(ProposalResubmitMetaSchema),
     defaultValues: {
       name: '',
@@ -260,6 +259,10 @@ export default function ProposalResubmissionPage() {
                             type='number'
                             placeholder='Estimated Credits (tons CO2e)'
                             {...field}
+                            value={field.value as number | undefined}
+                            onChange={(e) =>
+                              field.onChange(Number(e.target.value))
+                            }
                           />
                         </FormControl>
                         <FormMessage />
@@ -277,6 +280,10 @@ export default function ProposalResubmissionPage() {
                             type='number'
                             placeholder='Vintage (e.g., 2025)'
                             {...field}
+                            value={field.value as number | undefined}
+                            onChange={(e) =>
+                              field.onChange(Number(e.target.value))
+                            }
                           />
                         </FormControl>
                         <FormMessage />

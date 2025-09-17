@@ -39,7 +39,7 @@ export function ListingBuyDialog({
   currentRemaining,
   pricePerUnit,
 }: ListingBuyDialogProps) {
-  const form = useForm<ListingBuyForm>({
+  const form = useForm({
     resolver: zodResolver(getListingBuyForm(currentRemaining)),
     defaultValues: {
       quantity: 0,
@@ -79,7 +79,7 @@ export function ListingBuyDialog({
               control={form.control}
               name='quantity'
               render={({ field }) => {
-                const quantity = field.value ?? 0;
+                const quantity = (field.value as number) ?? 0;
                 const totalPrice = pricePerUnit * quantity;
 
                 return (
@@ -88,9 +88,10 @@ export function ListingBuyDialog({
                     <FormControl>
                       <Input
                         type='number'
-                        {...field}
                         min={0}
                         max={currentRemaining}
+                        value={field.value as number | undefined}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
                       />
                     </FormControl>
                     <FormMessage />

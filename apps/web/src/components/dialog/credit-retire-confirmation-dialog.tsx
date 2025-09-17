@@ -39,7 +39,7 @@ export function CreditRetireDialog({
   onConfirm,
   isRetiring = false,
 }: CreditRetireDialogProps) {
-  const form = useForm<CreditRetireForm>({
+  const form = useForm({
     resolver: zodResolver(CreditRetireSchema),
     defaultValues: {
       quantity: 0,
@@ -76,7 +76,12 @@ export function CreditRetireDialog({
                 <FormItem>
                   <FormLabel>Quantity</FormLabel>
                   <FormControl>
-                    <Input type='number' placeholder='0.01' {...field} />
+                    <Input
+                      type='number'
+                      placeholder='0.01'
+                      value={field.value as number | undefined}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

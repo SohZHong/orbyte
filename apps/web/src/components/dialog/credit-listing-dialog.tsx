@@ -44,7 +44,7 @@ export function CreditListingDialog({
   onConfirm,
   isListing = false,
 }: CreditListingDialogProps) {
-  const form = useForm<CreditListingForm>({
+  const form = useForm({
     resolver: zodResolver(CreditListingSchema),
     defaultValues: {
       quantity: 0,
@@ -85,7 +85,13 @@ export function CreditListingDialog({
                 <FormItem>
                   <FormLabel>Quantity</FormLabel>
                   <FormControl>
-                    <Input type='number' placeholder='0.01' {...field} />
+                    <Input
+                      type='number'
+                      placeholder='0.01'
+                      {...field}
+                      value={field.value as number | undefined}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -98,7 +104,13 @@ export function CreditListingDialog({
                 <FormItem>
                   <FormLabel>Price Per Unit (CELO)</FormLabel>
                   <FormControl>
-                    <Input type='number' placeholder='0.01' {...field} />
+                    <Input
+                      type='number'
+                      placeholder='0.01'
+                      {...field}
+                      value={field.value as number | undefined}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

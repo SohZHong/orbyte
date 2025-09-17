@@ -1,4 +1,4 @@
-import z from 'zod/v3';
+import z from 'zod';
 
 export const ReviewSchema = z.object({
   comment: z.string(),

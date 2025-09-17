@@ -1,10 +1,8 @@
 import { UserRole } from '@/types/user';
-import z from 'zod/v3';
+import z from 'zod';
 
 export const KycSchema = z.object({
-  role: z.nativeEnum(UserRole, {
-    errorMap: () => ({ message: 'Please select a user role' }),
-  }),
+  role: z.enum(UserRole, 'Please select a user role'),
   document: z
     .instanceof(File)
     .refine((file) => file instanceof File, 'Document is required'),

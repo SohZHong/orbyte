@@ -1,8 +1,0 @@
-{
-  "engines": {
-    "node": "20.x"
-  },
-  "scripts": {
-    "build": "next build"
-  }
-}

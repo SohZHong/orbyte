@@ -39,7 +39,7 @@ export function CreditTransferDialog({
   onConfirm,
   isTransferring = false,
 }: CreditTransferDialogProps) {
-  const form = useForm<CreditTransferForm>({
+  const form = useForm({
     resolver: zodResolver(CreditTransferSchema),
     defaultValues: {
       to: '',
@@ -90,7 +90,12 @@ export function CreditTransferDialog({
                 <FormItem>
                   <FormLabel>Quantity</FormLabel>
                   <FormControl>
-                    <Input type='number' placeholder='0.01' {...field} />
+                    <Input
+                      type='number'
+                      placeholder='0.01'
+                      value={field.value as number | undefined}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

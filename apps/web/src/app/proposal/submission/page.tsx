@@ -227,6 +227,10 @@ export default function ProposalSubmissionPage() {
                             type='number'
                             placeholder='Estimated Credits (tons CO2e)'
                             {...field}
+                            value={field.value as number | undefined}
+                            onChange={(e) =>
+                              field.onChange(Number(e.target.value))
+                            }
                           />
                         </FormControl>
                         <FormMessage />
@@ -244,6 +248,10 @@ export default function ProposalSubmissionPage() {
                             type='number'
                             placeholder='Vintage (e.g., 2025)'
                             {...field}
+                            value={field.value as number | undefined}
+                            onChange={(e) =>
+                              field.onChange(Number(e.target.value))
+                            }
                           />
                         </FormControl>
                         <FormMessage />
