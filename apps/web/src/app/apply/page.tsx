@@ -1,30 +1,42 @@
 'use client';
 
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useRouter } from 'next/navigation';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+
 import api from '@/config/axios';
 import { useKycContract } from '@/hooks/use-kyc-contract';
+import { usePrivy } from '@privy-io/react-auth';
 import { KycSchema, type KycForm } from '@/schema/kyc';
 import { UserRole } from '@/types/user';
-import { Spinner } from '@/components/ui/shadcn-io/spinner';
+
 import PublicOnlyRoute from '@/components/routing/public-only-route';
 import AppLayout from '@/components/app-layout';
-import { usePrivy } from '@privy-io/react-auth';
-import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Spinner } from '@/components/ui/shadcn-io/spinner';
+
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from '@/components/ui/form';
 
 export default function ApplyAsProfessionalPage() {
   const { submitKYC } = useKycContract();
   const { user: privyUser } = usePrivy();
   const address = privyUser?.smartWallet?.address;
-  const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
   const form = useForm<KycForm>({
     resolver: zodResolver(KycSchema),
     defaultValues: {
@@ -32,76 +44,57 @@ export default function ApplyAsProfessionalPage() {
     },
   });
 
-  const { watch } = form;
+  const { watch, handleSubmit } = form;
 
   const role = watch('role');
   const document = watch('document');
   const proofOfAddress = watch('proofOfAddress');
   const certification = watch('certification');
 
-  let completedSteps = 0;
-  if (role) completedSteps++;
-  if (document) completedSteps++;
-  if (proofOfAddress) completedSteps++;
-  if (certification) completedSteps++;
-
+  const completedSteps = [role, document, proofOfAddress, certification].filter(
+    Boolean
+  ).length;
   const totalSteps = 4;
   const progress = (completedSteps / totalSteps) * 100;
 
   const onSubmit = async (data: KycForm) => {
     try {
       setLoading(true);
-      // Build FormData for KYC + event
+
       const formData = new FormData();
       formData.append('role', String(data.role));
       formData.append('document', data.document);
       formData.append('proofOfAddress', data.proofOfAddress);
-      if (data.certification) {
+      if (data.certification)
         formData.append('certification', data.certification);
-      }
 
-      await api
-        .post('/kyc/submit', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' },
-        })
-        .then(async (res) => {
-          const { role, documentCid, proofOfAddressCid, certificationCid } =
-            res.data.data;
+      const res = await api.post('/kyc/submit', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
 
-          // Submit KYC on-chain
-          const tx = await submitKYC(
-            role,
-            documentCid,
-            proofOfAddressCid,
-            certificationCid
-          );
+      const { role, documentCid, proofOfAddressCid, certificationCid } =
+        res.data.data;
 
-          // Mint role token
-          await api.post('/role/mint', {
-            role,
-            address,
-          });
+      const tx = await submitKYC(
+        role,
+        documentCid,
+        proofOfAddressCid,
+        certificationCid
+      );
 
-          // Send Toast UI
-          toast('KYC Submitted & Role Minted', {
-            description: `Transaction Hash: ${tx.hash}`,
-            action: {
-              label: 'Close',
-              onClick: () => toast.dismiss(),
-            },
-          });
+      await api.post('/role/mint', { role, address });
 
-          // Return to dashboard
-          router.replace('/');
-        });
+      toast('KYC Submitted & Role Minted', {
+        description: `Transaction Hash: ${tx.hash}`,
+        action: { label: 'Close', onClick: () => toast.dismiss() },
+      });
+
+      router.replace('/');
     } catch (error) {
       console.error(error);
       toast('Submission failed', {
         description: (error as Error).message,
-        action: {
-          label: 'Close',
-          onClick: () => toast.dismiss(),
-        },
+        action: { label: 'Close', onClick: () => toast.dismiss() },
       });
     } finally {
       setLoading(false);
@@ -112,14 +105,13 @@ export default function ApplyAsProfessionalPage() {
     <PublicOnlyRoute>
       <AppLayout>
         <div className='flex flex-col gap-6 p-6'>
-          <div>
-            <h1 className='text-3xl font-bold tracking-tight'>
-              Professional Application
-            </h1>
-            <p className='text-muted-foreground'>
-              Apply as an Auditor or Project Developer through KYC Verification
-            </p>
-          </div>
+          <h1 className='text-3xl font-bold tracking-tight'>
+            Professional Application
+          </h1>
+          <p className='text-muted-foreground'>
+            Apply as an Auditor or Project Developer through KYC Verification
+          </p>
+
           <Card>
             <CardHeader>
               <CardTitle>KYC Progress</CardTitle>
@@ -137,114 +129,114 @@ export default function ApplyAsProfessionalPage() {
             </CardContent>
           </Card>
 
-          {/* Role Selection */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Role Selection</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Controller
-                control={form.control}
-                name='role'
-                render={({ field }) => (
-                  <RadioGroup
-                    value={String(field.value)}
-                    onValueChange={field.onChange}
-                    className='space-y-3'
-                  >
-                    <Label
-                      htmlFor='auditor'
-                      className={`flex w-full items-center space-x-3 rounded-lg border p-4 cursor-pointer ${
-                        field.value === UserRole.AUDITOR && 'border-accent'
-                      }`}
-                    >
-                      <RadioGroupItem
-                        value={String(UserRole.AUDITOR)}
-                        id='auditor'
-                      />
+          <Form {...form}>
+            <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
+              {/* Role Selection */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Role Selection</CardTitle>
+                </CardHeader>
+                <CardContent className='space-y-4'>
+                  <FormField
+                    control={form.control}
+                    name='role'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Role</FormLabel>
+                        <RadioGroup
+                          value={String(field.value)}
+                          onValueChange={(val) => field.onChange(Number(val))}
+                          className='space-y-3'
+                        >
+                          <Label
+                            htmlFor='auditor'
+                            className={`flex w-full items-center space-x-3 rounded-lg border p-4 cursor-pointer ${field.value === UserRole.AUDITOR ? 'border-accent' : ''}`}
+                          >
+                            <RadioGroupItem
+                              value={String(UserRole.AUDITOR)}
+                              id='auditor'
+                            />
+                            <div className='flex flex-col'>
+                              <span className='font-medium'>Auditor</span>
+                              <span className='text-sm text-muted-foreground'>
+                                Verify and validate carbon offset projects.
+                              </span>
+                            </div>
+                          </Label>
+                          <Label
+                            htmlFor='developer'
+                            className={`flex w-full items-center space-x-3 rounded-lg border p-4 cursor-pointer ${field.value === UserRole.DEVELOPER ? 'border-accent' : ''}`}
+                          >
+                            <RadioGroupItem
+                              value={String(UserRole.DEVELOPER)}
+                              id='developer'
+                            />
+                            <div className='flex flex-col'>
+                              <span className='font-medium'>
+                                Project Developer
+                              </span>
+                              <span className='text-sm text-muted-foreground'>
+                                Create and manage carbon offset projects.
+                              </span>
+                            </div>
+                          </Label>
+                        </RadioGroup>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
 
-                      <div className='flex flex-col'>
-                        <span className='font-medium'>Auditor</span>
-                        <span className='text-sm text-muted-foreground'>
-                          Verify and validate carbon offset projects.
-                        </span>
-                      </div>
-                    </Label>
-                    <Label
-                      htmlFor='developer'
-                      className={`flex w-full items-center space-x-3 rounded-lg border p-4 cursor-pointer ${
-                        field.value === UserRole.DEVELOPER && 'border-accent'
-                      }`}
-                    >
-                      <RadioGroupItem
-                        value={String(UserRole.DEVELOPER)}
-                        id='developer'
+              <Card>
+                <CardHeader>
+                  <CardTitle>Document Submission</CardTitle>
+                </CardHeader>
+                <CardContent className='space-y-4'>
+                  {['document', 'proofOfAddress', 'certification'].map(
+                    (fieldName, i) => (
+                      <FormField
+                        key={fieldName}
+                        control={form.control}
+                        name={fieldName as keyof KycForm}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>
+                              {fieldName === 'document'
+                                ? 'ID Document'
+                                : fieldName === 'proofOfAddress'
+                                  ? 'Proof of Address'
+                                  : 'Professional Certification (if applicable)'}
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                type='file'
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) field.onChange(file);
+                                }}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
                       />
+                    )
+                  )}
+                </CardContent>
+              </Card>
 
-                      <div className='flex flex-col'>
-                        <span className='font-medium'>Project Developer</span>
-                        <span className='text-sm text-muted-foreground'>
-                          Create and manage carbon offset projects.
-                        </span>
-                      </div>
-                    </Label>
-                  </RadioGroup>
+              <Button type='submit' disabled={loading} className='w-full'>
+                {loading ? (
+                  <span className='inline-flex gap-1 items-center'>
+                    <Spinner variant='circle' /> Submitting
+                  </span>
+                ) : (
+                  <span>Submit Documents</span>
                 )}
-              />
-            </CardContent>
-          </Card>
-
-          {/* Document Uploads */}
-          <Card className=''>
-            <CardHeader>
-              <CardTitle>Document Submission</CardTitle>
-            </CardHeader>
-            <CardContent className='space-y-4'>
-              <div>
-                <Label>ID Document</Label>
-                <Input
-                  type='file'
-                  onChange={(e) =>
-                    form.setValue('document', e.target.files?.[0] as File)
-                  }
-                  className='mt-2 border-accent text-muted-foreground'
-                />
-              </div>
-              <div>
-                <Label>Proof of Address</Label>
-                <Input
-                  type='file'
-                  onChange={(e) =>
-                    form.setValue('proofOfAddress', e.target.files?.[0] as File)
-                  }
-                  className='mt-2 border-accent text-muted-foreground'
-                />
-              </div>
-              <div>
-                <Label>Professional Certification (if applicable)</Label>
-                <Input
-                  type='file'
-                  onChange={(e) =>
-                    form.setValue('certification', e.target.files?.[0] as File)
-                  }
-                  className='mt-2 border-accent text-muted-foreground'
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Submit */}
-          <div className='flex justify-end'>
-            <Button onClick={form.handleSubmit(onSubmit)} disabled={loading}>
-              {loading ? (
-                <span className='inline-flex gap-1 items-center'>
-                  <Spinner variant='circle' /> Submitting
-                </span>
-              ) : (
-                <span>Submit Documents</span>
-              )}
-            </Button>
-          </div>
+              </Button>
+            </form>
+          </Form>
         </div>
       </AppLayout>
     </PublicOnlyRoute>

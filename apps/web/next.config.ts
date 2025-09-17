@@ -10,9 +10,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  async headers() {
-    return [];
-  },
 };
 
 export default nextConfig;
