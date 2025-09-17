@@ -143,7 +143,7 @@ export default function ProposalDetailsPage() {
           </p>
           <br />
           {/* Auditor Feedback */}
-          <AuditorFeedbackList reviews={proposal.reviews} />
+          <AuditorFeedbackList reviews={proposal.reviews ?? []} />
 
           {/* Actions */}
           {proposal.status === ProposalStatus.PendingReview && (
