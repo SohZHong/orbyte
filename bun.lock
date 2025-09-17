@@ -92,6 +92,7 @@
         "zod": "^4.1.1",
       },
       "devDependencies": {
+        "@eslint/js": "^9.35.0",
         "@tailwindcss/postcss": "^4.1.10",
         "@tanstack/react-query-devtools": "^5.80.5",
         "@types/node": "^20",

@@ -2,8 +2,10 @@ import type { CodegenConfig } from '@graphql-codegen/cli';
 
 const config: CodegenConfig = {
   overwrite: true,
-  schema:
+  schema: [
     'https://api.studio.thegraph.com/query/90479/orbyte-celo/version/latest',
+    'subgraph/schema.graphql',
+  ],
   documents: ['apps/**/src/graphql/**/*.graphql'],
   generates: {
     'apps/web/src/generated/': {
