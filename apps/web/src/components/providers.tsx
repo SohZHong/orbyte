@@ -10,12 +10,12 @@ const queryClient = new QueryClient();
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <PrivyProvider appId={appId} config={privyConfig}>
-      <SmartWalletsProvider config={smartWalletConfig}>
-        <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
+      <PrivyProvider appId={appId} config={privyConfig}>
+        <SmartWalletsProvider config={smartWalletConfig}>
           <WagmiProvider config={wagmiConfig}>{children}</WagmiProvider>
-        </QueryClientProvider>
-      </SmartWalletsProvider>
-    </PrivyProvider>
+        </SmartWalletsProvider>
+      </PrivyProvider>
+    </QueryClientProvider>
   );
 }
