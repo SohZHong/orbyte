@@ -9,16 +9,18 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@graphql-typed-document-node/core": "^3.2.0",
+    "dotenv": "^17.2.1",
     "next": "15.3.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "dotenv": "^17.2.1"
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.35.0",
+    "@types/bun": "^1.2.6",
     "@types/node": "^20",
     "@types/react": "^19",
-    "zod": "^4.0.13",
     "typescript": "^5",
-    "@types/bun": "^1.2.6"
+    "zod": "^4.0.13"
   }
 }

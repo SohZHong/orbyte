@@ -3,7 +3,7 @@ import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import { graphClient } from '@/graphql/client';
 import { ProposalDocument, type ProposalQuery } from '@/generated/graphql';
 import { fail } from '@/utils/apiResponse';
-import { addLine, drawWrappedText } from '@/utils/formatter';
+import { addLine } from '@/utils/formatter';
 
 export async function GET(req: NextRequest) {
   try {
