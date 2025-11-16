@@ -1,7 +1,7 @@
 # Orbyte — A Blockchain-Based Framework for Transparent & Traceable Voluntary Carbon Markets (VCM)
 
 Orbyte is the **official Proof-of-Concept (PoC)** implementation accompanying the conference paper  
-**“A Distributed Blockchain Framework for Real-Time Traceability and Transparency in the Voluntary Carbon Market”**  
+[**“A Distributed Blockchain Framework for Real-Time Traceability and Transparency in the Voluntary Carbon Market”**](https://drive.google.com/file/d/14fRKUYnQbCz38D2jwmDjVFYJCxQv-JGz/view?usp=sharing)  
 (accepted and pending publication).
 
 This repository demonstrates a **decentralized carbon credit lifecycle** using blockchain, smart contracts, and real-time on-chain data indexing via **The Graph Protocol**. It showcases how the proposed research architecture can be operationalized in a working decentralized application (dApp).
@@ -20,8 +20,6 @@ However, traditional VCM systems suffer from critical issues:
 - Double counting of carbon credits
 - Delayed or inaccessible public auditability
 
-As analyzed in the accompanying paper [oai_citation:1‡AIPCP Article_Blockchain.docx](sediment://file_000000008a4472089578295f8e45a642), these limitations undermine trust and prevent large-scale adoption.
-
 ### Research Goal
 
 The paper proposes a **conceptual blockchain-based framework** that:
@@ -34,8 +32,6 @@ The paper proposes a **conceptual blockchain-based framework** that:
 - Allows public, NGO, and governmental verification through immutable ledgers
 
 **Orbyte implements this entire workflow as a functional prototype.**
-
----
 
 ## 🧪 About This Proof-of-Concept
 
@@ -73,8 +69,6 @@ The Graph Protocol continuously streams contract state to the frontend for:
 
 Built using modern tooling (Next.js + Bun + Turborepo), the PoC demonstrates how blockchain infrastructure, indexing, and UI layers integrate into a cohesive dApp.
 
----
-
 ## 🏛 **System Architecture (Research-Aligned)**
 
 This PoC directly implements the architecture described in the paper:
@@ -96,8 +90,6 @@ This PoC directly implements the architecture described in the paper:
    - **Auditor**: validates proposals and authorizes token minting
    - **Buyer**: purchases or trades verifiable carbon credits
    - **Public/NGOs/Government**: independently inspect project metadata using blockchain explorers or the dApp interface
-
----
 
 ## 🛠 Tech Stack
 
@@ -124,8 +116,6 @@ This PoC directly implements the architecture described in the paper:
 - **TailwindCSS**
 - **shadcn/ui**
 - **React Server Components**
-
----
 
 ## 🚀 Getting Started
 
@@ -179,7 +169,7 @@ OWNER_PRIVATE_KEY=
 ## 📚 Relation to the Research Paper
 
 This repository serves as the practical validation of the conceptual framework proposed in the paper
-"A Distributed Blockchain Framework for Real-Time Traceability and Transparency in the Voluntary Carbon Market."
+[A Distributed Blockchain Framework for Real-Time Traceability and Transparency in the Voluntary Carbon Market](https://drive.google.com/file/d/14fRKUYnQbCz38D2jwmDjVFYJCxQv-JGz/view?usp=sharing)
 ￼
 Orbyte implements the following key contributions from the paper:
 
